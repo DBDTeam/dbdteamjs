@@ -62,7 +62,6 @@ class Shard extends EventEmitter {
         this.#client.emit("error", { type: "Close", d: { reason: reason.toString(), code }, time: new Date(), shard: this.shardID })
         this.#client.emit("shardDisconnect", this.shardID)
         clearInterval(this.#heartbeatInterval);
-        console.log(this.#sessionID)
         if (this.#sessionID) this.resume();
         this.#authenticated = false;
     }
@@ -72,7 +71,6 @@ class Shard extends EventEmitter {
             this.setAuthenticated()
             
             let _browser = this.#mobilePlatform
-            console.log(_browser)
             const identifyPayload = {
                 op: 2,
                 d: {
