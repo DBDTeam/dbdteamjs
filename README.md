@@ -25,12 +25,30 @@ const Intents = new IntentsBitField()
 
 Intents.add("Guilds")
 Intents.add("GuildMembers")
+Intents.add("GuildMessages")
+Intents.add("MessageContent")
 
 const client = new Client({
   token: `AQUI VA EL TOKEN DEL ROBOT`,
   intents: Intents.intents,
   gateway: {
     mobilePlatform: false // Únicamente esto si quieres que el robot tenga el ícono de online en un dispositivo móvil.
+  }
+})
+
+client.on("ready", () => {
+  console.log(`Me he encendido correctamente en ${client.user.username}`)
+  client.presence.update({
+    activities: [{ name: `¡Hola mundo!`, type: Presence.Types.Game }],
+    since: 0,
+    status: Presence.Status.DND
+  })
+})
+
+client.on("messageCreate", async(message) => {
+  if(message.user.bot) return; // El usuario es un robot
+  if(message.content.startsWith("!saludar")){
+    message.channel.createMessage(`¡Hola, ${message.user.username}!`)
   }
 })
 
