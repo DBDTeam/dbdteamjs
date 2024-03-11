@@ -1,0 +1,15 @@
+{
+  "name": "dbdteam.js",
+  "version": "0.0.1",
+  "description": "A casual package that uses discord api to create your bot!",
+  "main": "package.js",
+  "scripts": {
+    "start": "cls && node main.js"
+  },
+  "keywords": [],
+  "author": "DBDTeam",
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}
