@@ -15,12 +15,13 @@ class Client extends EventEmitter {
         readOnly(this, "token", opts.token)
         readOnly(this, "intents", opts.intents);
         readOnly(this, "rest", new REST(this))
-        this.gateway = opts?.gateway || {};
-        this.shardManager = new ShardManager(this, this.gateway);
+        readOnly(this, "configGateway", opts?.gateway || {});
+        this.shardManager = new ShardManager(this, this.configGateway);
+        this.gateway = shardManager.gateway
         this.guilds = new GuildManager(this)
         this.users = new UserManager(this)
         this.channels = new ChannelManager(this)
-        this.readyTimestamp = 0
+        this.ready = 0;
         this.user = null;
         this.presence = new ClientPresence(this);
         this.application = null;

@@ -32,7 +32,6 @@ class Shard extends EventEmitter {
         this.#authenticated = false;
         this.#latency = 0;
     }
-
     async connect() {
         if (this.#authenticated) return;
 
@@ -166,21 +165,34 @@ class ShardManager extends EventEmitter {
     #totalShards;
     #url;
     #client;
+    #gatewayConfig;
     #gateway;
     constructor(client, gateway) {
         super()
-        this.#gateway = gateway
+        this.#gatewayConfig = gateway
         this.#client = client
         this.#token = client.token;
         this.#intents = client.intents;
-        this.#totalShards = gateway?.totalShards || 1;
+        this.#totalShards = gateway?.totalShards || null;
         this.#url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
         this.shards = new Map();
+        this.gateway = null
     }
     
+    async getGatewayConfig() {
+        return await this.#client.rest.request("GET", `/gateway/bot`, true)
+    }
+
     async connect() {
+
+        this.#gateway = await this.getGatewayConfig().data
+
+        if(this.#gatewayConfig?.totalShards === null || this.#gatewayConfig?.totalShards<=0){
+            this.#gatewayConfig.totalShards = this.#gateway.shards
+        }
+
         for (let shardID = 0; shardID < this.#totalShards; shardID++) {
-            const shard = new Shard(this.#client, shardID, this.#totalShards, this.#gateway);
+            const shard = new Shard(this.#client, shardID, this.#totalShards, this.#gatewayConfig);
             this.shards.set(shardID, shard);
             await shard.connect();
             shard.on("eventReceived", (d) => {

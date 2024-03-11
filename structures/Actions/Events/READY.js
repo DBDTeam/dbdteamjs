@@ -1,3 +1,4 @@
+const { getAllStamps } = require("../../../Utils/utils.js");
 const { ClientUser } = require("../../../structures/Client/ClientUser.js");
 const { ClientApplication } = require("../../Client/ClientApplication.js");
 
@@ -5,7 +6,7 @@ module.exports = async (client, d, shard) => {
     client.user = new ClientUser(d.user, client)
     client.application = new ClientApplication(client)
     await waitForAllGuilds(client);
-    client.readyTimestamp = Date.now()
+    client.ready = getAllStamps(new Date())
     client.emit("debug", `Client logged successfully`, shard)
     client.emit("ready", client.user);
     
