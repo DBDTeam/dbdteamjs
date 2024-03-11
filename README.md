@@ -6,7 +6,7 @@ Este es un paquete pequeño que intenta hacer que la creación de robots de disc
 
 Para usar este pequeño paquete debes: (Proximamente se subirá a NPM para un uso más sencillo)
 
-1. Clona el repositorio: `git clone [https://github.com/tuusuario/tuproyecto.git](https://github.com/DBDTeam/dbdteamjs/tree/master)`
+1. Clona el repositorio: `git clone https://github.com/DBDTeam/dbdteamjs/tree/master`
 2. Instala las dependencias: `npm install` (o simplemente instalas `ws` usando `npm install ws`)
 
 ## Empezando a crear el bot
