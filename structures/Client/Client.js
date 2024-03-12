@@ -17,7 +17,7 @@ class Client extends EventEmitter {
         readOnly(this, "rest", new REST(this))
         readOnly(this, "configGateway", opts?.gateway || {});
         this.shardManager = new ShardManager(this, this.configGateway);
-        this.gateway = shardManager.gateway
+        this.gateway = this.shardManager.gateway
         this.guilds = new GuildManager(this)
         this.users = new UserManager(this)
         this.channels = new ChannelManager(this)
