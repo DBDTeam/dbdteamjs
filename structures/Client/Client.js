@@ -7,7 +7,6 @@ const { ChannelManager } = require('../Managers/ChannelManager.js');
 const { GuildManager } = require("../Managers/GuildManager.js");
 const { UserManager } = require('../Managers/UserManager.js');
 const { REST } = require('../../REST/REST.js');
-const { ApplicationCommandManager } = require("../Managers/ApplicationCommandsManager.js");
 
 class Client extends EventEmitter {
     constructor(opts) {

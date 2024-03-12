@@ -16,9 +16,9 @@ class ThreadMemberManager {
     async _fetchAllMembersInThread(obj) {
         var endpoint = Endpoints.ChannelThreadMembers(this.id)+`?with_member=true`
 
-        if(obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <=100)){ endpoint+= "?limit="+obj?.limit}
-        if(obj?.after && typeof obj?.after == "string"){ endpoint+= "?after="+obj?.after}
-        if(obj?.before && typeof obj?.before == "string"){ endpoint+= "?before="+obj?.before}
+        if(obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <=100)){ endpoint+= "&limit="+obj?.limit}
+        if(obj?.after && typeof obj?.after == "string"){ endpoint+= "&after="+obj?.after}
+        if(obj?.before && typeof obj?.before == "string"){ endpoint+= "&before="+obj?.before}
         const response = await this.#client.rest.request("GET", endpoint, true)
 
         if(response.error) { return null } else {
@@ -45,6 +45,14 @@ class ThreadMemberManager {
         } else if(typeof memberId === "object" || memberId === null || memberId === undefined) {
             return await this._fetchAllMembersInThread(memberId || {})
         }
+    }
+
+    async remove(memberId) {
+        memberId = memberId?.id || memberId
+
+        const response = await this.#client.rest.request("DELETE", Endpoints.ChannelThreadMember(this.id, memberId), true)
+
+        return response
     }
 }
 

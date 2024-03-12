@@ -2,6 +2,7 @@ const { setObj, typeChannel, getAllStamps } = require("../Utils/utils");
 const { Channel } = require("./DefaultChannel");
 const Endpoints = require("../REST/Endpoints");
 const { ThreadMemberManager } = require("./Managers/ThreadMemberManager");
+const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
 
 class ThreadChannel extends Channel {
     #client;
@@ -25,27 +26,8 @@ class ThreadChannel extends Channel {
             this.ownerId = this.guild.members.cache.get(this.ownerId)
         }
         this.members = new ThreadMemberManager(this.#client, this)
-    } /*{
-        type: 11,
-        total_message_sent: 98,
-        thread_metadata: {
-          locked: false,
-          create_timestamp: '2024-03-01T22:51:12.188000+00:00',
-          auto_archive_duration: 4320,
-          archived: false,
-          archive_timestamp: '2024-03-01T22:51:12.188000+00:00'
-        },
-        rate_limit_per_user: 0,
-        parent_id: '766497696604487691',
-        owner_id: '738824089128665118',
-        name: 'qwe',
-        message_count: 97,
-        member_count: 4,
-        last_message_id: '1213272648994267206',
-        id: '1213257240459350026',
-        guild_id: '759558437088264202',
-        flags: 0
-      }*/
+        this.messages = new ChannelMessageManager(this, this.#client)
+    }
 
     async edit(obj) {
         const thread = {
@@ -54,12 +36,16 @@ class ThreadChannel extends Channel {
             auto_archive_duration: 1440,
             locked: false,
             invitable: true,
-            rate_limit_per_user: 60,
+            rate_limit_per_user: 0,
             flags: 0,
             applied_tags: []
         };
 
-        const data = setObj(thread, obj)
+        const data = setObj(thread, obj, {
+            applied_tags: "tags",
+            rate_limit_per_user: ["cooldown", "rateLimitPerUser"],
+            auto_archive_duration: ["autoArchiveDuration"]
+        })
 
         const response = await this.#client.rest.request("PATCH", Endpoints.CHANNEL(this.id), true, { data })
 
@@ -67,9 +53,22 @@ class ThreadChannel extends Channel {
     } 
 
     async leave() {
-        const response = await this.#client.rest.request("DELETE", `/channels/${this.id}/thread-members/@me`, true)
+        const response = await this.#client.rest.request("DELETE", Endpoints.ChannelThreadMember(this.id, "@me"), true)
 
         return response?.error ? response : true
+    }
+
+    async archivedThreads(config) {
+        config = setObj({ before: null, limit: 5 }, config)
+
+        var endpoint = Endpoints.ChannelThreadsArchived(this.id)
+
+        if(config.before){
+            endpoint =+ `?before=${config.before}`
+        }
+        if(config.limit){
+            endpoint =+ config.before ? `&limit=${config.limit}` : `?limit=${config.limit}`
+        }
     }
 }
 

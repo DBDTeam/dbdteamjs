@@ -2,7 +2,6 @@ const { Base } = require("./Base.js");
 const Endpoints = require("../REST/Endpoints.js")
 const { typeChannel, setObj } = require("../Utils/utils.js");
 const { ChannelPermissionManager } = require("./Managers/ChannelPermissionManager.js");
-const { ChannelMessageManager } = require("./Managers/ChannelMessageManager.js");
 
 class DefaultChannel extends Base {
     #client;
@@ -18,10 +17,9 @@ class DefaultChannel extends Base {
         this.guildId = data.guild_id || data.guild.id;
         this.flags = this.flags
         this.permissions = new ChannelPermissionManager(data.permission_overwrites || [], this, client)
-        this.messages = new ChannelMessageManager(this, this.#client)
     }
 
-    ___patch(data) {
+    /*___patch(data) {
         //MEDIA OR FORUM
         //this.topic = data.topic;
         //this.lastMessageId = data.lastMessageId;
@@ -30,7 +28,9 @@ class DefaultChannel extends Base {
         this.defaultReactionEmoji = data.default_reaction_emoji
         this.defaultSortOrder = data.default_sort_order
         this.defaultForumLayout = data.default_forum_layout
-    }
+    } 
+    This thing will help me later
+    */
 
     async clone() {
         const channelObj = {
@@ -59,6 +59,8 @@ class DefaultChannel extends Base {
             permission_overwrites: "permissions",
             rtc_region: "rtc",
             video_quality_mode: "videoQuality",
+            default_auto_archive_duration: "defaultAutoArchiveDuration",
+            default_reaction_emoji: "defaultReactionEmoji"
         })
 
         var result = await this.#client.rest.request("POST", Endpoints.GUILD_CHANNELS(this.guildId), true, { data })
@@ -97,13 +99,13 @@ class DefaultChannel extends Base {
             default_reaction_emoji: "defaultReactionEmoji"
         })
 
-        var result = await this.#client.rest.request("PATCH", Endpoints.CHANNEL(this.id), true, { data }, reason)
+        var result = await this.#client.rest.request("PATCH", Endpoints.CHANNEL(this.id), true, { data }, null, reason)
 
         return result?.error ? result : typeChannel(result.data, this.#client)
     }
 
     async delete(reason) {
-        var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL(this.id), true,{}, reason?.trim() || null)
+        var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL(this.id), true,{}, null, reason?.trim() || null)
 
         return result?.error ? false : true
     }

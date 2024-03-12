@@ -25,7 +25,7 @@ class MessageReactions {
             for(var i of emojis){
                 var emoji = encodeURIComponent(getId(i))
         
-                var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL_MESSAGE_REACTION_USER(this.channelId, this.id, emoji, user), true)
+                var result = await this.#client.rest.request("DELETE", Endpoints.ChannelMessageReactionUser(this.channelId, this.id, emoji, user), true)
 
                 results.push(result)
             }
@@ -34,7 +34,7 @@ class MessageReactions {
         } else {
             var emoji = encodeURIComponent(getId(i))
         
-            var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL_MESSAGE_REACTION_USER(this.channelId, this.messageId, emoji, user), true)
+            var result = await this.#client.rest.request("DELETE", Endpoints.ChannelMessageReactionUser(this.channelId, this.messageId, emoji, user), true)
 
             return result
         }
@@ -45,7 +45,7 @@ class MessageReactions {
         for(var i of emojis){
             var emoji = encodeURIComponent(getId(i))
 
-            var result = await this.#client.rest.request("PUT", Endpoints.CHANNEL_MESSAGE_REACTION_USER(this.channelId, this.messageId, emoji, "@me"), true)
+            var result = await this.#client.rest.request("PUT", Endpoints.ChannelMessageReactionUser(this.channelId, this.messageId, emoji, "@me"), true)
             
             results.push(result)
         }
@@ -54,7 +54,7 @@ class MessageReactions {
     }
     
     async removeAll() {
-        var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL_MESSAGE_REACTIONS(this.channelId, this.messageId), true)
+        var result = await this.#client.rest.request("DELETE", Endpoints.ChannelMessageReactions(this.channelId, this.messageId), true)
             
         return result
     }

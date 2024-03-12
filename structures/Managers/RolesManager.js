@@ -64,6 +64,7 @@ class MemberRolesManager {
 
         if (response?.error) {
             //"why are u watching this xd"; "idk"; "this is kinda crazy"; "well, maybe it's, but, i'm bored"; "me too bro"
+            return response
         } else {
             if (response instanceof Collection) {
                 var i = response.toJSON().filter((i) => this.member?.roles?.includes(i.id))

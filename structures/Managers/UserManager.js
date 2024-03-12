@@ -2,7 +2,6 @@ const { Collection } = require("../../Utils/Collection")
 const Endpoints = require("../../REST/Endpoints")
 const { User } = require("../User")
 const { Member } = require("../Member")
-const { ClientUser } = require("../Client/ClientUser")
 
 class UserManager {
     #client
@@ -34,8 +33,13 @@ class GuildMemberManager {
     async _fetchAllMembers(obj) {
         var endpoint = Endpoints.GuildMembers(this.guildId)
 
-        if (obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <= 100)) { endpoint += "?limit=" + obj?.limit }
-        if (obj?.after && typeof obj?.after == "string") { endpoint += "?after=" + obj?.after }
+        const conditions = {
+            limit: obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <= 100),
+            after: obj?.after && typeof obj?.after == "string"
+        }
+
+        if (conditions.limit) { endpoint += "?limit=" + obj?.limit }
+        if (conditions.after) { endpoint += (conditions.limit ? "&after=" : "?after=") + obj.after }
         const response = await this.#client.rest.request("GET", endpoint, true)
 
         if (response.error) { return null } else {

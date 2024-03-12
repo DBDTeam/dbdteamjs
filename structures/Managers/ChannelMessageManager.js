@@ -25,17 +25,24 @@ class ChannelMessageManager {
 
             var endpoint = Endpoints.ChannelMessages(channel.id)
 
-            if(data.limit >= 1 && data.limit <= 100){
+            const conditions = {
+                limit: data.limit >= 1 && data.limit <= 100,
+                after: !!data.after,
+                before: !!data.before,
+                round: !!data.round
+            }
+
+            if(conditions.limit){
                 endpoint += "?limit="+data.limit
             }
             if(data.after){
-                endpoint += "?after="+data.after
+                endpoint += (conditions.limit ? "?after=" : "&after=") + data.after
             }
             if(data.before){
-                endpoint += "?before="+data.before
+                endpoint += ((conditions.limit || conditions.after) ? "?before=" : "&before=") + data.before
             }
             if(data.around){
-                endpoint += "?around="+data.around
+                endpoint += ((conditions.limit || conditions.before) ? "?round=" : "&round=") + data.round
             }
 
             const messages = await this.#client.rest.request("GET", endpoint, true)

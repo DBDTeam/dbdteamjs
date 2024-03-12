@@ -8,7 +8,7 @@ class GuildManager {
         this.cache = new Collection()
     }
     async fetch(id) {
-        var guild = await this.client.rest.request("GET", Endpoints.GUILD(id), true)
+        var guild = await this.client.rest.request("GET", Endpoints.Guild(id), true)
 
         guild = guild.data
 

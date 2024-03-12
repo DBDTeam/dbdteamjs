@@ -3,6 +3,7 @@ const { Channel } = require("./DefaultChannel")
 const Endpoints = require("../REST/Endpoints")
 const { Message } = require("./Message");
 const { MessagePayload } = require("./Payloads/MessagePayload");
+const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
 
 class TextChannel extends Channel {
     #client;
@@ -17,6 +18,7 @@ class TextChannel extends Channel {
         this.parentId = data.parent_id
         this.lastPinStamp = getAllStamps(data.last_pin_timestamp)
         this.rateLimitPerUser = data.rate_limit_per_user
+        this.messages = new ChannelMessageManager(this, this.#client)
         readOnly(this, "coldown", this.rateLimitPerUser)
         readOnly(this, "sendMessage", (arg) => this.createMessage(arg))
         readOnly(this, 'send', (arg) => this.createMessage(arg))

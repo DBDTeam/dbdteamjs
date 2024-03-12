@@ -12,7 +12,7 @@ class GuildChannelManager {
 
     async _fetchAllChannels() {
         try{
-            var allChannels = await this.client.rest.request("GET", "/guilds/"+this.guildId+"/channels", true)
+            var allChannels = await this.client.rest.request("GET", Endpoints.GuildChannels(this.guildId), true)
             var _return = new Collection()
             allChannels = allChannels.data
 
