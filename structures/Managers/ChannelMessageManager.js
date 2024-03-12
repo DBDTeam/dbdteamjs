@@ -7,7 +7,7 @@ class ChannelMessageManager {
     #client;
     constructor(channel, client) {
         this.guild = channel.guild
-        this.channel = channel
+        console.log(channel)
         this.#client = client
         this.cache = new Collection()
     }
@@ -23,7 +23,7 @@ class ChannelMessageManager {
 
             const data = setObj(config, msgId, {})
 
-            var endpoint = Endpoints.ChannelMessages(channel.id)
+            var endpoint = Endpoints.ChannelMessages(this.channel.id)
 
             const conditions = {
                 limit: data.limit >= 1 && data.limit <= 100,
@@ -64,7 +64,7 @@ class ChannelMessageManager {
                 return response
             }
         } else if (typeof msgId === "string") {
-            const response = await this.#client.rest.request("GET", Endpoints.ChannelMessage(channel.id, msgId), true)
+            const response = await this.#client.rest.request("GET", Endpoints.ChannelMessage(this.channel.id, msgId), true)
 
             if(response.error) {
                 return null
