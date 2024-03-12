@@ -1,3 +1,5 @@
+const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
+
 function readOnly(t, n, v) {
   Object.defineProperty(t, n, {
     value: v,
@@ -41,6 +43,8 @@ function interactionType(data, client) {
   const { InteractionBase } = require("../structures/Interactions/BaseInteraction");
 
   switch(data.type) {
+    case 1:
+      return new SlashInteraction(data, client)
     default:
       return new InteractionBase(data, client)
   }

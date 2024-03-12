@@ -18,7 +18,8 @@ class InteractionResponse extends Message {
         }
     }
 
-    async edit(obj) {
+    async editInteractionResponse(obj) {
+        //Remember that the tokens of interaction only works for 15 minutes, so, it's recommended to use <Message>.edit
         const payload = new EditMessagePayload(obj, obj.files)
         var data = payload.payload, files = payload.files
 

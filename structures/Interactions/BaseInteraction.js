@@ -21,7 +21,6 @@ class InteractionBase {
         this.permissions = data.app_permissions
         this.guildLocale = data.guild_locale
         this.rawData = data.data
-        this.name = data.data.name
         this.id = data.data.id
         this.type = data.data.type
     }
@@ -63,7 +62,7 @@ class InteractionBase {
         var data = payload.payload; var files = payload.files
 
         if(obj.ephemeral === true) {
-            data.flags |= 64 //i'm tired boss...
+            data.flags |= 64
         }
 
         const response = await this.client.rest.request("POST", Endpoints.InteractionCreateFollowUp(this.client.user.id, this.token), true, { data }, null, files)
