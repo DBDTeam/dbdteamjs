@@ -7,7 +7,7 @@ class SlashInteraction extends InteractionBase {
         this.name = data.data.name;
         this.options = new Collection();
 
-        for(var i of data.data.options){
+        for(var i of data.data?.options || []){
             this.options.set(i.name, i)
         }
     }

@@ -1,5 +1,3 @@
-const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
-
 function readOnly(t, n, v) {
   Object.defineProperty(t, n, {
     value: v,
@@ -41,9 +39,10 @@ function typeChannel(channelData, client) {
 
 function interactionType(data, client) {
   const { InteractionBase } = require("../structures/Interactions/BaseInteraction");
+  const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
 
   switch(data.type) {
-    case 1:
+    case 2:
       return new SlashInteraction(data, client)
     default:
       return new InteractionBase(data, client)
