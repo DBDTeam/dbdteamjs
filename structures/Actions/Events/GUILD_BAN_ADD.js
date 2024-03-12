@@ -5,5 +5,5 @@ module.exports = async(client, d, id) => {
 
     var user = User(d.user, client)
 
-    client.emit("guildBanCreate", user, guild)
+    client.emit("guildBanCreate", user, guild, id)
 }

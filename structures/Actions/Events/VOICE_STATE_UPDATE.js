@@ -1,5 +1,4 @@
 const { ChannelTypes } = require("../../../Types/ChannelTypes")
-const { VoiceChannel } = require("../../VoiceChannel")
 
 module.exports = async(client, d, shard) => {
     for(var ch of client.channels.cache.toJSON()){

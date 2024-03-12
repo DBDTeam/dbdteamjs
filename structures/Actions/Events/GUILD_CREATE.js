@@ -3,7 +3,7 @@ const { typeChannel } = require("../../../Utils/utils.js")
 const { ChannelTypes } = require("../../../Types/ChannelTypes.js")
 const { Member } = require("../../Member.js")
 const { User } = require("../../User.js")
-module.exports = async(client, d) => {
+module.exports = async(client, d, id) => {
     const g = new Guild(d, client)
 
     if(!client.guilds.cache.get(d.id)){
@@ -46,6 +46,6 @@ module.exports = async(client, d) => {
     const stamp = Date.parse(d.joined_at)
     
     if(stamp > Date.now()-2000){
-        client.emit("guildCreate", g)
+        client.emit("guildCreate", g, id)
     }
 }

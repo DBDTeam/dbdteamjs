@@ -11,5 +11,5 @@ module.exports = (client, d, id) => {
         }
     })
 
-    client.emit("channelUpdate", _old, _new)
+    client.emit("channelUpdate", _old, _new, id)
 }

@@ -2,7 +2,7 @@ const { Guild } = require("../../Guild")
 const { typeChannel } = require("../../../Utils/utils.js")
 const { Member } = require("../../Member.js")
 const { User } = require("../../User.js")
-module.exports = async(client, d) => {
+module.exports = async(client, d, id) => {
     const newGuild = new Guild(d, client)
     const oldGuild = client.guilds.cache.get(d.id)
     if(!client.guilds.cache.get(d.id)){
@@ -42,5 +42,5 @@ module.exports = async(client, d) => {
         client.users.cache.set(user.id, user)
     }
 
-    client.emit("guildUpdate", oldGuild, newGuild)
+    client.emit("guildUpdate", oldGuild, newGuild, id)
 }

@@ -14,5 +14,5 @@ module.exports = (client, d, id) => {
         f.set(i.user.id, memb)
     }
 
-    client.emit("guildMemberChunk", guild, f.toJSON(), chunk)
+    client.emit("guildMemberChunk", guild, f.toJSON(), chunk, id)
 }

@@ -7,5 +7,5 @@ module.exports = async(client, d, id) => {
 
     channel.messages.cache.delete(d.id)
 
-    client.emit("messageDelete", msg)
+    client.emit("messageDelete", msg, id)
 }

@@ -9,5 +9,5 @@ module.exports = (client, d, id) => {
 
     client.channels.cache.delete(d.id)
 
-    client.emit("channelDelete", _old)
+    client.emit("channelDelete", _old, id)
 }

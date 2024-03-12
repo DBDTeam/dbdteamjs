@@ -8,7 +8,7 @@ module.exports = async (client, d, shard) => {
     await waitForAllGuilds(client);
     client.ready = getAllStamps(new Date())
     client.emit("debug", `Client logged successfully`, shard)
-    client.emit("ready", client.user);
+    client.emit("ready", client.user, shard);
     
 };
 

@@ -3,7 +3,7 @@ module.exports = async(client, d, id) => {
         client.emit("guildUnavailable", client.guilds.cache.get(d.id))
         client.guilds.cache.set(d.id, d)
     } else {
-        client.emit("guildLeave", client.guilds.cache.get(d.id))
+        client.emit("guildLeave", client.guilds.cache.get(d.id), id)
         client.guilds.cache.delete(d.id)
     }
 }

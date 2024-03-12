@@ -5,5 +5,5 @@ module.exports = async(client, d, id) => {
     
     msg.channel.messages.cache.set(d.id, msg)
 
-    client.emit("messageUpdate", msg)
+    client.emit("messageUpdate", msg, id)
 }

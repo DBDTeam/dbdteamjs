@@ -12,5 +12,5 @@ module.exports = async(client, d, shardId) => {
     client.channels.cache.set(_new.id, _new)
 
     console.log(d)
-    client.emit("threadUpdate", _new, _old)
+    client.emit("threadUpdate", _new, _old, shardId)
 }

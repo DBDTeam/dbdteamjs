@@ -7,5 +7,5 @@ module.exports = async(client, d, id) => {
 
     guild.members.cache.set(member.id, member)
 
-    client.emit("guildMemberAdd", member, guild)
+    client.emit("guildMemberAdd", member, guild, id)
 }

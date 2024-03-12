@@ -3,7 +3,7 @@ module.exports = async(client, d, id) => {
 
     const member = guild.members.cache.get(d.user.id)
 
-    client.emit("guildMemberLeave", member, guild)
+    client.emit("guildMemberLeave", member, guild, id)
 
     guild.members.cache.delete(d.user.id)
 }

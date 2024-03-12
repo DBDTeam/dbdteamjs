@@ -7,5 +7,5 @@ module.exports = (client, d, id) => {
 
     d.guild.channels.set(d.id, typeChannel(d, client))
 
-    client.emit("channelDelete", channel)
+    client.emit("channelDelete", channel, id)
 }

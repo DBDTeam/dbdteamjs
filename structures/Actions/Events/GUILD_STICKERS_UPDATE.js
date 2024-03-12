@@ -1,4 +1,4 @@
-module.exports = async(client, d) => {
+module.exports = async(client, d, id) => {
     const guild = client.guilds.cache.get(d.id)
     
     const stickers = d.stickers
@@ -7,5 +7,5 @@ module.exports = async(client, d) => {
         guild.stickers.set(i.id, i)
     }
 
-    client.emit("guildStickersUpdate", guild, stickers)
+    client.emit("guildStickersUpdate", guild, stickers, id)
 }

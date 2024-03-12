@@ -1,4 +1,4 @@
-module.exports = async(client, d) => {
+module.exports = async(client, d, id) => {
     const guild = client.guilds.cache.get(d.id)
     
     const emojis = d.emojis
@@ -7,5 +7,5 @@ module.exports = async(client, d) => {
         guild.emojis.set(i.id, i)
     }
 
-    client.emit("guildEmojisUpdate", guild, emojis)
+    client.emit("guildEmojisUpdate", guild, emojis, id)
 }

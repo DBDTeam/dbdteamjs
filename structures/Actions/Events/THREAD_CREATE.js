@@ -10,5 +10,5 @@ module.exports = async(client, d, shardId) => {
     thread.guild.channels.cache.set(thread.id, thread)
     client.channels.cache.set(thread.id, thread)
 
-    client.emit("threadCreate", thread)
+    client.emit("threadCreate", thread, shardId)
 }

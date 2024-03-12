@@ -1,4 +1,4 @@
-module.exports = async(client, d) => {
+module.exports = async(client, d, id) => {
     const guild = client.guilds.cache.get(d.guild_id)
     const oldRole = guild.roles.cache.get(d.role.id)
 
@@ -6,5 +6,5 @@ module.exports = async(client, d) => {
 
     guild.roles.cache.set(newRole.id, newRole)
    
-    client.emit("guildRoleUpdate", guild, newRole, oldRole)
+    client.emit("guildRoleUpdate", guild, newRole, oldRole, id)
 }
