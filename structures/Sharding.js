@@ -184,10 +184,10 @@ class ShardManager extends EventEmitter {
     }
 
     async connect() {
+        this.#gateway = (await this.getGatewayConfig()).data
 
-        this.#gateway = await this.getGatewayConfig().data
-
-        if(this.#gatewayConfig?.totalShards === null || this.#gatewayConfig?.totalShards<=0){
+        if(this.#totalShards === null || this.#totalShards<=0){
+            this.#totalShards = this.#gateway.shards || 1;
             this.#gatewayConfig.totalShards = this.#gateway.shards
         }
 
