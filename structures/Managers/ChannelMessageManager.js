@@ -7,7 +7,7 @@ class ChannelMessageManager {
     #client;
     constructor(channel, client) {
         this.guild = channel.guild
-        console.log(channel)
+        this.channel = channel
         this.#client = client
         this.cache = new Collection()
     }
@@ -69,7 +69,7 @@ class ChannelMessageManager {
             if(response.error) {
                 return null
             } else {
-                const msg = new Message(response.data, this.#client)
+                const msg = new Message({...response.data, guild: this.guild}, this.#client)
                 if(this.channel.messages.cache.get(response.data.id)){
                     this.channel.messages.cache.set(response.data.id, msg)
                 }
