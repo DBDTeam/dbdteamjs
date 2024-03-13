@@ -8,6 +8,7 @@ const { Message } = require("../Message");
 const { InteractionResponse } = require("./InteractionResponse");
 
 class InteractionBase {
+    #d;
     constructor(data, client) {
         readOnly(this, "token", data.token)
         readOnly(this, "client", client)
@@ -21,9 +22,26 @@ class InteractionBase {
         this.permissions = data.app_permissions
         this.guildLocale = data.guild_locale
         this.rawData = data.data
+        this.#d = data;
         this.id = data.data.id
-        this.type = data.data.type
     }
+
+    get isComponent() {
+        return !!this.rawData.custom_id
+    }
+
+    get isSlash() {
+        return this.#d.type === 1
+    }
+
+    get isUser() {
+        return this.#d.type === 2
+    }
+
+    get isMessage() {
+        return this.#d.type === 3
+    }
+
     get author() { return this.member.user}
 
     async makeReply(obj) {

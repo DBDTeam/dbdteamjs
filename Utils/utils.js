@@ -38,14 +38,19 @@ function typeChannel(channelData, client) {
 }
 
 function interactionType(data, client) {
-  const { InteractionBase } = require("../structures/Interactions/BaseInteraction");
+  const { InteractionTypes } = require("../Types/Interactions");
   const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
+  const { ComponentInteraction } = require("../structures/Interactions/ComponentInteraction");
 
-  switch(data.type) {
-    case 2:
+  switch(data.data.type) {
+    case InteractionTypes.Slash:
+      return new SlashInteraction(data, client)
+    case InteractionTypes.Message:
+      return new SlashInteraction(data, client)
+    case InteractionTypes.User:
       return new SlashInteraction(data, client)
     default:
-      return new InteractionBase(data, client)
+      return new ComponentInteraction(data, client)
   }
 }
 

@@ -55,6 +55,9 @@ class ChannelMessageManager {
                     const msg = new Message(i, this.#client)
 
                     if(this.channel.messages.cache.get(i.id)){
+                        if(!msg.channel) {
+                            msg.channel = this.channel
+                        }
                         this.channel.messages.cache.set(i.id, msg)
                     }
 
@@ -70,6 +73,9 @@ class ChannelMessageManager {
                 return null
             } else {
                 const msg = new Message({...response.data, guild: this.guild}, this.#client)
+                if(!msg.channel) {
+                    msg.channel = this.channel
+                }
                 if(this.channel.messages.cache.get(response.data.id)){
                     this.channel.messages.cache.set(response.data.id, msg)
                 }

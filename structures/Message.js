@@ -20,12 +20,12 @@ class Message extends Base {
         this.id = data.id;
         this.type = data.type;
         this.channelId = data.channel_id;
-        this.guildId = data.guild_id || data.guild?.id;
+        this.guildId = data.guild_id || data.guild?.id || this.#client.channels.cache.get(this.channelId).guild?.id;
         this.author = this.user;
         this.content = data.content;
         this.mentions = { users: new Collection(), roles: new Collection(), channels: new Collection() }
-        this.channel = null;
-        this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild
+        this.channel = this.#client.channels.cache.get(this.channelId)
+        this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId).guild
         this.member = !data.member ? this.guild.members.cache.get(this.user.id) : new Member({...data.member, id: this.user.id}, this.guild, this.#client)
         this.reactions = new MessageReactions(this.#client, this, data.reactions || [])
         this.tts = data.tts;
@@ -40,8 +40,6 @@ class Message extends Base {
     }
 
     _patch(data) {
-        this.guild.members.cache.set(this.user.id, this.member)
-        this.channel = this.#client.channels.cache.get(this.channelId)
         if('webhook_id' in data){
             this.webhookId = data.webhook_id;
         }
