@@ -46,28 +46,32 @@ class ComponentInteraction extends InteractionBase {
             if(this.#data.data.resolved.channels){
                 const channels = Object.values(this.#data.data.resolved.channels)
 
-                for (var i of channels) {
-                    var f = this.#data.data.values.find(i.id)
+                for (var i in channels) {
+                    const channel = channels[i]
+                    var f = this.#data.data.values.find(x => x === channel.id)
                     if(f) {
-                        this.resolved.push(this.guild.channels.cache.get(f.id) || f)
+                        this.resolved.push(this.guild.channels.cache.get(f))
                     }
                 }
             } else if(this.#data.data.resolved.roles) {
                 const roles = Object.values(this.#data.data.resolved.roles)
 
-                for (var i of roles) {
-                    var f = this.#data.data.values.find(i.id)
+                for (var i in roles) {
+                    const role = roles[i]
+                    var f = this.#data.data.values.find(x => x === role.id)
                     if(f) {
-                        this.resolved.push(this.guild.roles.cache.get(f.id) || f)
+                        this.resolved.push(this.guild.roles.cache.get(f))
                     }
                 }
             } else if(this.#data.data.resolved.users) {
                 const members = Object.values(this.#data.data.resolved.members)
+                const users = Object.values(this.#data.data.resolved.users)
 
-                for (var i of members) {
-                    var f = this.#data.data.values.find(i.user.id)
+                for (var i in members) {
+                    const user = users[i], member = members[i]
+                    var f = this.#data.data.values.find(x => x === user.id)
                     if(f) {
-                        this.resolved.push(this.guild.members.cache.get(f.user.id) || f)
+                        this.resolved.push(this.guild.members.cache.get(f) || new Member({...member, user, id: user.id}, this.guild, this.client))
                     }
                 }
             }
