@@ -109,6 +109,9 @@ class DefaultChannel extends Base {
 
         return result?.error ? false : true
     }
+    toString() {
+        return `<#${this.id}>`
+    }
 }
 
 

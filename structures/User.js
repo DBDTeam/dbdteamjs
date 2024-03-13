@@ -84,6 +84,9 @@ class User extends Base {
         if (!this.id) return;
         return this.#client.rest.cdn.user_banner(this, opts);
     }
+    toString() {
+        return `<@${this.id}>`
+    }
 }
 
 module.exports = { User }

@@ -37,7 +37,9 @@ class Member extends Base {
             if(this.#client.users.cache.get(this.id)) {
                 x = this.#client.users.cache.get(this.id)
             } else {
-                this.#client.users.cache.set(this.id, new User(this.#d.user, this.#client))
+                var user = this.#d.user
+                if(!user){ user = this.#d.author }
+                this.#client.users.cache.set(this.id, new User(user, this.#client))
                 x = this.#client.users.cache.get(this.id)
             }
         } else {
@@ -163,6 +165,9 @@ class Member extends Base {
         var response = await this.#client.rest.request("PUT", Endpoints.GuildBan(this.guild.id, this.id), true, {}, reason)
 
         return response
+    }
+    toString() {
+        return `<@${this.id}>`
     }
 }
 
