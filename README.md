@@ -1,6 +1,6 @@
 # @dbdteam.js
 
-This is a small package that tries to make creating discord bots easy and efficient, it's just getting started, so if you find a bug, don't hesitate to let us know by joining the [official Discord server](https://www. dbdteam.xyz/discord), you open a forum in the "support projects" channel and you will be assisted without a doubt.
+This is a small package that tries to make creating discord bots easy and efficient, it's just getting started, so if you find a bug, don't hesitate to let us know by joining the [official Discord server](https://www.dbdteam.xyz/discord), you open a forum in the "support projects" channel and you will be assisted inmediatly (or no, but, you will get responsed).
 
 ## README in others languages:
 [SPANISH (Español)](/README/SPANISH.md)
