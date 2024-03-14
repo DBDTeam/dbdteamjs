@@ -46,7 +46,7 @@ client.on("ready", () => {
 
     client.presence.update({
       activities: [{ name: `¡Hola mundo!`, type: Presence.Types.Game }],
-      since: 0.
+      since: 0,
       status: Presence.Status.DND
     })
 })
@@ -64,7 +64,7 @@ client.connect() // Establecerá la conexión entre el robot y el WS.
 ## Ejemplo de uso de interacciones
 
 ```javascript
-const {Client, Presence, IntentsBitField} = require("./pacakge.js")
+const {Client, Presence, IntentsBitField, SlashTypes} = require("./pacakge.js")
 
 const Intents = new IntentsBitField()
 
@@ -85,7 +85,7 @@ client.on("ready", () => {
     console.log(`He iniciado sesión exitosamente en ${client.user.username}`)
     client.presence.updateinteraction({
       activities: [{ name: `¡Hola mundo!`, type: Presence.Types.Game }],
-      since: 0.
+      since: 0,
       status: Presence.Status.DND
     })
 
