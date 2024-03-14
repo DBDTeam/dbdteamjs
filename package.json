@@ -1,6 +1,6 @@
 {
-  "name": "dbdteam.js",
-  "version": "0.0.1",
+  "name": "dbdteamjs",
+  "version": "0.0.2",
   "description": "A casual package that uses discord api to create your bot!",
   "main": "package.js",
   "scripts": {
@@ -11,5 +11,9 @@
   "license": "MIT",
   "dependencies": {
     "ws": "^8.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DBDTeam/dbdteamjs/"
   }
 }
