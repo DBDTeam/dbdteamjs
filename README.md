@@ -24,7 +24,7 @@ Once you have that done, it's time to start creating the robot using the package
 ## Example using MessageContent Intent
 
 ```javascript
-const { Client, Presence, IntentsBitField } = require("./packge.js")
+const { Client, Presence, IntentsBitField } = require("./package.js")
 
 const Intents = new IntentsBitField()
 
@@ -63,7 +63,7 @@ client.connect() // Will establish the connection between the robot and the WS.
 ## Example using Interactions
 
 ```javascript
-const { Client, Presence, IntentsBitField, InteractionTypes } = require("./packge.js")
+const { Client, Presence, IntentsBitField, InteractionTypes } = require("./pacakge.js")
 
 const Intents = new IntentsBitField()
 

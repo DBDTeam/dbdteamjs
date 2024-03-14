@@ -24,7 +24,7 @@ Una vez hecho esto, es hora de comenzar a crear el robot usando el paquete:
 ## Ejemplo de uso del Intent MessageContent
 
 ```javascript
-const {Client, Presence, IntentsBitField} = require("./packge.js")
+const {Client, Presence, IntentsBitField} = require("./package.js")
 
 const Intents = new IntentsBitField()
 
@@ -64,7 +64,7 @@ client.connect() // Establecerá la conexión entre el robot y el WS.
 ## Ejemplo de uso de interacciones
 
 ```javascript
-const {Client, Presence, IntentsBitField} = require("./packge.js")
+const {Client, Presence, IntentsBitField} = require("./pacakge.js")
 
 const Intents = new IntentsBitField()
 
