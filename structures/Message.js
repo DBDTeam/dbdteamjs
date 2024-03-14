@@ -7,23 +7,64 @@ const { Member } = require("./Member.js")
 const { setObj, readOnly, typeChannel, getAllStamps } = require("../Utils/utils.js")
 const { MessagePayload } = require("./Payloads/MessagePayload.js")
 const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js")
+const { Client } = require("./Client/Client.js")
+const { ThreadChannel } = require("./ThreadChannel.js")
+const { TextChannel } = require("./TextChannel.js")
+const { VoiceChannel } = require("./VoiceChannel.js")
+const { Channel } = require("./DefaultChannel.js")
 
 
 class Message extends Base {
     #justUser;
     #client
-    // #data;
+    /**
+   * Represents a Discord Message
+   * @param {MessagePayload} data - The message payload
+   * @param {Client} client - The Client
+   */
     constructor(data, client){
         super(data.id)
         this.#client = client
         this.#justUser = data.author
+        /**
+         * Represents the ID of the message
+         * @type {string}
+        */
         this.id = data.id;
+        /**
+         * The type of the message. [Check types](https://discord.com/developers/docs/resources/channel#message-object-message-types)
+         * @type {string}
+        */
         this.type = data.type;
+        /**
+         * The channel id of where the message was sent
+         * @type {string}
+        */
         this.channelId = data.channel_id;
+        /**
+         * The guild id of where the message was sent
+         * @type {string}
+        */
         this.guildId = data.guild_id || data.guild?.id || this.#client.channels.cache.get(this.channelId).guild?.id;
+        /**
+         * The author of the message.
+         * @type {User}
+        */
         this.author = this.user;
+        /**
+         * The content of the message.
+         * @type {User}
+        */
         this.content = data.content;
+        /**
+         * The mentions of the message.
+         * @type {object|undefined}
+        */
         this.mentions = { users: new Collection(), roles: new Collection(), channels: new Collection() }
+        /**
+         * Represents the channel
+         * @type {TextChannel|VoiceChannel|ThreadChannel|Channel}
+        */
         this.channel = this.#client.channels.cache.get(this.channelId)
         this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId).guild
         this.member = !data.member ? this.guild.members.cache.get(this.user.id) : new Member({...data.member, id: this.user.id}, this.guild, this.#client)
