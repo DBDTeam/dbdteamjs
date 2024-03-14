@@ -24,6 +24,8 @@ class InteractionBase {
         this.rawData = data.data
         this.#d = data;
         this.id = data.data.id
+        readOnly(this, "reply", this.makeReply)
+        readOnly(this, "showModal", this.modal)
     }
 
     get isComponent() {
@@ -50,7 +52,13 @@ class InteractionBase {
 
         const data = { type: 4, data: _d }
 
-        const response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data }, null, files)
+        var response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data }, null, files)
+
+        if(obj.fetchResponse || obj.fetchReply){
+            response = await this.client.rest.request("GET", Endpoints.InteractionOriginal(this.client.user.id, this.token), true)
+
+            response = new InteractionResponse({...response.data, guild_id: this.guildId, token: this.token, interactionId: this.interactionId}, this.client)
+        }
 
         return response
     }
@@ -103,6 +111,17 @@ class InteractionBase {
         } else {
             return new InteractionResponse({...response.data, guild_id: this.guildId, token: this.token, interactionId: this.interactionId}, this.client)
         }
+    }
+
+    async modal() {
+        const payload = new InteractionPayload(obj, obj.files)
+        var _d = payload.payload, files = payload.files
+
+        const data = { type: 9, data: _d }
+
+        const response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data }, null, files)
+
+        return response
     }
 }
 

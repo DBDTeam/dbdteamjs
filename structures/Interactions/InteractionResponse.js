@@ -10,11 +10,11 @@ class InteractionResponse extends Message {
         readOnly(this, "token", data.token)
         readOnly(this, "interactionId", data.interactionId)
         this.interactionData = {
-            name: data.interaction?.name ?? data.interaction_metadata.name,
-            id: data.interaction?.id ?? data.interaction_metadata.id,
-            type: data.interaction?.type ?? data.interaction_metadata.type,
-            user: client.users.cache.get(data.interaction.user.id ?? data.interaction_metadata.user_id),
-            userId: data.interaction.user.id ?? data.interaction_metadata.user_id
+            name: data.interaction?.name ?? data.interaction_metadata?.name,
+            id: data.interaction?.id ?? data.interaction_metadata?.id,
+            type: data.interaction?.type ?? data.interaction_metadata?.type,
+            user: client.users.cache.get(data.interaction?.user?.id ?? data.interaction_metadata?.user_id),
+            userId: data.interaction?.user?.id ?? data.interaction_metadata?.user_id
         }
     }
 

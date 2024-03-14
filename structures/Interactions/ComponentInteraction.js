@@ -3,6 +3,8 @@ const { Member } = require("../Member")
 const { ComponentTypes } = require("../../Types/Interactions");
 const { Message } = require("../Message");
 const { InteractionBase } = require("./BaseInteraction");
+const { InteractionPayload } = require("../Payloads/InteractionPayload");
+const Endpoints = require("../../REST/Endpoints")
 
 class ComponentInteraction extends InteractionBase {
     #data;
@@ -18,6 +20,24 @@ class ComponentInteraction extends InteractionBase {
     get isSelectMenu() {
         return [ComponentTypes.String, ComponentTypes.User, ComponentTypes.Role, ComponentTypes.Mentionable, ComponentTypes.Channel].includes(this.componentType);
     }
+
+    async updateReply(obj) {
+        const payload = new InteractionPayload(obj, obj.files)
+        var _d = payload.payload, files = payload.files
+
+        const data = { type: 7, data: _d }
+
+        const response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data }, null, files)
+
+        if(obj.fetchResponse || obj.fetchReply){
+            response = await this.client.rest.request("GET", Endpoints.InteractionOriginal(this.client.user.id, this.token), true)
+
+            response = new InteractionResponse({...response.data, guild_id: this.guildId, token: this.token, interactionId: this.interactionId}, this.client)
+        }
+
+        return response
+    }
+
     async _patch() {
         this.message = new Message(this.#data.message, this.client);
         const userData = this.#data.member.user;
