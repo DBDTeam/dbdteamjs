@@ -1,6 +1,6 @@
 # @dbdteam.js
 
-Este es un pequeño paquete que intenta hacer que la creación de bots de Discord sea fácil y eficiente, apenas está comenzando, así que si encuentras un error, no dudes en informarnos uniéndote al [Servidor Oficial de Discord](https://www.dbdteam.xyz/discord), abres un foro en el canal "proyectos de soporte" y te atenderán sin duda.
+Este es un pequeño paquete que intenta hacer que la creación de bots de Discord sea fácil y eficiente, apenas está comenzando, así que si encuentras un error, no dudes en informarnos uniéndote al [Servidor Oficial de Discord](https://www.dbdteam.xyz/discord), abres un foro en el canal "support projects" y te atenderán sin duda.
 
 ## README en otros idiomas:
 [Inglés (English)](/README.md)
