@@ -4,7 +4,6 @@ const Endpoints = require("../../REST/Endpoints");
 const { InteractionPayload } = require("../Payloads/InteractionPayload");
 const { EditMessagePayload } = require("../Payloads/EditMessagePayload");
 const { MessagePayload } = require("../Payloads/MessagePayload");
-const { Message } = require("../Message");
 const { InteractionResponse } = require("./InteractionResponse");
 
 class InteractionBase {
@@ -113,13 +112,13 @@ class InteractionBase {
         }
     }
 
-    async modal() {
-        const payload = new InteractionPayload(obj, obj.files)
-        var _d = payload.payload, files = payload.files
+    async modal(obj) {
+        const payload = obj //new InteractionModal(obj)
+        //var _d = payload.payload
 
-        const data = { type: 9, data: _d }
+        const data = { type: 9, data: payload }
 
-        const response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data }, null, files)
+        const response = await this.client.rest.request("POST", Endpoints.Interaction(this.interactionId, this.token), true, { data })
 
         return response
     }

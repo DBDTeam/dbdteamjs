@@ -38,19 +38,26 @@ function typeChannel(channelData, client) {
 }
 
 async function interactionType(data, client) {
-  const { InteractionTypes } = require("../Types/Interactions");
+  const { InteractionTypes, ComponentTypes } = require("../Types/Interactions");
   const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
-  const { ComponentInteraction } = require("../structures/Interactions/ComponentInteraction");
+  const { InteractionModal } = require("../structures/Interactions/InteractionModal");
+  const { ButtoInteraction } = require("../structures/Interactions/ButtonInteraction");
+  const { SelectMenuInteraction } = require("../structures/Interactions/SelectMenuInteraction");
 
-  switch(data.data.type) {
-    case InteractionTypes.Slash:
-      return await new SlashInteraction(data, client)
-    case InteractionTypes.Message:
-      return await new SlashInteraction(data, client)
-    case InteractionTypes.User:
-      return await new SlashInteraction(data, client)
-    default:
-      return await new ComponentInteraction(data, client)
+  if (data.data.type === InteractionTypes.Slash && !data.data.component_type) {
+    return await new SlashInteraction(data, client);
+  } else if(data.data.type === InteractionTypes.Message && !data.data.component_type) {
+    return await new SlashInteraction(data, client);
+  } else if(data.data.type === InteractionTypes.User && !data.data.component_type) {
+    return await new SlashInteraction(data, client);
+  } else if(data.type === 5) {
+    return await new InteractionModal(data, client);
+  } else if(data.data.custom_id) {
+   if(data.data.component_type === ComponentTypes.Button){
+    return await new ButtoInteraction(data, client)
+   } else if([ComponentTypes.String, ComponentTypes.User, ComponentTypes.Role, ComponentTypes.Mentionable, ComponentTypes.Channel].includes(data.data?.component_type)){
+    return await new SelectMenuInteraction(data, client)
+   }
   }
 }
 
