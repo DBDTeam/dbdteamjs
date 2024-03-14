@@ -37,20 +37,20 @@ function typeChannel(channelData, client) {
   }
 }
 
-function interactionType(data, client) {
+async function interactionType(data, client) {
   const { InteractionTypes } = require("../Types/Interactions");
   const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
   const { ComponentInteraction } = require("../structures/Interactions/ComponentInteraction");
 
   switch(data.data.type) {
     case InteractionTypes.Slash:
-      return new SlashInteraction(data, client)
+      return await new SlashInteraction(data, client)
     case InteractionTypes.Message:
-      return new SlashInteraction(data, client)
+      return await new SlashInteraction(data, client)
     case InteractionTypes.User:
-      return new SlashInteraction(data, client)
+      return await new SlashInteraction(data, client)
     default:
-      return new ComponentInteraction(data, client)
+      return await new ComponentInteraction(data, client)
   }
 }
 
