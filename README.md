@@ -1,22 +1,24 @@
 # @dbdteam.js
 
-Este es un paquete pequeño que intenta hacer que la creación de robots de discord sea sencillo y eficaz, apenas está empezando, así que si encuentras un error, no dudes a comunicarte uniéndote al [servidor oficial de Discord](https://www.dbdteam.xyz/discord), abres un foro en el canal de "support projects" y serás atendido sin duda.
+This is a small package that tries to make creating discord bots easy and efficient, it's just getting started, so if you find a bug, don't hesitate to let us know by joining the [official Discord server](https://www. dbdteam.xyz/discord), you open a forum in the "support projects" channel and you will be assisted without a doubt.
 
-## Instalación
+## Installation
 
-Para usar este pequeño paquete debes: (Proximamente se subirá a NPM para un uso más sencillo)
+To use this small package you must: (It will soon be uploaded to NPM for easier use)
 
-1. Clona el repositorio: `git clone https://github.com/DBDTeam/dbdteamjs/tree/master`
-2. Instala las dependencias: `npm install` (o simplemente instalas `ws` usando `npm install ws`)
+1. Clone the repository: `git clone https://github.com/DBDTeam/dbdteamjs/tree/master`
+2. Install the dependencies: `npm install` (or just install `ws` using `npm install ws`)
 
-## Empezando a crear el bot
+## Starting to create the bot
 
-Primeramente se suguiere que por favor tenga conocimientos de como crear Aplicaciones de discord en [Discord Developers Applications](https://discord.com/developers/applications), una vez tenga su aplicación creada, siga los siguientes pasos (esto será simple, así que se le siguiere que sepa sobre los Intents de Discord también):
+Firstly, it is suggested that you please have knowledge of how to create Discord Applications in [Discord Developers Applications](https://discord.com/developers/applications), once you have your application created, follow the following steps (this will be simple, so you should know about Discord Intents too):
 
-1. Obtenga el token de su aplicación.
-2. Ínvite su robot a un servidor.
+1. Get your app token.
+2. Invite your bot to a server.
 
-Una vez tenga eso hecho, es momento de empezar a crear el robot usando el paquete:
+Once you have that done, it's time to start creating the robot using the package:
+
+## Example using MessageContent Intent
 
 ```javascript
 const { Client, Presence, IntentsBitField } = require("./packge.js")
@@ -29,28 +31,77 @@ Intents.add("GuildMessages")
 Intents.add("MessageContent")
 
 const client = new Client({
-  token: `AQUI VA EL TOKEN DEL ROBOT`,
-  intents: Intents.intents,
-  gateway: {
-    mobilePlatform: false // Únicamente esto si quieres que el robot tenga el ícono de online en un dispositivo móvil.
-  }
+   token: `HERE GOES THE ROBOT TOKEN`,
+   intents: Intents.intents,
+   gateway: {
+     mobilePlatform: false // Only this if you want the robot to have the online icon on a mobile device.
+   }
 })
 
 client.on("ready", () => {
-  console.log(`Me he encendido correctamente en ${client.user.username}`)
-  client.presence.update({
-    activities: [{ name: `¡Hola mundo!`, type: Presence.Types.Game }],
-    since: 0,
-    status: Presence.Status.DND
-  })
+   console.log(`I have successfully logged on to ${client.user.username}`)
+   client.presence.update({
+     activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
+     since: 0.
+     status: Presence.Status.DND
+   })
 })
 
 client.on("messageCreate", async(message) => {
-  if(message.user.bot) return; // El usuario es un robot
-  if(message.content.startsWith("!saludar")){
-    message.channel.createMessage(`¡Hola, ${message.user.username}!`)
-  }
+   if(message.user.bot) return; // The user is a robot
+   if(message.content.startsWith("!greet")){
+     message.channel.createMessage(`Hello, ${message.user.username}!`)
+   }
 })
 
-client.connect() // Establecerá la conexión entre el robot y la WS.
+client.connect() // Will establish the connection between the robot and the WS.
+```
+
+## Example using Interactions
+
+```javascript
+const { Client, Presence, IntentsBitField, InteractionTypes } = require("./packge.js")
+
+const Intents = new IntentsBitField()
+
+Intents.add("Guilds")
+Intents.add("GuildMembers")
+
+const client = new Client({
+   token: `HERE GOES THE ROBOT TOKEN`,
+   intents: Intents.intents,
+   gateway: {
+     mobilePlatform: false // Only this if you want the robot to have the online icon on a mobile device.
+   }
+})
+
+client.on("ready", () => {
+   console.log(`I have successfully logged on to ${client.user.username}`)
+   client.presence.update({
+     activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
+     since: 0.
+     status: Presence.Status.DND
+   })
+
+   client.application.commands.set(
+    [
+      {
+        name: "ping",
+        description: "Pong!",
+        options: [],
+        type: SlashTypes.InteractionTypes
+      }, //You can add more application commands adding it in the object.
+    ]
+   )
+})
+
+client.on("interactionCreate", async(interaction) => {
+   if(interaction.isSlash){
+    if(interaction.name === "ping"){
+      interaction.makeReply({ content: `Pong!\nLatency: ${client.ping}` })
+    }
+   }
+})
+
+client.connect() // Will establish the connection between the robot and the WS.
 ```
