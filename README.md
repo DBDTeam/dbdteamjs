@@ -2,6 +2,9 @@
 
 This is a small package that tries to make creating discord bots easy and efficient, it's just getting started, so if you find a bug, don't hesitate to let us know by joining the [official Discord server](https://www. dbdteam.xyz/discord), you open a forum in the "support projects" channel and you will be assisted without a doubt.
 
+## README in others languages:
+[SPANISH (Español)](/README/SPANISH.md)
+
 ## Installation
 
 To use this small package you must: (It will soon be uploaded to NPM for easier use)
