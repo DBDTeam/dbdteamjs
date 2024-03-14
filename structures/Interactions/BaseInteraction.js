@@ -32,15 +32,15 @@ class InteractionBase {
     }
 
     get isSlash() {
-        return this.#d.type === 1
+        return this.rawData.type === 1
     }
 
     get isUser() {
-        return this.#d.type === 2
+        return this.rawData.type === 2
     }
 
     get isMessage() {
-        return this.#d.type === 3
+        return this.rawData.type === 3
     }
 
     get author() { return this.member.user}
