@@ -45,7 +45,7 @@ client.on("ready", () => {
    console.log(`I have successfully logged on to ${client.user.username}`)
    client.presence.update({
      activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
-     since: 0.
+     since: 0,
      status: Presence.Status.DND
    })
 })
@@ -63,7 +63,7 @@ client.connect() // Will establish the connection between the robot and the WS.
 ## Example using Interactions
 
 ```javascript
-const { Client, Presence, IntentsBitField, InteractionTypes } = require("./pacakge.js")
+const { Client, Presence, IntentsBitField, SlashTypes } = require("./pacakge.js")
 
 const Intents = new IntentsBitField()
 
@@ -82,7 +82,7 @@ client.on("ready", () => {
    console.log(`I have successfully logged on to ${client.user.username}`)
    client.presence.update({
      activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
-     since: 0.
+     since: 0,
      status: Presence.Status.DND
    })
 
