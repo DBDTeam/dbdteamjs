@@ -8,7 +8,6 @@ const { readOnly, typeChannel, getAllStamps } = require("../Utils/utils.js")
 const { MessagePayload } = require("./Payloads/MessagePayload.js")
 const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js")
 
-
 class Message extends Base {
     #justUser;
     #client
@@ -65,30 +64,83 @@ class Message extends Base {
         */
         this.mentions = { users: new Collection(), roles: new Collection(), channels: new Collection() }
         /**
-         * Represents the channel
+         * Represents the current channel
          * @type {TextChannel|VoiceChannel|ThreadChannel|Channel}
         */
         this.channel = this.#client.channels.cache.get(this.channelId)
+        /**
+         * Represents the current guild
+         * @type {Guild}
+         */
         this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId).guild
+        /**
+         * Represents the member
+         * @type {Member}
+         */
         this.member = !data.member ? this.guild.members.cache.get(this.user.id) : new Member({...data.member, id: this.user.id}, this.guild, this.#client)
+        /**
+         * Represents the reactions of the message
+         * @type {MessageReactions}
+         */
         this.reactions = new MessageReactions(this.#client, this, data.reactions || [])
+        /**
+         * If the message was sended with TTS 
+         * @type {boolean}
+         */
         this.tts = data.tts;
+        /**
+         * The message flags
+         * @type {number}
+         */
         this.flags = data.flags;
+        /**
+         * The Date, unix and timestamp of when the message was sent
+         * @type {object}
+         */
         this.sended = getAllStamps(this.getCreatedAt)
+        /**
+         * The embeds of the message (if any)
+         * @type {object}
+         */
         this.embeds = data.embeds;
+        /**
+         * The attachments of the message (if any)
+         * @type {Collection}
+         */
         this.attachments = data.attachments;
+        /**
+         * The stickers of the message (if any)
+         * @type {Collection}
+         */
         this.stickers = new Collection();
+        /**
+         * The nonce of the message
+         * @type {number}
+         * @readonly
+         */
         readOnly(this, 'nonce', data.nonce)
+        /**
+         * If the message is pinned
+         * @type {boolean}
+         */
         this.pinned = data.pinned;
         this._patch(data);
     }
 
     _patch(data) {
         if('webhook_id' in data){
+            /**
+             * The webhook id of the message (if any)
+             * @type {string|undefined}
+             */
             this.webhookId = data.webhook_id;
         }
 
         if('thread' in data){
+            /**
+             * The thread where the message was sent. (if any)
+             * @type {object|undefined}
+             */
             this.thread = data.thread;
         }
 
@@ -109,7 +161,11 @@ class Message extends Base {
             }
         }
     }
-    
+    /**
+     * 
+     * @param {object} obj - Send a message in the channel
+     * @returns {Message}
+     */
     async reply(obj) {
         const message = new MessagePayload(obj, obj?.files)
 
@@ -125,7 +181,11 @@ class Message extends Base {
 
         return x
     }
-    
+    /**
+     * 
+     * @param {object} obj - Edits the message (Only if the message author is the client)
+     * @returns {Message}
+     */
     async edit(obj) {
         const message = new EditMessagePayload(obj, obj.files)
 
@@ -141,7 +201,11 @@ class Message extends Base {
 
         return x
     }
-    
+    /**
+     * 
+     * @param {} - Remove the embeds of the message
+     * @returns {Message}
+     */
     async removeEmbeds() {
         var result = await this.#client.rest.request("PATCH", Endpoints.ChannelMessage(this.channelId, this.id), true, { data: { flags: 4} })
             
@@ -155,13 +219,20 @@ class Message extends Base {
 
         return x
     }
-    
+    /**
+     * 
+     * @param {}  - Deletes the message
+     * @returns {Message}
+     */
     async delete() {
         var result = await this.#client.rest.request("DELETE", Endpoints.ChannelMessage(this.channelId, this.id), true)
             
         return result
     }
-    
+    /**
+     * @type {User}
+     * @returns - The author of the message
+     */
     get user() {
         if(this.webhookId){
             return data.user
