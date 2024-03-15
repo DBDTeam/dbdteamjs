@@ -164,6 +164,11 @@ class Message extends Base {
     /**
      * 
      * @param {object} obj - Send a message in the channel
+     * @example
+     * <Message>.reply({
+     *  content: `Hello!`,
+     *  mentions: { repliedUser: false }
+     * })
      * @returns {Message}
      */
     async reply(obj) {
@@ -184,6 +189,10 @@ class Message extends Base {
     /**
      * 
      * @param {object} obj - Edits the message (Only if the message author is the client)
+     * @example
+     * <Message>.edit({
+     *  content: "This is the content of the new message"
+     * })
      * @returns {Message}
      */
     async edit(obj) {

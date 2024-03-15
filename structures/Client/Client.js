@@ -9,6 +9,18 @@ const { UserManager } = require('../Managers/UserManager.js');
 const { REST } = require('../../REST/REST.js');
 
 class Client extends EventEmitter {
+    /**
+     * Represents the Client
+     * @param {object} opts - The client options
+     * @example
+     * const client = new Client({
+     *  token: `Client token goes here`,
+     *  intents: YourIntents,
+     *  gateway: {
+     *      mobilePlatform: true 
+     *  } 
+     * })
+     */
     constructor(opts) {
         super()
         /**
