@@ -85,4 +85,4 @@ class ChannelMessageManager {
     }
 }
 
-module.exports = { ChannelMessageManager }
+module.exports = { ChannelMessageManager };

@@ -4,14 +4,9 @@ const {Collection} = require("../Utils/Collection.js")
 const Endpoints = require("../REST/Endpoints.js")
 const { MessageReactions } = require("./Managers/ReactionMessage.js")
 const { Member } = require("./Member.js")
-const { setObj, readOnly, typeChannel, getAllStamps } = require("../Utils/utils.js")
+const { readOnly, typeChannel, getAllStamps } = require("../Utils/utils.js")
 const { MessagePayload } = require("./Payloads/MessagePayload.js")
 const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js")
-const { Client } = require("./Client/Client.js")
-const { ThreadChannel } = require("./ThreadChannel.js")
-const { TextChannel } = require("./TextChannel.js")
-const { VoiceChannel } = require("./VoiceChannel.js")
-const { Channel } = require("./DefaultChannel.js")
 
 
 class Message extends Base {
@@ -24,20 +19,28 @@ class Message extends Base {
    */
     constructor(data, client){
         super(data.id)
+        const { Client } = require("./Client/Client.js")
+        const { ThreadChannel } = require("./ThreadChannel.js")
+        const { TextChannel } = require("./TextChannel.js")
+        const { VoiceChannel } = require("./VoiceChannel.js")
+        const { Channel } = require("./DefaultChannel.js")
         this.#client = client
         this.#justUser = data.author
         /**
-         * Represents the ID of the message
          * @type {string}
+         * @en Represents the ID of the Message
+         * @es Representa el ID del Mensaje.
         */
         this.id = data.id;
         /**
-         * The type of the message. [Check types](https://discord.com/developers/docs/resources/channel#message-object-message-types)
+         * @en The type of the message.
+         * @es El tipo de mensaje.
          * @type {string}
         */
         this.type = data.type;
         /**
-         * The channel id of where the message was sent
+         * @en The channel id of where the message was sent
+         * @es El ID del canal en donde el mensaje fue enviado.
          * @type {string}
         */
         this.channelId = data.channel_id;

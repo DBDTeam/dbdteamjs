@@ -4,7 +4,8 @@
   "description": "A casual package that uses discord api to create your bot!",
   "main": "package.js",
   "scripts": {
-    "start": "cls && node main.js"
+    "start": "cls && node main.js",
+    "docs": "jsdoc --configure .jsdoc.config.json --verbose"
   },
   "keywords": [],
   "author": "DBDTeam",

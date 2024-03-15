@@ -20,7 +20,6 @@ function typeChannel(channelData, client) {
   const { CategoryChannel } = require("../structures/CategoryChannel");
   const { ThreadChannel } = require("../structures/ThreadChannel");
 
-
   switch (channelData.type) {
     case ChannelTypes.Text:
       return new TextChannel(channelData, client)
