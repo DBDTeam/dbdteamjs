@@ -8,17 +8,17 @@ const { MemberEditPayload } = require("./Payloads/MemberEditPayload");
 const { Guild } = require("./Guild");
 
 class Member extends Base {
+    #DATE;
+    #PREMIUM;
+    #TIMEOUTED;
+    #client;
+    #d;
     /**
      * Represents a GuildMember
      * @param {object} data - The member payload
      * @param {object} guild - The guild where the member is it
      * @param {Client} client - The Client
      */
-    #DATE;
-    #PREMIUM;
-    #TIMEOUTED;
-    #client;
-    #d;
     constructor(data, guild, client) {
         super(data.id)
         this.#d = data;
