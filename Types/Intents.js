@@ -26,7 +26,7 @@
  * Definition of Discord intents.
  * @type {DiscordIntents}
  */
-module.exports.DiscordIntents = {
+module.exports = {
     "Guilds": 1 << 0,
     "GuildMembers": 1 << 1,
     "GuildModeration": 1 << 2,

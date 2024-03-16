@@ -1,4 +1,4 @@
-const DiscordIntents = require("../../Types/Intents").DiscordIntents
+const DiscordIntents = require("../../Types/Intents")
 
 class IntentBitFields {
     /**
