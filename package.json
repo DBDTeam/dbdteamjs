@@ -5,7 +5,10 @@
   "main": "package.js",
   "scripts": {
     "start": "cls && node main.js",
-    "docs": "jsdoc --configure .jsdoc.config.json --verbose"
+    "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
+    "doc": "git add . && npm run docx",
+    "docx": "git commit -m \"Updating documentation\" && npm run docy",
+    "docy": "git push origin 0.0.2"
   },
   "keywords": [],
   "author": "DBDTeam",

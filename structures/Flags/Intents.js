@@ -1,29 +1,21 @@
-const { readOnly } = require("../../Utils/utils");
+const DiscordIntents = require("../../Types/Intents").DiscordIntents
 
 class IntentBitFields {
-    #Intents = {
-        "Guilds": 1 << 0,
-        "GuildMembers": 1 << 1,
-        "GuildModeration": 1 << 2,
-        "GuildEmojisAndStickers": 1 << 3,
-        "GuildIntegrations": 1 << 4,
-        "GuildWebhooks": 1 << 5,
-        "GuildInvites": 1 << 6,
-        "GuildVoiceStates": 1 << 7,
-        "GuildPresences": 1 << 8,
-        "GuildMessages": 1 << 9,
-        "GuildMessageReactions": 1 << 10,
-        "GuildMessageTyping": 1 << 11,
-        "DirectMessages": 1 << 12,
-        "DirectMessagesReactions": 1 << 13,
-        "DirectMessageTyping": 1 << 14,
-        "MessageContent": 1 << 15,
-        "GuildScheduledEvents": 1 << 16,
-        "AutoModerationConfiguration": 1 << 20,
-        "AutoModerationExecution": 1 << 21,
-    }
+    /**
+     * Use this to put your Intents in your bot
+     */
+    #Intents = DiscordIntents
     #intent;
     #iced = false;
+    /**
+     * Add your intents.
+     * @example
+     * const Intents = new IntentBitFields("Guilds", "GuildMembers", "GuildMessages", "GuildMessageContent")
+     * Intents.add("GuildPresences")
+     * Intents.freeze() // This freezes the intents
+     * Intents.add("GuildBans") // This wouldn't be added
+     * @param  {...DiscordIntents} intents 
+     */
     constructor(...intents) {
         this.intents = 0;
         this.#intent = intents
