@@ -27,19 +27,16 @@ class Message extends Base {
         this.#justUser = data.author
         /**
          * @type {string}
-         * @en Represents the ID of the Message
-         * @es Representa el ID del Mensaje.
+         * Represents the ID of the Message
         */
         this.id = data.id;
         /**
-         * @en The type of the message.
-         * @es El tipo de mensaje.
+         * The type of the message.
          * @type {string}
         */
         this.type = data.type;
         /**
-         * @en The channel id of where the message was sent
-         * @es El ID del canal en donde el mensaje fue enviado.
+         * The channel id of where the message was sent
          * @type {string}
         */
         this.channelId = data.channel_id;
