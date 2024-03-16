@@ -3,12 +3,12 @@ const { GuildChannelManager } = require("./Managers/ChannelManager")
 const { readOnly, getAllStamps } = require("../Utils/utils")
 const { Collection } = require("../Utils/Collection");
 const ENDPOINTS = require("../REST/Endpoints");
-const { GuildMemberManager } = require("./Managers/UserManager");
 const { GuildRolesManager } = require("./Managers/RolesManager");
 
 class Guild extends Base {
     #client;
     constructor(data, client) {
+        const { GuildMemberManager } = require("./Managers/UserManager");
         super(data.id)
         this.#client = client
         this.name = data.name
