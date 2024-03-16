@@ -102,24 +102,63 @@ class Member extends Base {
     }
     _patch(data) {
         if ("nick" in data && data.nick !== null && data.nick !== undefined) {
+            /**
+             * The nickname of the GuildMember
+             * @type {string|undefined}
+             */
             this.nick = data.nick
         }
         if ('avatar' in data && data.avatar !== null && data.avatar !== undefined) {
+            /**
+             * The avatar of the GuildMember
+             * @type {string|undefined}
+             */
             this.avatar = data.avatar
         }
         if ('premium_since' in data && data.premium_since !== null && data.premium_since !== undefined) {
+            /**
+             * The information stamps whether the guild member has boosted the server.
+             * @type {string|undefined}
+             */
             this.premiumSince = getAllStamps(this.#PREMIUM)
         }
         if ('pending' in data) {
+            /**
+             * If the user is pending
+             * @type {boolean}
+             */
             this.pending = data.pending
         }
         if ('permissions' in data && !data.permissions) {
+            /**
+             * The permissions of the member
+             */
             this.permissions = data.permissions
         }
         if ('communication_disabled_until' in data) {
+            /**
+             * The stamp if the GuildMember is timed out.
+             * @type {object}
+             * @readonly
+             */
             readOnly(this, 'communicationDisabledUntil', getAllStamps(this.#TIMEOUTED))
+            /**
+             * The stamp if the GuildMember is timed out.
+             * @type {object}
+             * @readonly
+             */
             readOnly(this, 'timeoutUntil', this.communicationDisabledUntil)
+            /**
+             * If the GuildMember is timed out.
+             * @type {boolean}
+             * @readonly
+             */
             readOnly(this, 'communicationDisabled', data.communication_disabled_until ? true : false)
+            /**
+             * If the GuildMember is timed out.
+             * @type {boolean}
+             * @readonly
+             */
             this.timeouted = this.communicationDisabled
         }
         
@@ -127,6 +166,11 @@ class Member extends Base {
             this.edit;
             this.kick;
             this.ban;
+            /**
+             * Only if the GuildMember is the Client.
+             * @function
+             * @returns {object}
+             */
             this.leave = async() => {
                 const response = await this.#client.rest.request("DELETE", Endpoints.UserGuild(this.guild.id), true)
 
@@ -134,6 +178,11 @@ class Member extends Base {
             }
         }
     }
+    
+    /**
+     * If the GuildMember is kickable by the Client
+     * @returns {boolean}
+     */
 
     get kickable() {
         var _p = 0
@@ -156,6 +205,11 @@ class Member extends Base {
         return expression
     }
 
+    /**
+     * If the GuildMember is banneable by the Client
+     * @returns {boolean}
+     */
+
     get banneable() {
         var _p = 0
         var _h = this.roles.cache.toJSON().sort((a,b) => b.position-a.position)?.[0]?.position || 0
@@ -177,6 +231,12 @@ class Member extends Base {
         return expression
     }
 
+    /**
+     * Edits the GuildMember
+     * @param {MemberEditPayload} obj - The Member Edit Payload
+     * @returns {boolean}
+     */
+
     async edit(obj) {
         var payload = new MemberEditPayload(obj)
         
@@ -192,12 +252,26 @@ class Member extends Base {
             return true
         }
     }
+
+    /**
+     * Changes the nickname of the GuildMember
+     * @param {string} nickname - The new nickname of the GuildMember
+     * @param {string} [reason=null] - The reason of why edit's the GuildMember nickname
+     * @returns {object}
+     */
+
     async changeNickname(nickname, reason) {
         reason = reason?.trim()
         var response = await this.#client.rest.request("PATCH", Endpoints.GuildMember(this.guild.id, this.id), true, { data: { roles: this.roles, flags: this.flags, nick: nickname } }, reason)
 
         return response
     }
+
+    /**
+     * Kick the GuildMember from the server
+     * @param {string} reason - The reason
+     * @returns {object}
+     */
 
     async kick(reason) {
         reason = reason?.trim()
@@ -206,6 +280,12 @@ class Member extends Base {
 
         return response
     }
+
+    /**
+     * Ban the GuildMember from the server
+     * @param {string} reason - The reason
+     * @returns {object}
+     */
 
     async ban(obj) {
         const banObj = {
@@ -219,6 +299,12 @@ class Member extends Base {
 
         return response
     }
+
+    /**
+     * Returns the mention of the GuildMember
+     * @returns {string}
+     */
+
     toString() {
         return `<@${this.id}>`
     }
