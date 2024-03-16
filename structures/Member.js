@@ -5,8 +5,15 @@ const Endpoints = require("../REST/Endpoints");
 const { User } = require("./User");
 const { PermissionsBitField } = require("../Types/PermissionsBitFields");
 const { MemberEditPayload } = require("./Payloads/MemberEditPayload");
+const { Guild } = require("./Guild");
 
 class Member extends Base {
+    /**
+     * Represents a GuildMember
+     * @param {object} data - The member payload
+     * @param {object} guild - The guild where the member is it
+     * @param {Client} client - The Client
+     */
     #DATE;
     #PREMIUM;
     #TIMEOUTED;
@@ -19,18 +26,64 @@ class Member extends Base {
         this.#DATE = new Date(data.joined_at)
         this.#PREMIUM = new Date(data.premium_since)
         this.#TIMEOUTED = new Date(data.communication_disabled_until)
+        /**
+         * The ID of the User
+         * @type {number}
+         */
         this.id = data.id
+        /**
+         * The Guild where the member is it
+         * @readonly
+         * @type {Guild}
+         */
         readOnly(this, "guild", guild)
+        /**
+         * All stamps related to when the user joined
+         * @type {object}
+         */
         this.joined = getAllStamps(this.getCreatedAt)
+        /**
+         * Represents the user
+         * @type {User}
+         */
         readOnly(this, "user", this.author)
+        /**
+         * If the member is muted
+         * @type {boolean}
+         */
         this.isMuted = data.mute
-        this.isDeafeaned = data.deaf
+        /**
+         * If the member is deafened
+         * @type {boolean}
+         */
+        this.isDeafened = data.deaf
+        /**
+         * The member is flags
+         * @type {boolean}
+         */
         this.flags = data.flags
+        /**
+         * The member permissions
+         * @type {boolean}
+         */
         this.permissions = data.permissions
+        /**
+         * The member role ids
+         * @type {...number}
+         * @readonly
+         */
         readOnly(this, "roleIds", data.roles)
+        /**
+         * The member roles
+         * @type {MemberRolesManager}
+         */
         this.roles = new MemberRolesManager(this.guild, data, this.#client)
         this._patch(data)
     }
+    /**
+     * Represents the user
+     * @returns {User}
+     */
     get author() {
         var x;
         if(this.id !== this.#client.user.id) {
