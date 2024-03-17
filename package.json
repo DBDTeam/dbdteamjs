@@ -6,9 +6,7 @@
   "scripts": {
     "start": "cls && node main.js",
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
-    "doc": "git add . && npm run docx",
-    "docx": "git commit -m \"Updating documentation\" && npm run docy",
-    "docy": "git push origin 0.0.2"
+    "doc": "git add . | git commit -m \"Updating the documentation\" | git push origin 0.0.2"
   },
   "keywords": [],
   "author": "DBDTeam",
