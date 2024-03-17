@@ -68,15 +68,13 @@ class TextChannel extends Channel {
          */
         readOnly(this, "coldown", this.rateLimitPerUser)
         /**
-         * Create a message in the Text Channel
+         * Creates a message in the Text Channel
          * @readonly
-         * @function createMessage
          */
         readOnly(this, "sendMessage", (arg) => this.createMessage(arg))
         /**
-         * Create a message in the Text Channel
+         * Creates a message in the Text Channel
          * @readonly
-         * @function createMessage
          */
         readOnly(this, 'send', (arg) => this.createMessage(arg))
     }
