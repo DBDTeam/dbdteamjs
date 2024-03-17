@@ -167,7 +167,6 @@ class User extends Base {
      * 
      * user.bannerUrl()// https://cdn.discordapp.com/banners/640685917467705344/0510a7bd372082644a05c92ffbbe7b2b.webp
      * @returns {string}
-     * @returns {string}
      */
 
     bannerUrl(opts) {

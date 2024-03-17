@@ -6,31 +6,66 @@ const { ChannelPermissionManager } = require("./Managers/ChannelPermissionManage
 class DefaultChannel extends Base {
     #client;
     #data;
+    /**
+     * Represents a BaseChannel (for a easier usage)
+     * @param {object} data - The Channel payload
+     * @param {Client} client - The Client
+     */
     constructor(data, client) {
         super(data.id)
         this.#data = data
         this.#client = client
+        /**
+         * The Channel ID
+         * @type {string}
+         */
         this.id = data.id;
+        /**
+         * The Channel type
+         * @type {string}
+         */
         this.type = data.type;
+        /**
+         * The Channel name
+         * @type {string}
+         */
         this.name = data.name;
+        /**
+         * The Guild where the Channel is it
+         * @type {Guild}
+         */
         this.guild = data.guild;
+        /**
+         * The Guild id where the Channel is it
+         * @type {number}
+         */
         this.guildId = data.guild_id || data.guild.id;
+        /**
+         * The Channel flags
+         * @type {number}
+         */
         this.flags = this.flags
+        /**
+         * The Channel permissions manager
+         * @type {ChannelPermissionManager}
+         */
         this.permissions = new ChannelPermissionManager(data.permission_overwrites || [], this, client)
     }
 
-    /*___patch(data) {
-        //MEDIA OR FORUM
-        //this.topic = data.topic;
-        //this.lastMessageId = data.lastMessageId;
-        this.avaibleTags = data.avaible_tags
-        this.appliedTags = data.applied_tags
-        this.defaultReactionEmoji = data.default_reaction_emoji
-        this.defaultSortOrder = data.default_sort_order
-        this.defaultForumLayout = data.default_forum_layout
-    } 
-    This thing will help me later
-    */
+    /**
+     * Clones the channel
+     * @returns {DefaultChannel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel }
+     * @async
+     * @example
+     * const channel = client.channels.cache.get("766497696604487691")
+     * channel.clone().then((result) => {
+     *  if(result?.error){
+     *      console.log(`Error :()`)
+     *  } else {
+     *      console.log(`Channel cloned successfully`)
+     *  }
+     * })
+     */
 
     async clone() {
         const channelObj = {
@@ -68,6 +103,22 @@ class DefaultChannel extends Base {
         return result?.error ? result : typeChannel(result.data, this.#client)
     }
 
+    /**
+     * 
+     * @param {object} obj - The Channel Edit payload
+     * @returns {DefaultChannel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel }
+     * @example
+     * const channel = client.channels.cache.get("766497696604487691")
+     * channel.edit({ name: "hello" }).then((result) => {
+     *  if(result?.error){
+     *      console.log(`Error :()`)
+     *  } else {
+     *      console.log(`Channel edited successfully`)
+     *  }
+     * })
+     * @async
+     */
+
     async edit(obj) {
         const reason = obj.reason || null
         const channelObj = {
@@ -104,11 +155,23 @@ class DefaultChannel extends Base {
         return result?.error ? result : typeChannel(result.data, this.#client)
     }
 
+    /**
+     * Deletes the Channel
+     * @param {string} reason - The reason
+     * @returns {boolean}
+     */
+
     async delete(reason) {
         var result = await this.#client.rest.request("DELETE", Endpoints.CHANNEL(this.id), true,{}, null, reason?.trim() || null)
 
         return result?.error ? false : true
     }
+
+    /**
+     * Returns the mention of the channel
+     * @returns {string}
+     */
+
     toString() {
         return `<#${this.id}>`
     }

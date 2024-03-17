@@ -235,6 +235,7 @@ class Member extends Base {
      * @param {string} nickname - The new nickname of the GuildMember
      * @param {string} [reason=null] - The reason of why edit's the GuildMember nickname
      * @returns {object}
+     * @async
      */
 
     async edit(obj) {
@@ -252,6 +253,15 @@ class Member extends Base {
             return true
         }
     }
+
+    /**
+     * Edits the GuildMember nickname
+     * @param {string} nickname - The new nickname for the GuildMember
+     * @param {string} reason - The reason
+     * @returns {object}
+     * @async
+     */
+
     async changeNickname(nickname, reason) {
         reason = reason?.trim()
         var response = await this.#client.rest.request("PATCH", Endpoints.GuildMember(this.guild.id, this.id), true, { data: { roles: this.roles, flags: this.flags, nick: nickname } }, reason)
@@ -263,6 +273,7 @@ class Member extends Base {
      * Kick the GuildMember from the server
      * @param {string} reason - The reason
      * @returns {object}
+     * @async
      */
 
     async kick(reason) {
@@ -277,6 +288,7 @@ class Member extends Base {
      * Ban the GuildMember from the server
      * @param {string} reason - The reason
      * @returns {object}
+     * @async
      */
 
     async ban(obj) {

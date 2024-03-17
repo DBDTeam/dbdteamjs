@@ -7,22 +7,85 @@ const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
 
 class TextChannel extends Channel {
     #client;
+    /**
+     * Represents a Text Channel
+     * @extends DefaultChannel
+     * @param {object} data 
+     * @param {Client} client 
+     */
     constructor(data, client) {
         super(data, client);
         this.#client = client
+        /**
+         * The Text Channel position
+         * @type {number}
+         */
         this.position = data.position;
+        /**
+         * The Text Channel permissions overwrites
+         * @type {object}
+         */
         this.permissionOverwrites = data.permission_overwrites;
+        /**
+         * The Text Channel topic
+         * @type {string | undefined}
+         */
         this.topic = data.topic;
+        /**
+         * If the Text Channel has enabled the NSFW option
+         * @type {boolean}
+         */
         this.nsfw = data.nsfw;
+        /**
+         * The last Text Channel message
+         * @type {string | undefined}
+         */
         this.lastMessageId = data.last_message_id;
+        /**
+         * The Text Channel parent id (category id)
+         * @type {string}
+         */
         this.parentId = data.parent_id
+        /**
+         * The Text Channel last pin time information
+         * @type {object}
+         */
         this.lastPinStamp = getAllStamps(data.last_pin_timestamp)
+        /**
+         * The Text Channel cooldown per user in seconds
+         * @type {number}
+         */
         this.rateLimitPerUser = data.rate_limit_per_user
+        /**
+         * The Text Channel message manager
+         * @type {ChannelMessageManager}
+         */
         this.messages = new ChannelMessageManager(this, this.#client)
+        /**
+         * The Text Channel cooldown per user in seconds
+         * @readonly
+         * @type {number}
+         */
         readOnly(this, "coldown", this.rateLimitPerUser)
+        /**
+         * Create a message in the Text Channel
+         * @readonly
+         * @function createMessage
+         */
         readOnly(this, "sendMessage", (arg) => this.createMessage(arg))
+        /**
+         * Create a message in the Text Channel
+         * @readonly
+         * @function createMessage
+         */
         readOnly(this, 'send', (arg) => this.createMessage(arg))
     }
+
+    /**
+     * Creates a message in the Text Channel
+     * @param {MessagePayload} obj - The message send payload
+     * @returns {Message | object}
+     */
 
     async createMessage(obj) {
         const message = new MessagePayload(obj, obj?.files)

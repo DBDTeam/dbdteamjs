@@ -7,12 +7,12 @@ const { GuildMemberManager } = require("./Managers/UserManager");
 const { GuildRolesManager } = require("./Managers/RolesManager");
 
 class Guild extends Base {
+    #client;
     /**
      * Represents a Guild
      * @param {object} data - Guild payload
      * @param {Client} client - The Client
      */
-    #client;
     constructor(data, client) {
         super(data.id)
         this.#client = client
