@@ -2,12 +2,12 @@ const { readOnly } = require("../Utils/utils");
 const { Base } = require("./Base");
 
 class User extends Base {
+    #client;
     /**
      * Represents a User
      * @param {object} data - The user payload
      * @param {Client} client - The Client
      */
-    #client;
     constructor(data, client){
         super(data.id);
         this.#client = client;
