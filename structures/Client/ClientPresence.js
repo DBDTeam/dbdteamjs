@@ -32,7 +32,8 @@ class ClientPresence {
      * 
      * @param {object} obj - The object that will be used for update the presence of the client
      * @param {number} shardId [shardId=0] - The shardID
-     * @returns 
+     * @returns {boolean}
+     * @async
      */
     async update(obj, shardId = 0) {
         const shard = this.#client.shardManager.shards.get(shardId);
@@ -61,7 +62,13 @@ class ClientPresence {
         this.activities = obj.activities
         this.since = obj.since
 
-        ws.send(JSON.stringify(payload));
+        try{
+            var i = await ws.send(JSON.stringify(payload));
+        } catch(err) {
+            return false
+        }
+
+        return true
     }
 }
 
