@@ -4,10 +4,9 @@ This is a small package that tries to make creating discord bots easy and effici
 
 ## Installation
 
-To use this small package you must: (It will soon be uploaded to NPM for easier use)
+To use this small package you must:
 
-1. Clone the repository: `git clone https://github.com/DBDTeam/dbdteamjs/tree/master`
-2. Install the dependencies: `npm install` (or just install `ws` using `npm install ws`)
+1. Execute in your termianl `npm i dbdteamjs` or `npm i github.com/DBDTeam/dbdteamjs#0.2.2`
 
 ## Starting to create the bot
 
@@ -21,9 +20,9 @@ Once you have that done, it's time to start creating the robot using the package
 ## Example using MessageContent Intent
 
 ```javascript
-const { Client, Presence, IntentsBitField } = require("./package.js")
+const { Client, Presence, IntentBitFields } = require("./package.js")
 
-const Intents = new IntentsBitField()
+const Intents = new IntentsBitFields()
 
 Intents.add("Guilds")
 Intents.add("GuildMembers")
@@ -60,9 +59,9 @@ client.connect() // Will establish the connection between the robot and the WS.
 ## Example using Interactions
 
 ```javascript
-const { Client, Presence, IntentsBitField, SlashTypes } = require("./pacakge.js")
+const { Client, Presence, IntentBitFields, SlashTypes } = require("./pacakge.js")
 
-const Intents = new IntentsBitField()
+const Intents = new IntentBitFields()
 
 Intents.add("Guilds")
 Intents.add("GuildMembers")
