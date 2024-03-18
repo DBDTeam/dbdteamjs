@@ -6,7 +6,7 @@ This is a small package that tries to make creating discord bots easy and effici
 
 To use this small package you must:
 
-1. Execute in your termianl `npm i dbdteamjs` or `npm i github.com/DBDTeam/dbdteamjs#0.2.2`
+1. Execute in your termianl `npm i dbdteamjs` or `npm i github:DBDTeam/dbdteamjs#0.0.3`
 
 ## Starting to create the bot
 
