@@ -14,6 +14,13 @@ class MessagePayload {
      */
 
     /**
+     * @typedef {Array<object>} Files
+     * @property {string} name
+     * @property {string} description
+     * @property {string | buffer} url
+     */
+
+    /**
      * @typedef {Object} MessagePayloadData
      * @property {string} content
      * @property {boolean} tts
@@ -48,7 +55,11 @@ class MessagePayload {
     #d;
     #files;
     #f;
-    
+    /**
+     * Creates a message payload to send messages
+     * @param {MessagePayloadData} data 
+     * @param {Files} files 
+     */
     constructor(data = {}, files = []) {
         this.#d = typeof data == "string" ? data : setObj(this.#Data, data, { sticker_ids: "stickers" });
         this.#files = [];
