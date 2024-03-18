@@ -11,6 +11,7 @@ const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js")
 class Message extends Base {
     #justUser;
     #client
+    #data;
     /**
    * Represents a Discord Message
    * @param {MessagePayload} data - The message payload
@@ -24,6 +25,7 @@ class Message extends Base {
         const { VoiceChannel } = require("./VoiceChannel.js")
         const { Channel } = require("./DefaultChannel.js")
         this.#client = client
+        this.#data = data
         this.#justUser = data.author
         /**
          * @type {string}
@@ -241,7 +243,7 @@ class Message extends Base {
      */
     get user() {
         if(this.webhookId){
-            return data.user
+            return this.#data.user
         } else {
             var x = new User(this.#justUser, this.#client)
             this.#client.users.cache.set(x.id, x)
