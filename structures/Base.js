@@ -20,7 +20,7 @@ class Base {
     }
     
     get getUnixStamp() {
-        return Number(this.getTimestamp / 1000);
+        return Number(this.getTimestamp) / 1000;
     }
 
     get getCreatedAt() {

@@ -8,7 +8,13 @@
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
     "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.2"
   },
-  "keywords": ["discord", "api", "wrapper", "discordapp", "dbdteam"],
+  "keywords": [
+    "discord",
+    "api",
+    "wrapper",
+    "discordapp",
+    "dbdteam"
+  ],
   "author": "DBDTeam",
   "license": "MIT",
   "dependencies": {

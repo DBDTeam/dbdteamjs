@@ -34,19 +34,16 @@ class MessagePayload {
      * @property {Array<Object>} attachments
      */
 
-    /**
-     * @type {Array<MentionType>}
-     */
     #MENTIONS = ["users", "roles", "everyone"];
     
     #Data = {
         content: "",
         tts: false,
         embeds: [],
-        mentions: { parse: [], users: [], roles: [], messageReferenceId: null },
+        allowed_mentions: {},
+        message_reference: {},
         components: [],
         sticker_ids: [],
-        flags: 0,
         files: [],
         nonce: Date.now(),
         attachments: []
@@ -54,61 +51,51 @@ class MessagePayload {
 
     #d;
     #files;
-    #f;
+
     /**
      * Creates a message payload to send messages
      * @param {MessagePayloadData} data 
      * @param {Files} files 
      */
-    constructor(data = {}, files = []) {
-        this.#d = typeof data == "string" ? data : setObj(this.#Data, data, { sticker_ids: "stickers" });
+    constructor(data = {}) {
+        this.#d = typeof data === "string" ? { content: data } : setObj(this.#Data, data, { sticker_ids: "stickers" });
         this.#files = [];
-        this.#f = files;
-        if (typeof this.#d == "string") {
-            var i = this.#d;
-            this.#d = {};
-            this.#d.content = i;
+
+        if (this.#d.reply) {
+            this.#d.allowed_mentions = {};
+            this.#d.message_reference = {};
+            if (this.#d.reply.mention) {
+                this.#d.allowed_mentions.replied_user = true;
+            }
+            
+            if (this.#d.reply.error === true) {
+                this.#d.message_reference.fail_if_not_exists = true;
+            }
+            
+            this.#d.message_reference.message_id = this.#d.reply.id;
         }
-        if (this.#d?.reply) {
-            if ('mention' in this.#d.reply) {
-                this.#d.mentions.replied_user = !!this.#d.reply.mention;
-            }
-            
-            if ('error' in this.#d.reply) {
-                // No se hace nada
-            }
-            
-            if ('id' in this.#d.reply) {
-                this.#d.mentions.messageReferenceId = this.#d.reply.id;
-            } else {
-                this.#d.mentions.messageReferenceId = null;
-            }
-        } else {
-            this.#d.mentions.messageReferenceId = null;
-        }   
         
-        if (this.#d?.mentions) {
-            if ('parse' in this.#d?.mentions) {
-                this.#d.mentions.parse = this.#MENTIONS.filter(mention => this.#d?.mentions?.parse?.some(allowedMention => mention.toLowerCase() === allowedMention?.toLowerCase()));
+        if (this.#d.mentions) {
+            this.#d.allowed_mentions = {};
+            if (this.#d.mentions.parse) {
+                this.#d.allowed_mentions.parse = this.#MENTIONS.filter(mention =>
+                    this.#d.allowed_mentions.parse.some(allowedMention =>
+                        mention.toLowerCase() === allowedMention?.toLowerCase()));
             }
             
-            if ('users' in this.#d?.mentions) {
-                this.#d.mentions.users = this.#d?.mentions?.users;
-            }
-            
-            if ('roles' in this.#d?.mentions) {
-                this.#d.mentions.roles = this.#d?.mentions?.roles;
-            }
+            this.#d.allowed_mentions.users = this.#d.mentions.users || [];
+            this.#d.allowed_mentions.roles = this.#d.mentions.roles || [];
         }
 
-        if (typeof this.#f === "object") {
-            for (var i in this.#f) {
-                if ('url' in this.#f[i] && 'name' in this.#f[i]) {
-                    this.#files.push({ name: this.#f[i].name, url: this.#f[i].url });
-                    this.#d.attachments.push({ id: i, filename: this.#f[i].name, description: this.#f[i].description });
+        if (typeof this.#d.files === "object") {
+            for (const i in this.#d.files) {
+                if (this.#files[i].url && this.#files[i].name) {
+                    this.#files.push({ name: this.#files[i].name, url: this.#files[i].url });
+                    this.#d.attachments.push({ id: i, filename: this.#files[i].name, description: this.#files[i].description });
                 }
             }
         }
+        
         delete this.#d.reply;
         delete this.#d.mentions;
     }

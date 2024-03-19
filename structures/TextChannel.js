@@ -96,7 +96,7 @@ class TextChannel extends Channel {
      */
 
     async createMessage(obj) {
-        const message = new MessagePayload(obj, obj?.files)
+        const message = new MessagePayload(obj)
 
         var result = await this.#client.rest.request("POST", Endpoints.ChannelMessages(this.id), true, { data: message.payload }, null, message.files)
         
