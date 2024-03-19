@@ -1,7 +1,6 @@
 const { setObj } = require("../../Utils/utils");
 
-class MessagePayload {
-    /**
+/**
      * @typedef {("users" | "roles" | "everyone")} MentionType
      */
 
@@ -19,6 +18,8 @@ class MessagePayload {
      * @property {string} description
      * @property {string | buffer} url
      */
+
+class MessagePayload {
 
     /**
      * @typedef {Object} MessagePayloadData

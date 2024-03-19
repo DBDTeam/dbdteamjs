@@ -2,11 +2,22 @@ const { setObj } = require("../../Utils/utils");
 
 class EditMessagePayload {
     #MENTIONS = ["users", "roles", "everyone"]
+
+    /**
+     * @typedef {Object} MessageEditPayloadData
+     * @property {string} content
+     * @property {Array<Object>} embeds
+     * @property {MentionsData} mentions
+     * @property {Array<Object>} components
+     * @property {number} flags
+     * @property {Array<Object>} files
+     * @property {Array<Object>} attachments
+     */
+
     #Data = {
         content: "",
-        tts: false,
         embeds: [],
-        allowed_mentions: { parse: [], users: [], roles: []},
+        mentions: {},
         components: [],
         flags: 0,
         files: [],
