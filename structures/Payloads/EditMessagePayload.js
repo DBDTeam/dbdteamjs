@@ -4,14 +4,15 @@ class EditMessagePayload {
     #MENTIONS = ["users", "roles", "everyone"]
 
     /**
+     * At least one of the options (content or embeds) must be placed and not undefined
      * @typedef {Object} MessageEditPayloadData
-     * @property {string} content
-     * @property {Array<Object>} embeds
-     * @property {MentionsData} mentions
-     * @property {Array<Object>} components
-     * @property {number} flags
-     * @property {Array<Object>} files
-     * @property {Array<Object>} attachments
+     * @property {string} [content]
+     * @property {Array<Object>} [embeds]
+     * @property {MentionsData} [mentions]
+     * @property {Array<Object>} [components]
+     * @property {number} [flags]
+     * @property {Array<Object>} [files]
+     * @property {Array<Object>} [attachments]
      */
 
     #Data = {
