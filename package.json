@@ -6,7 +6,7 @@
   "scripts": {
     "start": "cls && node main.js",
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
-    "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.2"
+    "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.3"
   },
   "keywords": [
     "discord",
