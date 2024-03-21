@@ -33,6 +33,7 @@ class Guild extends Base {
         this.icon = data.icon
         /**
          * The Guild permissions
+         * @type {object}
          */
         this.permissions = data.permissions
         /**

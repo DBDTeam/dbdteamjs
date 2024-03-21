@@ -1,6 +1,5 @@
 const WebSocket = require("ws");
 const EventEmitter = require('events');
-const TextDecoder = require('util').TextDecoder;
 
 class Shard extends EventEmitter {
     #client;
@@ -18,7 +17,6 @@ class Shard extends EventEmitter {
 
     constructor(client, shardID, totalShards, gateway) {
         super()
-        
         this.#client = client;
         this.#url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
         this.#mobilePlatform = gateway?.mobilePlatform ? "Discord Android" : 'dbdteam.js'

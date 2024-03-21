@@ -72,6 +72,7 @@ class User extends Base {
         if ('global_name' in data) {
             /**
              * The User global name
+             * @type {string}
              */
             this.globalName = data.global_name;
         }
@@ -119,6 +120,7 @@ class User extends Base {
 
     /**
      * If the User is a partial
+     * @type {boolean}
      * @returns {boolean}
      */
 

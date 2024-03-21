@@ -2,14 +2,14 @@ const { setObj } = require("../../Utils/utils");
 
 class MemberEditPayload {
     /**
-     * At least one of the options must be placed and not undefined
+     * At least one of the options must be placed and not undefined.
      * @typedef {object} MemberEditPayload
      * @property {string} [nick]
      * @property {Array} [roles]
-     * @property {boolean} [mute] - Or muted
-     * @property {boolean} [deaf] - Or defeaned
-     * @property {snowflake} [channelId] - Or voiceId
-     * @property {number} [communication_disabled_until] Or timeout
+     * @property {boolean} [mute] - Or muted.
+     * @property {boolean} [deaf] - Or defeaned.
+     * @property {snowflake} [channelId] - Or voiceId.
+     * @property {number} [communication_disabled_until] Or timeout.
      * @property {number} [flags]
      * @property {string} [reason=null] 
      */

@@ -170,6 +170,9 @@ class DefaultChannel extends Base {
     /**
      * Returns the mention of the channel
      * @returns {string}
+     * @example
+     * const channel = client.channels.cache.get("1234567890123456")
+     * channel.send(`Im sending this message in ${channel.toString()}`)
      */
 
     toString() {

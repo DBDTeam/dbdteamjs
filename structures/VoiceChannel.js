@@ -29,18 +29,22 @@ class VoiceChannel extends Channel {
         this.rateLimitPerUser = data.rate_limit_per_user
         /**
          * The region of the Voice Channel
+         * @type {string}
          */
         this.region = data.rtc_region
         /**
          * The video quality of the Voice Channel
+         * @type {string}
          */
         this.videoQuality = data.video_quality_mode
         /**
          * The session Id to join the Voice Channel
+         * @type {string}
          */
         this.sessionId = data.session_id
         /**
          * Voice channel message manager
+         * @type {ChannelMessageManager}
          */
         this.messages = new ChannelMessageManager(this, this.#client)
         /**

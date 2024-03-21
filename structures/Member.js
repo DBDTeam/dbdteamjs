@@ -81,6 +81,7 @@ class Member extends Base {
     }
     /**
      * Represents the user
+     * @type {User}
      * @returns {User}
      */
     get author() {
@@ -131,6 +132,7 @@ class Member extends Base {
         if ('permissions' in data && !data.permissions) {
             /**
              * The permissions of the member
+             * @type {object}
              */
             this.permissions = data.permissions
         }
@@ -180,6 +182,7 @@ class Member extends Base {
 
     /**
      * If the GuildMember is kickable by the Client
+     * @type {boolean}
      * @returns {boolean}
      */
 
@@ -206,6 +209,7 @@ class Member extends Base {
 
     /**
      * If the GuildMember is banneable by the Client
+     * @type {boolean}
      * @returns {boolean}
      */
 

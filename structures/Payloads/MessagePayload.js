@@ -6,33 +6,33 @@ const { setObj } = require("../../Utils/utils");
 
     /**
      * @typedef {Object} MentionsData
-     * @property {Array<MentionType>} parse
-     * @property {Array<string>} users
-     * @property {Array<string>} roles
-     * @property {string | null} messageReferenceId
+     * @property {Array<MentionType>} parse - The Mention parse.
+     * @property {Array<string>} users - The user ids.
+     * @property {Array<string>} roles - The role ids.
+     * @property {string | null} messageReferenceId - The Message id used to reply.
      */
 
     /**
      * @typedef {Array<object>} Files
-     * @property {string} name
-     * @property {string} description
-     * @property {string | buffer} url
+     * @property {string} name - The name of the file.
+     * @property {string} description - The description that appears when you click the image.
+     * @property {string | buffer} url - The URL or buffer of the image.
      */
 
 class MessagePayload {
 
     /**
      * @typedef {Object} MessagePayloadData
-     * @property {string} content
-     * @property {boolean} tts
-     * @property {Array<Object>} embeds
-     * @property {MentionsData} mentions
-     * @property {Array<Object>} components
-     * @property {Array<string>} sticker_ids
-     * @property {number} flags
-     * @property {Array<Object>} files
-     * @property {number} nonce
-     * @property {Array<Object>} attachments
+     * @property {string} content - The content of the message.
+     * @property {boolean} tts - If the message will be sended using TTs.
+     * @property {Array<Object>} embeds - The embeds of the message.
+     * @property {MentionsData} mentions - The mentiondata of the message.
+     * @property {Array<Object>} components - The components of the message.
+     * @property {Array<string>} stickers - The sticker ids of the message (or you can use sticker_ids).
+     * @property {number} flags - The flags of the message.
+     * @property {Array<Object>} files - The files of the message.
+     * @property {number | undefined} nonce - The nonce of the message. (if any)
+     * @property {Array<Object> | undefined} attachments - The attachments of the message. (if any)
      */
 
     #MENTIONS = ["users", "roles", "everyone"];
@@ -54,7 +54,7 @@ class MessagePayload {
     #files;
 
     /**
-     * Creates a message payload to send messages
+     * Creates a message payload to send messages.
      * @param {MessagePayloadData} data 
      * @param {Files} files 
      */
