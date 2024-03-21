@@ -84,8 +84,8 @@ class MessagePayload {
                         mention.toLowerCase() === allowedMention?.toLowerCase()));
             }
             
-            this.#d.allowed_mentions.users = this.#d.mentions.users || [];
-            this.#d.allowed_mentions.roles = this.#d.mentions.roles || [];
+            this.#d.allowed_mentions.users = this.#d.mentions.users?.[0] ? this.#d.mentions.users : null;
+            this.#d.allowed_mentions.roles = this.#d.mentions.roles?.[0] ? this.#d.mentions.roles : null;
         }
 
         if (typeof this.#d.files === "object") {
