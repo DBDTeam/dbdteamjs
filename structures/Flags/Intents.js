@@ -1,6 +1,6 @@
 const { readOnly } = require("../../Utils/utils");
 
-class IntentBitFields {
+class IntentsBitFields {
     #Intents = {
         "Guilds": 1 << 0,
         "GuildMembers": 1 << 1,
@@ -67,4 +67,4 @@ class IntentBitFields {
     }
  }
 
-module.exports = { IntentBitFields }
+module.exports = { IntentsBitFields }
