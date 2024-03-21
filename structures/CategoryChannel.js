@@ -2,13 +2,18 @@ const { Collection } = require("../Utils/Collection");
 const { Channel } = require("./DefaultChannel");
 
 class CategoryChannel extends Channel {
+    /**
+     * Represents a CategoryChannel
+     * @param {object} data 
+     * @param {Client} client 
+     */
     constructor(data, client){
         super(data, client)
-        this._patch()
     }
-    async _patch() {
-        
-    }
+    /**
+     * Returns the channels that are in the cache.
+     * @type {Collection<string, TextChannel | VoiceChannel | DefaultChannel | ThreadChannel>}
+     */
     get channels() {
         const categoryChannels = new Collection();
         for (const channel of this.guild.channels.cache.values()) {

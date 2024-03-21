@@ -1,8 +1,25 @@
 class Collection extends Map {
+    /**
+     * Represents a Collection (Extended from map).
+     * @param {number} limit 
+     */
     constructor(limit= null){
         super()
+        /**
+         * Represents the limit of the Collection.
+         */
         this.limit = limit || Infinity
     }
+    /**
+     * Returns a the Collection values in a object
+     * @returns {Array<*>}
+     * @example
+     * const myFirstCollection = new Collection()
+     * 
+     * myFirstCollection.set("hi", "hello")
+     * myFirstCollection.set("hallo", "hi")
+     * console.log(myFirstCollection.toJSON()) // ["hello", "hi"]
+     */
     toJSON() {
         const copy = new Map(this)
         let jsonObj = [];
@@ -12,6 +29,12 @@ class Collection extends Map {
         return jsonObj;
     }
 
+    /**
+     * Check if the Collection has any value that you are trying to check.
+     * @param {object} keys 
+     * @returns {boolean}
+     */
+
     hasAny(keys) {
         for (let key of keys) {
             if (this.has(key)) {
@@ -20,6 +43,12 @@ class Collection extends Map {
         }
         return false;
     }
+
+    /**
+     * Returns the first value. (or firsts values)
+     * @param {number} [x = 1] - The number of amount values you want to get. 
+     * @returns {Array}
+     */
 
     first(x=1) {
         let result = [];
