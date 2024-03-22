@@ -30,7 +30,7 @@ class MessagePayload {
      * @property {Array<Object>} components - The components of the message.
      * @property {Array<string>} stickers - The sticker ids of the message (or you can use sticker_ids).
      * @property {number} flags - The flags of the message.
-     * @property {Array<Object>} files - The files of the message.
+     * @property {Files} files - The files of the message.
      * @property {number | undefined} nonce - The nonce of the message. (if any)
      * @property {Array<Object> | undefined} attachments - The attachments of the message. (if any)
      */
@@ -63,9 +63,9 @@ class MessagePayload {
         this.#files = [];
 
         if (this.#d.reply) {
-            this.#d.allowed_mentions = {};
             this.#d.message_reference = {};
             if (this.#d.reply.mention) {
+                this.#d.allowed_mentions = {};
                 this.#d.allowed_mentions.replied_user = true;
             }
             

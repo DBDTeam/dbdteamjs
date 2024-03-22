@@ -1,5 +1,18 @@
 const { setObj } = require("../../Utils/utils");
 
+/**
+ * @typedef InteractionPayloadData - At least one of the options (content or embeds) must be placed and not undefined.
+ * @property {string} [content] - The content of the Interaction response.
+ * @property {boolean} [tts=false] - If the message will be sended using TTS.
+ * @property {Array<object>} [embeds] - The embeds of the Interaction response.
+ * @property {MentionsData} [mentions] - The MentionsData of the Interaction response.
+ * @property {Array<object>} [components] - The components of the Interaction response.
+ * @property {number} [flags] - The flags of the Interaction response. (is not needed to use 64, exists the option called 'ephemeral')
+ * @property {Files} [files] - The files of the Interaction response.
+ * @property {object} [attachments] - The attachments of the Interaction response.
+ * @property {boolean} [ephemeral=false] - Yes, the Interaction response will be sent ephemerally.
+ */
+
 class InteractionPayload {
     #MENTIONS = ["users", "roles", "everyone"]
     #Data = {
