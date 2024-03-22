@@ -1,37 +1,19 @@
 const { getAllStamps } = require("../../../Utils/utils.js");
 const { ClientUser } = require("../../../structures/Client/ClientUser.js");
 const { ClientApplication } = require("../../Client/ClientApplication.js");
+const { Guild } = require("../../Guild.js")
 
 module.exports = async (client, d, shard) => {
     client.user = new ClientUser(d.user, client)
     client.application = new ClientApplication(client)
-    await waitForAllGuilds(client);
+    const guilds = await client.rest.request("GET", "/users/@me/guilds", true)
+    if(!guilds.error) {
+        for(var guild of guilds.data){
+            client.guilds.cache.set(guild.id, new Guild(guild, client))
+        }
+    }
     client.ready = getAllStamps(new Date())
     client.emit("debug", `Client logged successfully`, shard)
     client.emit("ready", client.user, shard);
     
 };
-
-async function waitForAllGuilds(c) {
-    let lastCheckedGuildCount = 0;
-    let consecutiveChecks = 0;
-
-    while (true) {
-        if (c.guilds.cache.size === lastCheckedGuildCount) {
-            consecutiveChecks++;
-        } else {
-            lastCheckedGuildCount = c.guilds.cache.size;
-            consecutiveChecks = 0;
-        }
-
-        if (consecutiveChecks >= 3 && lastCheckedGuildCount === c.guilds.cache.size) {
-            return;
-        } else {
-            await sleep(350);
-        }
-    }
-}
-
-function sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}

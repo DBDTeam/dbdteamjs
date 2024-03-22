@@ -61,6 +61,10 @@ class InteractionModalPayload {
             }
         }
     }
+    /**
+     * Returns the clean payload.
+     * @type {ModalPayloadData}
+     */
     get payload() {
         return this.#d
     }

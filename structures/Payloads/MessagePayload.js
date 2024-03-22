@@ -40,14 +40,14 @@ class MessagePayload {
     #Data = {
         content: "",
         tts: false,
-        embeds: [],
-        allowed_mentions: {},
-        message_reference: {},
-        components: [],
-        sticker_ids: [],
-        files: [],
+        embeds: null,
+        allowed_mentions: null,
+        message_reference: null,
+        components: null,
+        sticker_ids: null,
+        files: null,
         nonce: Date.now(),
-        attachments: []
+        attachments: null
     };
 
     #d;
