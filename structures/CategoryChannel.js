@@ -4,6 +4,7 @@ const { Channel } = require("./DefaultChannel");
 class CategoryChannel extends Channel {
     /**
      * Represents a CategoryChannel
+     * @extends DefaultChannel
      * @param {object} data 
      * @param {Client} client 
      */

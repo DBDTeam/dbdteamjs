@@ -5,10 +5,10 @@ class InteractionModal extends ComponentInteraction {
     constructor(data, client) {
         super(data, client)
         this.inputs = new Collection()
-        this.___patch(data) // Pasar 'data' como argumento
+        this.___patch(data)
     }
 
-    ___patch(data) { // Modificar el método para aceptar 'data' como argumento
+    ___patch(data) {
         for (var i of data.data.components) {
             for (var x of i.components) {
                 if (x.type === 4) {
