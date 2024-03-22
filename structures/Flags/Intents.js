@@ -1,5 +1,3 @@
-const { readOnly } = require("../../Utils/utils");
-
 class IntentsBitFields {
     #Intents = {
         "Guilds": 1 << 0,

@@ -35,7 +35,7 @@ Once you have that done, it's time to start creating the robot using the package
 
 # Example using MessageContent Intent
 ```javascript
-const { Client, Presence, IntentBitFields } = require("./package.js")
+const { Client, Presence, IntentsBitFields } = require("./package.js")
 
 const Intents = new IntentsBitFields()
 
@@ -72,9 +72,9 @@ client.connect() // Will establish the connection between the robot and the WS.
 ```
 # Example using Interactions
 ```javascript
-const { Client, Presence, IntentBitFields, SlashTypes } = require("./pacakge.js")
+const { Client, Presence, IntentsBitFields, SlashTypes } = require("./pacakge.js")
 
-const Intents = new IntentBitFields()
+const Intents = new IntentsBitFields()
 
 Intents.add("Guilds")
 Intents.add("GuildMembers")
@@ -101,7 +101,7 @@ client.on("ready", () => {
         name: "ping",
         description: "Pong!",
         options: [],
-        type: SlashTypes.InteractionTypes
+        type: InteractionTypes.Slash
       }, //You can add more application commands adding it in the object.
     ]
    )
