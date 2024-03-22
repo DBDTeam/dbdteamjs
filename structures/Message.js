@@ -19,11 +19,6 @@ class Message extends Base {
    */
     constructor(data, client){
         super(data.id)
-        const { Client } = require("./Client/Client.js")
-        const { ThreadChannel } = require("./ThreadChannel.js")
-        const { TextChannel } = require("./TextChannel.js")
-        const { VoiceChannel } = require("./VoiceChannel.js")
-        const { Channel } = require("./DefaultChannel.js")
         this.#client = client
         this.#data = data
         this.#justUser = data.author
@@ -144,14 +139,14 @@ class Message extends Base {
         }
 
         for(var i of data?.mentions){
-            this.mentions.users.set(i.id, new User(i));
+            this.mentions.users.set(i.id, new User(i, this.#client));
         }
         for(var i of data?.mention_roles){
             this.mentions.roles.set(i.id, i);
         }
         if('mentions_channels' in data) {
             for(var i of data?.mention_channels){
-                this.mentions.channels.set(i.id, i);
+                this.mentions.channels.set(i.id, typeChannel(i, this.#client));
             }
         }
         if('stickers' in data) {
