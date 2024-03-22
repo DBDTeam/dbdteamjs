@@ -7,6 +7,14 @@ const { Member } = require("./Member.js")
 const { readOnly, typeChannel, getAllStamps } = require("../Utils/utils.js")
 const { MessagePayload } = require("./Payloads/MessagePayload.js")
 const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js")
+const { ThreadChannel } = require("./ThreadChannel.js")
+
+/**
+ * @typedef MessageMentions - Represents the mentions in a message.
+ * @property {Array<Collection<id, User>>} users - All of the mentioned users.
+ * @property {Array<Collection<id, TextChannel, VoiceChannel, CategoryChannel, ThreadChannel, DefaultChannel>>} channels - All mentioned channels.
+ * @property {Array<Collection<id, object>>} roles - All mentioned roles
+ */
 
 class Message extends Base {
     #justUser;
@@ -54,7 +62,7 @@ class Message extends Base {
         this.content = data.content;
         /**
          * The mentions of the message.
-         * @type {object|undefined}
+         * @type {MessageMentions}
         */
         this.mentions = { users: new Collection(), roles: new Collection(), channels: new Collection() }
         /**
@@ -133,9 +141,9 @@ class Message extends Base {
         if('thread' in data){
             /**
              * The thread where the message was sent. (if any)
-             * @type {object|undefined}
+             * @type {ThreadChannel|undefined}
              */
-            this.thread = data.thread;
+            this.thread = new ThreadChannel(data.thread, this.#client);
         }
 
         for(var i of data?.mentions){
