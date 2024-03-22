@@ -3,6 +3,7 @@ const { Channel } = require("./DefaultChannel");
 const Endpoints = require("../REST/Endpoints");
 const { ThreadMemberManager } = require("./Managers/ThreadMemberManager");
 const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
+const { MessagePayload } = require("./Payloads/MessagePayload");
 
 class ThreadChannel extends Channel {
     #client;
@@ -137,6 +138,37 @@ class ThreadChannel extends Channel {
         if(config.limit){
             endpoint =+ config.before ? `&limit=${config.limit}` : `?limit=${config.limit}`
         }
+    }
+    /**
+     * Creates a message in the Text Channel
+     * @param {MessagePayload} obj - The message send payload
+     * @example
+     * const channel = client.channels.cache.get("766497696604487691")
+     * 
+     * channel.createMessage(`Hello world!`).then((response) => {
+     *  if(response.error){
+     *      return console.log(response) 
+     *  } else {
+     *      console.log(`Message sended successfully!`)
+     *  }
+     * })
+     * @returns {Message | object}
+     */
+
+    async createMessage(obj) {
+        const message = new MessagePayload(obj, obj.files)
+
+        var result = await this.#client.rest.request("POST", Endpoints.ChannelMessages(this.id), true, { data: message.payload }, null, message.files)
+        
+        if (!result.error) {
+            result.data = {...result.data, guild: this.guild, member: this.guild.members.cache.get(result.data.author.id) }
+
+            var x = new Message(result.data, this.#client)
+        } else {
+            var x = result
+        }
+
+        return x
     }
 }
 

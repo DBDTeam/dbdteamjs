@@ -2,6 +2,7 @@ const { Channel } = require("./DefaultChannel")
 const Endpoints = require("../REST/Endpoints");
 const { readOnly } = require("../Utils/utils");
 const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
+const { MessagePayload } = require("./Payloads/MessagePayload");
 class VoiceChannel extends Channel {
     #client;
     /**
@@ -76,7 +77,7 @@ class VoiceChannel extends Channel {
      */
 
     async createMessage(obj) {
-        const message = new MessagePayload(obj, obj?.files)
+        const message = new MessagePayload(obj, obj.files)
 
         var result = await this.#client.rest.request("POST", Endpoints.ChannelMessages(this.id), true, { data: message.payload }, null, message.files)
         

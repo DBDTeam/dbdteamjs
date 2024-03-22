@@ -2,8 +2,17 @@ const { Collection } = require("../../Utils/Collection");
 const { ComponentInteraction } = require("./ComponentInteraction");
 
 class InteractionModal extends ComponentInteraction {
+    /**
+     * Represents a InteractionModal.
+     * @param {object} data - The InteractionModalPayload.
+     * @param {Client} client - The Client.
+     */
     constructor(data, client) {
         super(data, client)
+        /**
+         * The inputs of the InteractionModal.
+         * @type {Collection}
+         */
         this.inputs = new Collection()
         this.___patch(data)
     }

@@ -82,6 +82,7 @@ function setObj(baseObj, actualObj, mappings = {}, includeUndefined = false) {
       latest[key] = value
     }
   }
+
   return latest;
 }
 

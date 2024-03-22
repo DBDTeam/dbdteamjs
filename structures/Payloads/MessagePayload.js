@@ -52,15 +52,17 @@ class MessagePayload {
 
     #d;
     #files;
+    #f;
 
     /**
      * Creates a message payload to send messages.
      * @param {MessagePayloadData} data 
      * @param {Files} files 
      */
-    constructor(data = {}) {
+    constructor(data = {}, files = []) {
         this.#d = typeof data === "string" ? { content: data } : setObj(this.#Data, data, { sticker_ids: "stickers" });
         this.#files = [];
+        this.#f = files
 
         if (this.#d.reply) {
             this.#d.message_reference = {};
@@ -88,11 +90,13 @@ class MessagePayload {
             this.#d.allowed_mentions.roles = this.#d.mentions.roles?.[0] ? this.#d.mentions.roles : null;
         }
 
-        if (typeof this.#d.files === "object") {
-            for (const i in this.#d.files) {
-                if (this.#files[i].url && this.#files[i].name) {
-                    this.#files.push({ name: this.#files[i].name, url: this.#files[i].url });
-                    this.#d.attachments.push({ id: i, filename: this.#files[i].name, description: this.#files[i].description });
+
+        if (typeof this.#f === "object") {
+            for (const i in this.#f) {
+                this.#d.attachments = []
+                if (this.#f[i].url && this.#f[i].name) {
+                    this.#files.push({ name: this.#f[i].name, url: this.#f[i].url });
+                    this.#d.attachments.push({ id: i, filename: this.#f[i].name, description: this.#f[i].description });
                 }
             }
         }
