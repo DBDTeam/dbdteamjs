@@ -53,15 +53,27 @@ class InteractionModalPayload {
 
         for(var i in this.#d?.components){
             const d = this.#d.components[i]
-            for(var x of d?.components){
-                this.#d.components[i]?.components[x] = setObj(this.#COMPONENT_DATA, this.#d.components[i]?.components[x], {custom_id: "customId"})
+            for(var x in d?.components){
+                var _data = setObj(this.#COMPONENT_DATA, this.#d.components[i]?.components[x], { custom_id: "customId" })
+                if(!_data.type){
+                    _data.type = 4
+                }
+                if(_data.style != "1" && _data.style != "2"){
+                    _data.style = 1
+                }
+                this.#d.components[i].components[x] = _data
                 try{
                     delete this.#d.components[i]?.components[x].customId
                 } catch(err) {}
             }
         }
     }
+    /**
+     * Returns the clean payload.
+     * @type {ModalPayloadData}
+     */
     get payload() {
+        //console.log(this.#d.components[0].components[0])
         return this.#d
     }
 }

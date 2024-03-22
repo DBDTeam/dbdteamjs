@@ -90,7 +90,7 @@ class Guild extends Base {
     }
 
     async _patch(data) {
-        for(var i of data.voice_states){
+        for(var i of (data.voice_states) || []){
             this.voiceStates.set(i.channel_id, i)
         }
         if(data.splash){

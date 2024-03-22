@@ -15,7 +15,7 @@ const { ThreadMember } = require("./structures/ThreadMember");
 const { VoiceChannel } = require("./structures/VoiceChannel");
 
 //Types
-const { IntentBitFields } = require("./structures/Flags/Intents.js")
+const { IntentsBitFields } = require("./structures/Flags/Intents.js")
 const { SlashTypes, InteractionTypes, ComponentTypes, ButtonStyles } = require("./Types/Interactions.js")
 const { Presence } = require("./Types/PresenceInfo")
 const { ChannelTypes } = require("./Types/ChannelTypes")
@@ -40,7 +40,7 @@ module.exports = {
   TextChannel,
   ThreadMember,
   VoiceChannel,
-  IntentBitFields,
+  IntentsBitFields,
   SlashTypes,
   InteractionTypes,
   ComponentTypes,
