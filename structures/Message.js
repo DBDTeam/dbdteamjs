@@ -21,7 +21,7 @@ class Message extends Base {
         super(data.id)
         this.#client = client
         this.#data = data
-        this.#justUser = data.author
+        this.#justUser = data.author || data.user
         /**
          * @type {string}
          * Represents the ID of the Message

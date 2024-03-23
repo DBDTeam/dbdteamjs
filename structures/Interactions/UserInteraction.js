@@ -8,8 +8,8 @@ class UserInteraction extends InteractionBase {
         this.#data = data;
     }
     async __patch() {
-        const key = Object.keys(this.#data?.data?.resolved)?.[0]
-        const member = this.guild.members.cache.get(this.#data.data?.target_id || key) || await this.guild.members.fetch(this.#data.resolved.target_id)
+        const key = this.#data.data?.target_id || Object.keys(this.#data?.data?.resolved)?.[0]
+        const member = this.guild.members.cache.get(key) || await this.guild.members.fetch(key)
 
         this.target = {
             user: member.user,
