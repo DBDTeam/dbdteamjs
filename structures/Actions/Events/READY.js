@@ -6,7 +6,7 @@ const { Guild } = require("../../Guild.js")
 module.exports = async (client, d, shard) => {
     client.user = new ClientUser(d.user, client)
     client.application = new ClientApplication(client)
-    const guilds = await client.rest.request("GET", "/users/@me/guilds", true)
+    const guilds = await client.rest.request("GET", "/users/@me/guilds?with_counts=true", true)
     if(!guilds.error) {
         for(var guild of guilds.data){
             client.guilds.cache.set(guild.id, new Guild(guild, client))

@@ -6,6 +6,8 @@ module.exports = async(client, d, id) => {
     const member = new Member({ ...d, id: d.user.id}, guild, client)
 
     guild.members.cache.set(member.id, member)
+    guild.approximateMemberCount++
+    client.guilds.cache.set(guild.id, guild)
 
     client.emit("guildMemberAdd", member, guild, id)
 }

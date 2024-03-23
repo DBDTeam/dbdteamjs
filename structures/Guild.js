@@ -8,6 +8,7 @@ const { GuildRolesManager } = require("./Managers/RolesManager");
 
 class Guild extends Base {
     #client;
+    #exists;
     /**
      * Represents a Guild
      * @param {object} data - Guild payload
@@ -15,6 +16,7 @@ class Guild extends Base {
      */
     constructor(data, client) {
         super(data.id)
+        this.#exists = client.guilds.cache.get(data.id)
         this.#client = client
         /**
          * The Guild name
@@ -45,12 +47,12 @@ class Guild extends Base {
          * The Guild approximate member count
          * @type {number | undefined}
          */
-        this.approximateMemberCount = data.approximate_member_count
+        this.approximateMemberCount = data.approximate_member_count || this.#exists?.approximateMemberCount
         /**
          * The Guild approximate presence count
          * @type {number | undefined}
          */
-        this.approximatePresenceCount = data.approximate_presence_count
+        this.approximatePresenceCount = data.approximate_presence_count || this.#exists?.approximatePresenceCount
         /**
          * The Guild roles
          * @type {GuildRolesManager}
@@ -72,17 +74,17 @@ class Guild extends Base {
          */
         this.channels = new GuildChannelManager(this.id, this.#client)
         /**
-         * The Guild voice channels
+         * The Guild voice channels in the cache.
          * @type {Collection}
          */
         this.voiceStates = new Collection()
         /**
-         * The Guild members
+         * The Guild members in the cache.
          * @type {GuildMemberManager}
          */
         this.members = new GuildMemberManager(this.#client, data)
         /**
-         * The Guild time information
+         * The Guild time information.
          * @type {object}
          */
         this.created = getAllStamps(this.getCreatedAt)

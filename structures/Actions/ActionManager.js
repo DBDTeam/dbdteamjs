@@ -42,6 +42,9 @@ class ActionManager {
 
         this._r("GUILD_INTEGRATION_UPDATE")
 
+        // GUILD PRESENCES 1 << 8
+        this._r("PRESENCE_UPDATE")
+
         // GUILD MESSAGES 1 << 9
 
         this._r("MESSAGE_CREATE")
