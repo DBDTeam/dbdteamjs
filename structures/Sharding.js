@@ -29,6 +29,7 @@ class Shard extends EventEmitter {
         this.#interval = 45000;
         this.#authenticated = false;
         this.#latency = 0;
+        this.restartTimes = 0;
     }
     async connect() {
         if (this.#authenticated) return;
@@ -56,6 +57,12 @@ class Shard extends EventEmitter {
     }
 
     async closeEvent(code, reason) {
+        if(code === 1001 && reason.toString()?.toLowerCase()?.startsWith("discord websocket requesting")){
+            this.ws = null
+            this.#authenticated = false
+            this.restartTimes++
+            this.connect()
+        }
         this.#client.emit("error", { type: "Close", d: { reason: reason.toString(), code }, time: new Date(), shard: this.shardID })
         this.#client.emit("shardDisconnect", this.shardID)
         clearInterval(this.#heartbeatInterval);
@@ -102,7 +109,7 @@ class Shard extends EventEmitter {
         const message = JSON.parse(data);
         if (message.s !== undefined) this.#sequence = message.s;
         switch (message.op) {
-            case 0: // Dispatch
+            case 0:
                 this.#client.emit("debug", "Event from discord received: "+message.t, this.shardID)
                 if(message.t == "READY"){
                     this.#sessionID = message.d.session_id
@@ -116,14 +123,14 @@ class Shard extends EventEmitter {
                     this.resume();
                 }
                 break;
-            case 10: // Hello (initializes the heartbeat)
+            case 10:
                 this.#client.emit("debug", "Hello received", this.shardID)
                 this.#interval = message.d.heartbeat_interval;
                 clearInterval(this.#heartbeatInterval);
                 this.#heartbeatInterval = setInterval(() => this.heartbeat(), this.#interval);
                 this.identify();
                 break;
-            case 11: // Heartbeat ACK
+            case 11:
                 this.#client.emit("Heartbeat ACK received", this.shardID)
                 this.#client.ping = Date.now() - this.#latency
                 break;
