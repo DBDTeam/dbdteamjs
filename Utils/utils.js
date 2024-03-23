@@ -38,17 +38,19 @@ function typeChannel(channelData, client) {
 
 async function interactionType(data, client) {
   const { InteractionTypes, ComponentTypes } = require("../Types/Interactions");
-  const { SlashInteraction } = require("../structures/Interactions/SlashInteraction");
-  const { InteractionModal } = require("../structures/Interactions/InteractionModal");
-  const { ButtoInteraction } = require("../structures/Interactions/ButtonInteraction");
-  const { SelectMenuInteraction } = require("../structures/Interactions/SelectMenuInteraction");
+  const { SlashInteraction }                 = require("../structures/Interactions/SlashInteraction");
+  const { InteractionModal }                 = require("../structures/Interactions/InteractionModal");
+  const { ButtoInteraction }                 = require("../structures/Interactions/ButtonInteraction");
+  const { SelectMenuInteraction }            = require("../structures/Interactions/SelectMenuInteraction");
+  const { UserInteraction }                  = require("../structures/Interactions/UserInteraction");
+  const { MessageInteraction }               = require("../structures/Interactions/MessageInteraction");
 
   if (data.data.type === InteractionTypes.Slash && !data.data.component_type) {
     return await new SlashInteraction(data, client);
   } else if(data.data.type === InteractionTypes.Message && !data.data.component_type) {
-    return await new SlashInteraction(data, client);
+    return await new MessageInteraction(data, client);
   } else if(data.data.type === InteractionTypes.User && !data.data.component_type) {
-    return await new SlashInteraction(data, client);
+    return await new UserInteraction(data, client);
   } else if(data.type === 5) {
     return await new InteractionModal(data, client);
   } else if(data.data.custom_id) {
