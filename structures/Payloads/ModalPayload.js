@@ -38,8 +38,8 @@ class InteractionModalPayload {
         custom_id: "",
         label: "",
         style: 1,
-        min_length: null,
-        max_length: null,
+        min_length: 0,
+        max_length: 1,
         required: true,
         value: null,
         placeholder: null
@@ -54,13 +54,7 @@ class InteractionModalPayload {
         for(var i in this.#d?.components){
             const d = this.#d.components[i]
             for(var x in d?.components){
-                var _data = setObj(this.#COMPONENT_DATA, this.#d.components[i]?.components[x], { custom_id: "customId" })
-                if(!_data.type){
-                    _data.type = 4
-                }
-                if(_data.style != "1" && _data.style != "2"){
-                    _data.style = 1
-                }
+                var _data = setObj(this.#COMPONENT_DATA, this.#d.components[i]?.components[x], { custom_id: "customId", min_length: ["minlength", "min"], max_length: ["max", "maxlength"] })
                 this.#d.components[i].components[x] = _data
                 try{
                     delete this.#d.components[i]?.components[x].customId
