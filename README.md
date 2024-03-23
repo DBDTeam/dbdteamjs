@@ -1,5 +1,5 @@
 # @dbdteam.js
-✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](https://www.dbdteam.xyz/discord) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://dbdteam.github.io/jsdocs.github.io/).
+✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](https://www.dbdteam.xyz/discord) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://jsdocs.dbdteam.xyz/).
 
 ### NPM:
 ![](https://img.shields.io/npm/v/dbdteamjs) ![](https://img.shields.io/npm/dt/dbdteamjs)
@@ -14,7 +14,7 @@ npm i dbdteamjs
 ``` 
 or 
 ```
-npm i github:DBDTeam/dbdteamjs#0.0.3
+npm i github:DBDTeam/dbdteamjs#0.0.5
 ```
 **YARN**
 ```
@@ -35,7 +35,7 @@ Once you have that done, it's time to start creating the robot using the package
 
 # Example using MessageContent Intent
 ```javascript
-const { Client, Presence, IntentsBitFields } = require("./package.js")
+const { Client, Presence, IntentsBitFields } = require("dbdteamjs")
 
 const Intents = new IntentsBitFields()
 
@@ -72,7 +72,7 @@ client.connect() // Will establish the connection between the robot and the WS.
 ```
 # Example using Interactions
 ```javascript
-const { Client, Presence, IntentsBitFields, SlashTypes } = require("./pacakge.js")
+const { Client, Presence, IntentsBitFields, InteractionTypes } = require("dbdteamjs")
 
 const Intents = new IntentsBitFields()
 
