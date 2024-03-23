@@ -19,11 +19,6 @@ class Message extends Base {
    */
     constructor(data, client){
         super(data.id)
-        const { Client } = require("./Client/Client.js")
-        const { ThreadChannel } = require("./ThreadChannel.js")
-        const { TextChannel } = require("./TextChannel.js")
-        const { VoiceChannel } = require("./VoiceChannel.js")
-        const { Channel } = require("./DefaultChannel.js")
         this.#client = client
         this.#data = data
         this.#justUser = data.author
@@ -71,12 +66,12 @@ class Message extends Base {
          * Represents the current guild
          * @type {Guild}
          */
-        this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId).guild
+        this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId)?.guild
         /**
          * Represents the member
          * @type {Member}
          */
-        this.member = !data.member ? this.guild.members.cache.get(this.user.id) : new Member({...data.member, id: this.user.id}, this.guild, this.#client)
+        this.member = this.guild.members.cache.get(this.user.id)
         /**
          * Represents the reactions of the message
          * @type {MessageReactions}
@@ -127,6 +122,9 @@ class Message extends Base {
     }
 
     _patch(data) {
+        if(!this.member) {
+            this.member = new Member({...data.member, id: this.user.id}, this.guild, this.#client)
+        }
         if('webhook_id' in data){
             /**
              * The webhook id of the message (if any)

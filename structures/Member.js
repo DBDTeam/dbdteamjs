@@ -77,6 +77,11 @@ class Member extends Base {
          * @type {MemberRolesManager}
          */
         this.roles = new MemberRolesManager(this.guild, data, this.#client)
+        /**
+         * The presence of the Member.
+         * @type {object | null}
+         */
+        this.presence = null
         this._patch(data)
     }
     /**
