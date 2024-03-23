@@ -1,12 +1,12 @@
 {
   "name": "dbdteamjs",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A Discord api wrapper to create your bot!",
   "main": "package.js",
   "scripts": {
     "start": "cls && node main.js",
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
-    "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.3"
+    "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.4"
   },
   "keywords": [
     "discord",
