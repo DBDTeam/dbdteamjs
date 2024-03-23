@@ -17,7 +17,7 @@ class GuildChannelManager {
             allChannels = allChannels.data
 
             for(var i of allChannels){
-                var guild = this.client.channels.cache.get(i.id).guild || this.cache.get(i.id).guild
+                var guild = this.client.channels.cache.get(i.id)?.guild || this.cache.get(i.id)?.guild
                 i.guild = guild
                 this.client.channels.cache.set(i.id, typeChannel(i, this.client))
                 this.cache.set(i.id, typeChannel(i, this.client))
