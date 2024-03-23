@@ -1,6 +1,7 @@
 const { Collection } = require("../../Utils/Collection");
 const { setObj, readOnly } = require("../../Utils/utils");
-const Endpoints = require("../../REST/Endpoints")
+const Endpoints = require("../../REST/Endpoints");
+const { GuildRole } = require("../Role");
 
 class MemberRolesManager {
     #client;
@@ -39,20 +40,20 @@ class MemberRolesManager {
         return { errors, success }
     }
     async remove(obj) {
-        var roles = setObj({role_ids: []}, obj, { roles: "role_ids" })?.role_ids || []
+        var roles = setObj({role_ids: []}, obj, { role_ids: "roles" })?.role_ids || []
 
         var reason = obj.reason
 
-        var errors = []
-        var success = []
+        var errors = new Collection()
+        var success = new Collection()
 
         for (var i in roles) {
             var response = await this.#client.rest.request("DELETE", Endpoints.GuildMemberRole(this.guild.id, this.member.id, roles[i]), true, {}, reason)
 
             if (response.error) {
-                errors.push(response)
+                errors.set(roles[i], response)
             } else {
-                success.push(response)
+                success.set(roles[i], response)
             }
         }
 
@@ -96,10 +97,11 @@ class GuildRolesManager {
             response = _allGuildRoles
         } else {
             for (var i of _allGuildRoles.data) {
-                this.cache.set(i.id, i)
+                var x = new GuildRole(i)
+                this.cache.set(i.id, x)
 
                 if (roleId == i.id) {
-                    response = i
+                    response = x
                 }
             }
 
@@ -116,16 +118,16 @@ class GuildRolesManager {
 
         var reason = obj.reason
 
-        var errors = []
-        var success = []
+        var errors = new Collection()
+        var success = new Collection()
 
         for (var i in roles) {
             var response = await this.#client.rest.request("DELETE", Endpoints.GuildRole(this.guild.id, roles[i]), true, {}, reason)
 
             if (response.error) {
-                errors.push(response)
+                errors.set(roles[i], response)
             } else {
-                success.push(response)
+                success.set(roles[i], response)
             }
         }
 
@@ -144,7 +146,7 @@ class GuildRolesManager {
             reason: null
         }
 
-        var data = setObj(base, obj, { unicodeEmoji: "unicode_emoji" })
+        var data = setObj(base, obj, { unicode_emoji: "unicodeEmoji" })
 
         var reason = data.reason
 
@@ -153,7 +155,7 @@ class GuildRolesManager {
         const response = await this.#client.rest.request("POST", Endpoints.GuildRoles(this.guild.id), true, { data }, reason)
 
         if (response.error) { return response } else {
-            this.cache.set(response.data.id, response.data)
+            this.cache.set(response.data.id, new GuildRole(response.data, this.guild.id, this.#client))
 
             return response.data
         }

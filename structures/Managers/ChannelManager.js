@@ -42,6 +42,27 @@ class GuildChannelManager {
             return channel
         }
     }
+
+    async create(channelObj = {}) {
+        const reason = channelObj?.reason
+        const response = this.client.rest.request("POST", Endpoints.GuildChannels(this.guildId), true, channelObj, reason)
+
+        if(response.error){
+            return response.error
+        } else {
+            return await typeChannel(response.data, this.client)
+        }
+    }
+
+    async delete(channelId, reason) {
+        const response = this.client.rest.request("DELETE", Endpoints.Channel(channelId), true, channelObj, reason)
+
+        if(response.error){
+            return response.error
+        } else {
+            return await typeChannel(response.data, this.client)
+        }
+    }
 }
 
 class ChannelManager {

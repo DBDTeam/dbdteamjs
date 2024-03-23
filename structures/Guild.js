@@ -5,6 +5,7 @@ const { Collection } = require("../Utils/Collection");
 const ENDPOINTS = require("../REST/Endpoints");
 const { GuildMemberManager } = require("./Managers/UserManager");
 const { GuildRolesManager } = require("./Managers/RolesManager");
+const { GuildRole } = require("./Role");
 
 class Guild extends Base {
     #client;
@@ -166,7 +167,12 @@ class Guild extends Base {
              */
             this.explicitContentLevel = data.explicit_content_filter
         }
-        if(data.roles?.[0]){ for(var i of data.roles){ this.roles.cache.set(i.id, i) } }
+        if(data.roles?.[0]){
+            for(var i of data.roles){
+                const role = new GuildRole(i, this, this.#client)
+                this.roles.cache.set(i.id, role)
+            }
+        }
         if(data.emojis?.[0]){ for(var i of data.emojis){ this.emojis.set(i.id, i) } }
         if(data?.stickers?.[0]){ for(var i of data.stickers){ this.stickers.set(i.id, i) } }
         if(data.mfa_level){

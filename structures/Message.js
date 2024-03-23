@@ -66,7 +66,7 @@ class Message extends Base {
          * Represents the current guild
          * @type {Guild}
          */
-        this.guild = this.#client.guilds.cache.get(this.guildId) || data.guild || this.#client.channels.cache.get(this.channelId)?.guild
+        this.guild = this.#client.guilds.cache.get(this.guildId) || this.#client.channels.cache.get(this.channelId)?.guild
         /**
          * Represents the member
          * @type {Member}

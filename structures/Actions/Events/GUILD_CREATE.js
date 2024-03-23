@@ -3,6 +3,7 @@ const { typeChannel } = require("../../../Utils/utils.js")
 const { ChannelTypes } = require("../../../Types/ChannelTypes.js")
 const { Member } = require("../../Member.js")
 const { User } = require("../../User.js")
+const { GuildRole } = require("../../Role.js")
 module.exports = async(client, d, id) => {
     const g = new Guild(d, client)
 
@@ -42,6 +43,12 @@ module.exports = async(client, d, id) => {
         client.guilds.cache.get(d.id).members.cache.set(memb.id, memb)
         client.users.cache.set(user.id, user)
     }
+
+    for(var i of d.roles) {
+        g.roles.cache.set(i.id, new GuildRole(i, g.id, client))
+    }
+
+    client.guilds.cache.set(g.id, g)
 
     const stamp = Date.parse(d.joined_at)
     
