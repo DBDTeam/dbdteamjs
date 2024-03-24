@@ -6,27 +6,70 @@ const { InteractionBase } = require("./BaseInteraction");
 const { InteractionPayload } = require("../Payloads/InteractionPayload");
 const Endpoints = require("../../REST/Endpoints");
 const { readOnly } = require("../../Utils/utils");
+const { InteractionResponse } = require("./InteractionResponse");
 
 class ComponentInteraction extends InteractionBase {
     #d;
+    /**
+     * Represents a ComponentInteraction.
+     * @extends InteractionBase
+     * @param {object} data - The ComponentInteraction Payload.
+     * @param {Client} client - The Client
+     */
     constructor(data, client) {
         super(data, client);
+        /**
+         * The CustomId of the Interaction.
+         * @type {string}
+         */
         this.customId = data.data.custom_id;
+        /**
+         * The componentType of the Interaction.
+         * @type {string}
+         */
         this.componentType = data.data.component_type;
         this.#d = data;
+        /**
+         * Updates the original response.
+         * {@link ComponentInteraction#updateReply}
+         * @async
+         */
         readOnly(this, "update", this.updateReply)
         this._patch()
     }
+    
+    /**
+     * Check if the ComponentInteraction is a Button.
+     * @type {boolean}
+     */
+
     get isButton() {
         return this.#d.data?.component_type === ComponentTypes.Button;
     }
+
+    /**
+     * Check if the ComponentInteraction is a SelectMenu.
+     * @type {boolean}
+     */
+
     get isSelectMenu() {
         return [ComponentTypes.String, ComponentTypes.User, ComponentTypes.Role, ComponentTypes.Mentionable, ComponentTypes.Channel].includes(this.#d.data?.component_type);
     }
 
+    /**
+     * Check if the ComponentInteraction is a Modal.
+     * @type {boolean}
+     */
+
     get isModal() {
         return this.#d.type === 5
     }
+
+    /**
+     * Updates the original reply.
+     * @param {InteractionPayloadData} obj - The InteractionPayloadData
+     * @returns {InteractionResponse}
+     */
 
     async updateReply(obj) {
         const payload = new InteractionPayload(obj, obj.files)

@@ -6,9 +6,28 @@ const Endpoints = require("../../REST/Endpoints")
 class InteractionResponse extends Message {
     constructor(data, client) {
         super(data, client)
+        /**
+         * The Client.
+         * @type {Client}
+         * @readonly
+         */
         readOnly(this, "client", client)
+        /**
+         * The Interaction Token.
+         * @type {string}
+         * @readonly
+         */
         readOnly(this, "token", data.token)
+        /**
+         * The Interaction Id.
+         * @type {string}
+         * @readonly
+         */
         readOnly(this, "interactionId", data.interactionId)
+        /**
+         * The Interaction Data
+         * @type {object}
+         */
         this.interactionData = {
             name: data.interaction?.name ?? data.interaction_metadata?.name,
             id: data.interaction?.id ?? data.interaction_metadata?.id,
@@ -17,6 +36,12 @@ class InteractionResponse extends Message {
             userId: data.interaction?.user?.id ?? data.interaction_metadata?.user_id
         }
     }
+
+    /**
+     * Edits the Actual Interaction Response.
+     * @param {EditMessagePayload} obj - The EditMessagePayloadData 
+     * @returns {InteractionResponse}
+     */
 
     async editInteractionResponse(obj) {
         const payload = new EditMessagePayload(obj, obj.files)

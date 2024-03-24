@@ -23,7 +23,7 @@ module.exports = async(client, d, id) => {
 
         ch = typeChannel(i, client)
 
-        client.guilds.cache.get(d.id).channels.cache.set(i.id, ch)
+        g.channels.cache.set(i.id, ch)
         client.channels.cache.set(i.id, ch)
     }
     
@@ -32,20 +32,27 @@ module.exports = async(client, d, id) => {
         
         ch = typeChannel(i, client)
 
-        client.guilds.cache.get(d.id).channels.cache.set(i.id, ch)
+        g.channels.cache.set(i.id, ch)
         client.channels.cache.set(i.id, ch)
+    }
+
+    for(var i of d.roles) {
+        g.roles.cache.set(i.id, new GuildRole(i, g.id, client))
     }
 
     for(var i of d.members){
         var memb = new Member({...i, id: i.user.id}, client.guilds.cache.get(d.id), client)
         var user = new User(i.user, client)
 
-        client.guilds.cache.get(d.id).members.cache.set(memb.id, memb)
+        g.members.cache.set(memb.id, memb)
         client.users.cache.set(user.id, user)
     }
 
-    for(var i of d.roles) {
-        g.roles.cache.set(i.id, new GuildRole(i, g.id, client))
+    for(var i of d.presences){
+        const finded = g.members.cache.find((x) => x.id === i.user.id)
+
+        finded.presence = i
+        g.members.cache.set(finded.id, finded)
     }
 
     client.guilds.cache.set(g.id, g)
