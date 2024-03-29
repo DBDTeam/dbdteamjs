@@ -1,0 +1,13 @@
+{
+   "compilerOptions": {
+      "moduleResolution": "NodeNext",
+      "target": "ESNext",
+      "checkJs": true,
+      "declaration": true,
+      "skipLibCheck": true,
+      "typeRoots": ["./node_modules/@types", "./typings"],
+      "paths": {
+        "@types": ["./typings/index.d.ts"]
+      }
+   }
+}
