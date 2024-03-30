@@ -1,5 +1,5 @@
 const { ShardManager } = require("../structures/Sharding.js");
-const { EventEmitter } = require("node:events");
+const { TypedEmitter } = require("tiny-typed-emitter");
 const { ActionManager } = require("../structures/Actions/ActionManager.js");
 const { ClientPresence } = require("./ClientPresence.js");
 const { ChannelManager } = require("../structures/Managers/ChannelManager.js");
@@ -18,9 +18,9 @@ const { readOnly } = require("../utils/utils.js");
  */
 
 /**
- * @extends {EventEmitter}
+ * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}
  */
-class Client extends EventEmitter {
+class Client extends TypedEmitter {
   /**
    * Represents the Client
    * @param {ClientOptions} opts - The client options

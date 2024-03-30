@@ -1,74 +1,14 @@
-// export { Client } from "../src/package";
+import { type InteractionBase } from "../src/structures/Interactions/BaseInteraction";
+import type { Message } from "../src/package";
 
-declare module "node:events" {
-  class EventEmitter {
-    // Add type overloads for client events.
-    public static once<
-      Emitter extends EventEmitter,
-      Event extends keyof ClientEvents
-    >(
-      eventEmitter: Emitter,
-      eventName: Emitter extends Client ? Event : string
-    ): Promise<Emitter extends Client ? ClientEvents[Event] : any[]>;
-    public static on<
-      Emitter extends EventEmitter,
-      Events extends keyof ClientEvents
-    >(
-      eventEmitter: Emitter,
-      eventName: Emitter extends Client ? Events : string
-    ): AsyncIterableIterator<
-      Emitter extends Client ? ClientEvents[Events] : any
-    >;
-  }
-}
+// export declare class Client<Ready extends boolean = boolean> extends EventEmitter<ClientEvents> {}
 
-export class Client<Ready extends boolean = boolean> {
-  public on<Event extends keyof ClientEvents>(
-    event: Event,
-    listener: (...args: ClientEvents[Event]) => void
-  ): this;
-  public on<Event extends string | symbol>(
-    event: Exclude<Event, keyof ClientEvents>,
-    listener: (...args: any[]) => void
-  ): this;
-
-  public once<Event extends keyof ClientEvents>(
-    event: Event,
-    listener: (...args: ClientEvents[Event]) => void
-  ): this;
-  public once<Event extends string | symbol>(
-    event: Exclude<Event, keyof ClientEvents>,
-    listener: (...args: any[]) => void
-  ): this;
-
-  public emit<Event extends keyof ClientEvents>(
-    event: Event,
-    ...args: ClientEvents[Event]
-  ): boolean;
-  public emit<Event extends string | symbol>(
-    event: Exclude<Event, keyof ClientEvents>,
-    ...args: unknown[]
-  ): boolean;
-
-  public off<Event extends keyof ClientEvents>(
-    event: Event,
-    listener: (...args: ClientEvents[Event]) => void
-  ): this;
-  public off<Event extends string | symbol>(
-    event: Exclude<Event, keyof ClientEvents>,
-    listener: (...args: any[]) => void
-  ): this;
-
-  public removeAllListeners<Event extends keyof ClientEvents>(
-    event?: Event
-  ): this;
-  public removeAllListeners<Event extends string | symbol>(
-    event?: Exclude<Event, keyof ClientEvents>
-  ): this;
-}
 
 export interface ClientEvents {
-  // messageCreate: [message: Message];
+  debug: (...args: unknown[]) => unknown;
+  messageCreate: (message: Message) => unknown;
+  interactionCreate: (interaction: BaseInteraction) => unknown;
+  ready: () => unknown;
 }
 
 // export class Message<InGuild extends boolean = boolean> extends Base {

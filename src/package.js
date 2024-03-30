@@ -7,6 +7,7 @@ const { Base } = require("./structures/Base");
 const { User } = require("./structures/User");
 const { Member } = require("./structures/Member");
 const { Guild } = require("./structures/Guild");
+const { Message } = require("./structures/Message");
 const { Channel } = require("./structures/DefaultChannel");
 const { CategoryChannel } = require("./structures/CategoryChannel");
 const { ThreadChannel } = require("./structures/ThreadChannel");
@@ -46,6 +47,7 @@ module.exports = {
   TextChannel,
   ThreadMember,
   VoiceChannel,
+  Message,
   IntentsBitFields,
   Contexts,
   SlashTypes,

@@ -55,11 +55,8 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-// ! I dont known how to auto types the events :sob:
 
-client.on(
-  "messageCreate",
-  /** @param {Message} msg */ async (msg) => {
+client.on("messageCreate", async (msg) => {
     if (msg.author.bot) return;
     if (msg.content.startsWith("!eval")) {
       const as = Date.now();
