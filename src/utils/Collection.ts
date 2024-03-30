@@ -4,12 +4,13 @@
  * @param {number} limit
  */
 class Collection extends Map {
-  constructor(limit = null) {
+  public limit: number | null;
+  constructor(limit:number = Infinity) {
     super();
     /**
      * Represents the limit of the Collection.
      */
-    this.limit = limit || Infinity;
+    this.limit = limit;
   }
   /**
    * Returns a the Collection values in a object
@@ -36,7 +37,7 @@ class Collection extends Map {
    * @returns {boolean}
    */
 
-  hasAny(keys) {
+  hasAny(keys:Array<string>) {
     for (let key of keys) {
       if (this.has(key)) {
         return true;
@@ -51,7 +52,7 @@ class Collection extends Map {
    * @returns {Array}
    */
 
-  first(x = 1) {
+  first(x:number = 1) {
     let result = [];
     let count = 0;
     for (let [id, key] of this) {
@@ -63,7 +64,7 @@ class Collection extends Map {
     }
     return result?.[1] ? result : result[0];
   }
-  last(x = 1) {
+  last(x:number = 1) {
     let result = [];
     let count = 0;
     for (let [id, key] of [...this.entries()].reverse()) {
@@ -76,8 +77,8 @@ class Collection extends Map {
     return result?.[1] ? result : result[0];
   }
 
-  set(key, value) {
-    if (this.size >= this.limit) {
+  set(key:any, value:any) {
+    if (this.size >= (this.limit || Infinity)) {
       const firstKey = this.keys().next().value;
       this.delete(firstKey);
     }
@@ -85,17 +86,17 @@ class Collection extends Map {
     return this;
   }
 
-  find(expression) {
+  find(expression: (arg: Collection) => Array<Object>) {
     var obj = this.toJSON();
 
     return obj.find(expression);
   }
 
-  filter(expression) {
+  filter(expression: (arg: Collection) => Array<Object>) {
     var obj = this.toJSON();
 
     return obj.filter(expression);
   }
 }
 
-module.exports = { Collection };
+export { Collection };

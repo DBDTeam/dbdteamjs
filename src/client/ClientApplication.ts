@@ -1,19 +1,21 @@
-const { readOnly } = require("../utils/utils");
-const {
+import { type Client } from "./Client";
+
+import {
   ApplicationCommandManager,
-} = require("../structures/Managers/ApplicationCommandsManager");
+} from "../structures/Managers/ApplicationCommandsManager";
 
 /**
  * Represents the Client Application
  */
 class ClientApplication {
-  constructor(client) {
+  readonly client;
+  public commands;
+  constructor(client: Client) {
     /**
      * The client
      * @readonly
      */
     this.client = client;
-    readOnly(this, "client", client);
     /**
      * Represents all of the application commands of the client
      * @type {ApplicationCommandManager}
@@ -22,4 +24,4 @@ class ClientApplication {
   }
 }
 
-module.exports = { ClientApplication };
+export { ClientApplication };

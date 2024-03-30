@@ -324,4 +324,4 @@ class Message extends Base {
   }
 }
 
-module.exports = { Message };
+export { Message };

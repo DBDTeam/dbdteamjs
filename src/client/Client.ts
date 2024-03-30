@@ -1,29 +1,51 @@
-const { ShardManager } = require("../structures/Sharding.js");
-const { TypedEmitter } = require("tiny-typed-emitter");
-const { ActionManager } = require("../structures/Actions/ActionManager.js");
-const { ClientPresence } = require("./ClientPresence.js");
-const { ChannelManager } = require("../structures/Managers/ChannelManager.js");
-const { GuildManager } = require("../structures/Managers/GuildManager.js");
-const { UserManager } = require("../structures/Managers/UserManager.js");
-const { REST } = require("../rest/REST.js");
-const { ClientApplication } = require("./ClientApplication.js");
-const { ClientUser } = require("./ClientUser.js");
-const { readOnly } = require("../utils/utils.js");
+import { GatewayConfig, ShardManager } from "../structures/Sharding.js";
+import { TypedEmitter } from "tiny-typed-emitter";
+import { ActionManager } from "../structures/Actions/ActionManager.js";
+import { ClientPresence } from "./ClientPresence";
+import { ChannelManager } from "../structures/Managers/ChannelManager.js";
+import { GuildManager } from "../structures/Managers/GuildManager.js";
+import { UserManager } from "../structures/Managers/UserManager.js";
+import { REST } from "../rest/REST.js";
+import { ClientApplication } from "./ClientApplication.js";
+import { ClientUser } from "./ClientUser.js";
 
 /**
  * @typedef ClientOptions
  * @property {string} token - The Client token
  * @property {number} intents - The intents of the client
- * @property {object} gateway - The client gateway configuration
+ * @property {GatewayConfig} gateway - The client gateway configuration
  */
+
+export interface ClientOptions {
+  token: string;
+  intents: number;
+  gateway: GatewayConfig
+}
 
 /**
  * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}
  */
 class Client extends TypedEmitter {
+  readonly token: string
+  readonly intents: number
+  readonly rest: typeof REST
+  readonly configGateway: GatewayConfig;
+  shardManager: ShardManager;
+  gateway: GatewayConfig;
+  guilds: GuildManager;
+  users: UserManager;
+  channels: ChannelManager;
+  ready: number;
+  ping: number;
+  user?: ClientUser;
+  presence: ClientPresence;
+  application: ClientApplication;
+  privatactions: ActionManager;
+
   /**
    * Represents the Client
-   * @param {ClientOptions} opts - The client options
+   * @param opts - The client options
+   * 
    * @example
    * const client = new Client({
    *  token: `Client token goes here`,
@@ -33,77 +55,59 @@ class Client extends TypedEmitter {
    *  }
    * })
    */
-  constructor(opts) {
+  constructor(public opts: ClientOptions) {
     super();
     /**
      * The token of the client
-     * @name Client#token
-     * @type {string}
-     * @readonly
+     * @name Client#token¿
      */
-    this.token = opts.token;
-    readOnly(this, "token", opts.token);
+     this.token = opts.token;
 
     /**
      * The intents of the client
      * @name Client#intents
-     * @type {number}
-     * @readonly
      */
     this.intents = opts.intents;
-    readOnly(this, "intents", opts.intents);
 
     /**
      * The REST of the client
      * @name Client#rest
-     * @type {REST}
-     * @readonly
      */
     this.rest = new REST(this);
-    readOnly(this, "rest", this.rest);
+    
 
     /**
      * The Gateway Configuration of the client
-     * @name Client#c
-     * @type {object}
-     * @readonly
+     * @name Client#configGateway
      */
-    this.configGateway = opts?.gateway || {};
-    readOnly(this, "configGateway", this.configGateway);
+    this.configGateway = opts?.gateway;
 
     /**
      * The shard manager of the client
-     * @type {ShardManager}
      */
     this.shardManager = new ShardManager(this, this.configGateway);
     /**
      * The gateway of the ShardManager
-     * @type {object}
      */
     this.gateway = this.shardManager.gateway;
     /**
      * The guild manager of the client
-     * @type {GuildManager}
      */
-    this.guilds = new GuildManager(this);
+    this.guilds  = new GuildManager(this);
     /**
      * The user manager of the client
-     * @type {UserManager}
      */
     this.users = new UserManager(this);
     /**
      * The channel manager of the client
-     * @type {ChannelManager}
      */
     this.channels = new ChannelManager(this);
     /**
      * The timestamp when the client execute's the event "READY"
-     * @type {number}
      */
     this.ready = 0;
     /**
      * The ping of the client
-     * @type {number}
      */
     this.ping = 0;
     /**
@@ -118,13 +122,10 @@ class Client extends TypedEmitter {
     this.presence = new ClientPresence(this);
     /**
      * The application manager of the client
-     * @type {ClientApplication}
      */
     this.application = null;
     /**
      * The action manager of the client
-     * @type {ActionManager}
-     * @private
      */
     this.actions = new ActionManager(this);
 
@@ -136,9 +137,19 @@ class Client extends TypedEmitter {
   /**
    * Establish the connection with the proyect to the WS
    */
-  connect() {
+  public connect() {
     this.shardManager.connect();
+  }
+
+  public disconnect() {
+    this.shardManager.disconnect();
+  }
+
+  public reconnectAll() {
+    for(var [key, shardID] of this.shardManager.shards){
+      this.shardManager.reconnect(shardID);
+    }
   }
 }
 
-module.exports = { Client };
+export { Client };

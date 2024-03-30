@@ -284,4 +284,4 @@ class Guild extends Base {
   }
 }
 
-module.exports = { Guild };
+export { Guild };

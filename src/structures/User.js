@@ -189,4 +189,4 @@ class User extends Base {
   }
 }
 
-module.exports = { User };
+export { User }

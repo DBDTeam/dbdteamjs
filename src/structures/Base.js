@@ -52,4 +52,4 @@ class Base {
   }
 }
 
-module.exports = { Base };
+export { Base };

@@ -31,4 +31,4 @@ class CategoryChannel extends Channel {
   }
 }
 
-module.exports = { CategoryChannel };
+export { CategoryChannel };

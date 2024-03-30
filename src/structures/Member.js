@@ -405,4 +405,4 @@ class Member extends Base {
   }
 }
 
-module.exports = { Member };
+export { Member };

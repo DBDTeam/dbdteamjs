@@ -1,44 +1,54 @@
+import { type Client } from "./Client";
+
+import { PresenceStatus, ActivityPayload } from "../types/Presences";
+
+interface PresencePayload {
+  activities: Array<ActivityPayload>,
+  status: PresenceStatus,
+  afk: boolean,
+  since: number,
+}
+
+/**
+  * Represents the client presence (WS presence)
+  */
 class ClientPresence {
-  #client;
-  /**
-   * Represents the client presence (WS presence)
-   * @param {import("./Client").Client} client
-   */
-  constructor(client) {
-    this.#client = client;
+  public status;
+  public activities: Array<ActivityPayload>;
+  public since: number;
+  public mobilePlatform: boolean;
+  
+  constructor(private client: Client) {
+    this.client = client;
     /**
      * The status of the bot
-     * @type {string}
      */
     this.status = "online";
     /**
      * An array of activities of the bot
-     * @type {object}
      */
     this.activities = [];
     /**
      * Since when the bot will put the activity
-     * @type {number}
      */
     this.since = 0;
     /**
      * If the bot has the icon of mobile device.
-     * @type {boolean}
      */
     this.mobilePlatform = client?.gateway?.mobilePlatform;
   }
 
   /**
    *
-   * @param {object} obj - The object that will be used for update the presence of the client
-   * @param {number} shardId [shardId=0] - The shardID
+   * @param obj - The object that will be used for update the presence of the client
+   * @param shardId - The shardID
    * @returns {Promise<boolean>}
    * @async
    */
-  async update(obj, shardId = 0) {
-    const shard = this.#client.shardManager.shards.get(shardId);
+  async update(obj: PresencePayload, shardId: number = 0) {
+    const shard = this.client.shardManager.shards.get(shardId);
     if (!shard) {
-      this.#client.emit("error", {
+      this.client.emit("error", {
         status: 0,
         error: {
           message:
@@ -51,7 +61,7 @@ class ClientPresence {
     const ws = shard.ws;
 
     !["online", "invisible", "dnd", "idle"].includes(obj.status)
-      ? (obj.status = "online")
+      ? (obj.status = PresenceStatus.Online)
       : null;
 
     Number.isInteger(obj.since) ? null : (obj.since = 0);
@@ -80,4 +90,4 @@ class ClientPresence {
   }
 }
 
-module.exports = { ClientPresence };
+export { ClientPresence };

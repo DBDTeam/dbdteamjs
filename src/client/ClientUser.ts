@@ -2,13 +2,18 @@ const { User } = require("../structures/User.js");
 const Endpoints = require("../rest/Endpoints.js");
 const { resolveImage } = require("../utils/ImageResolver.js");
 
+interface EditClientUserPayload {
+  username: string | undefined,
+  avatar: string | undefined,
+}
+
 /**
  * @extends {User}
  */
 class ClientUser extends User {
   /**
    *
-   * @param {object} obj - The new info to edit the client
+   * @param {object} object - The new info to edit the client
    * @example
    * client.edit({
    *  username: "DBDTeamJS",
@@ -19,22 +24,18 @@ class ClientUser extends User {
    * })
    * @returns {Promise<ClientUser>}
    */
-  async edit(obj) {
-    var modify = {};
-    if (obj.username) {
-      modify.username = obj.username;
-    }
-    if (obj.avatar) {
-      modify.avatar = await resolveImage(obj.avatar);
-    }
+  async edit(object: EditClientUserPayload) {
+
+    object.avatar = await resolveImage(object.avatar);
+
     const result = await this.client.rest.request(
       "PATCH",
       Endpoints.User("@me"),
       true,
       {
-        data: modify,
+        data: object,
         headers: {
-          "Content-Length": Buffer.byteLength(JSON.stringify(modify)),
+          "Content-Length": Buffer.byteLength(JSON.stringify(object)),
         },
       }
     );
@@ -84,4 +85,4 @@ class ClientUser extends User {
   }
 }
 
-module.exports = { ClientUser };
+export { ClientUser }
