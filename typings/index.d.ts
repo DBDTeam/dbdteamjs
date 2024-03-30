@@ -1,8 +1,8 @@
 import { type InteractionBase } from "../src/structures/Interactions/BaseInteraction";
-import { type TypedEmitter } from "tiny-typed-emitter";
 import type { Message } from "../src/package";
 
 // export declare class Client<Ready extends boolean = boolean> extends EventEmitter<ClientEvents> {}
+
 
 export interface ClientEvents {
   debug: (...args: unknown[]) => unknown;
