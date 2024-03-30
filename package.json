@@ -3,6 +3,7 @@
   "version": "0.0.5",
   "description": "A Discord api wrapper to create your bot!",
   "main": "./src/package.js",
+  "types": "./typings/index.d.ts",
   "scripts": {
     "start": "cls && node main.js",
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
@@ -18,6 +19,7 @@
   "author": "DBDTeam",
   "license": "Apache-2.0",
   "dependencies": {
+    "tiny-typed-emitter": "^2.1.0",
     "ws": "^8.16.0"
   },
   "repository": {
