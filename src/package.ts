@@ -1,61 +1,26 @@
 // Structures
-import { Client } from "./client/Client"
-import { ClientPresence } from "./client/ClientPresence";
-import { ClientUser } from "./client/ClientUser";
-import { Shard, ShardManager } from "./structures/Sharding";
-import { Base } from "./structures/Base";
-import { User } from "./structures/User";
-import { Member } from "./structures/Member";
-import { Guild } from "./structures/Guild";
-import { Message } from "./structures/Message";
-import { Channel } from "./structures/DefaultChannel";
-import { CategoryChannel } from "./structures/CategoryChannel";
-import { ThreadChannel } from "./structures/ThreadChannel";
-import { TextChannel } from "./structures/TextChannel";
-import { ThreadMember } from "./structures/ThreadMember";
-import { VoiceChannel } from "./structures/VoiceChannel";
+export * from "./client/Client";
+export * from "./client/ClientPresence";
+export * from "./client/ClientUser";
+export * from "./structures/Base";
+export * from "./structures/BaseChannel";
+export * from "./structures/CategoryChannel";
+export * from "./structures/Guild";
+export * from "./structures/Member";
+export * from "./structures/Message";
+export * from "./structures/Sharding";
+export * from "./structures/TextChannel";
+export * from "./structures/ThreadChannel";
+export * from "./structures/ThreadMember";
+export * from "./structures/User";
+export * from "./structures/VoiceChannel";
 
 //Types
-import { IntentsBitFields } from "./structures/Flags/Intents";
-import {
-  Contexts,
-  SlashTypes,
-  InteractionTypes,
-  ComponentTypes,
-  ButtonStyles,
-} from "./types/Interactions.js";
-import { Presence } from "./types/Presences";
-import { ChannelTypes } from "./types/ChannelTypes";
+export * from "./structures/Flags/Intents";
+export * from "./types/ChannelTypes";
+export * from "./types/Interactions.js";
+export * from "./types/Presences";
 
 // Utils
-import { Collection } from "./utils/Collection";
-import { resolveImage } from "./utils/ImageResolver";
-
-export {
-  Client,
-  ClientPresence,
-  ClientUser,
-  ShardManager,
-  Shard,
-  Base,
-  User,
-  Member,
-  Guild,
-  Channel,
-  CategoryChannel,
-  ThreadChannel,
-  TextChannel,
-  ThreadMember,
-  VoiceChannel,
-  Message,
-  IntentsBitFields,
-  Contexts,
-  SlashTypes,
-  InteractionTypes,
-  ComponentTypes,
-  ButtonStyles,
-  Presence,
-  ChannelTypes,
-  Collection,
-  resolveImage,
-};
+export * from "./utils/Collection";
+export * from "./utils/ImageResolver";

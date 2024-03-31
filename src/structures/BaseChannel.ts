@@ -17,7 +17,7 @@ const {
  * Represents a BaseChannel (for a easier usage)
  * @extends {Base}
  */
-class DefaultChannel extends Base {
+class BaseChannel extends Base {
   #data;
   /**
    * Represents a BaseChannel (for a easier usage)
@@ -273,4 +273,4 @@ class DefaultChannel extends Base {
   }
 }
 
-module.exports = { Channel: DefaultChannel };
+export { BaseChannel as Channel };

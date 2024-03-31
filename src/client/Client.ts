@@ -1,13 +1,13 @@
-import { GatewayConfig, ShardManager } from "../structures/Sharding.js";
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ActionManager } from "../structures/Actions/ActionManager.js";
+import { REST } from "../rest/REST";
+import { ActionManager } from "../structures/Actions/ActionManager";
+import { ChannelManager } from "../structures/Managers/ChannelManager";
+import { GuildManager } from "../structures/Managers/GuildManager";
+import { UserManager } from "../structures/Managers/UserManager";
+import { GatewayConfig, ShardManager } from "../structures/Sharding";
+import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
-import { ChannelManager } from "../structures/Managers/ChannelManager.js";
-import { GuildManager } from "../structures/Managers/GuildManager.js";
-import { UserManager } from "../structures/Managers/UserManager.js";
-import { REST } from "../rest/REST.js";
-import { ClientApplication } from "./ClientApplication.js";
-import { ClientUser } from "./ClientUser.js";
+import { ClientUser } from "./ClientUser";
 
 /**
  * @typedef ClientOptions
@@ -19,16 +19,16 @@ import { ClientUser } from "./ClientUser.js";
 export interface ClientOptions {
   token: string;
   intents: number;
-  gateway: GatewayConfig
+  gateway: GatewayConfig;
 }
 
 /**
  * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}
  */
 class Client extends TypedEmitter {
-  readonly token: string
-  readonly intents: number
-  readonly rest: typeof REST
+  readonly token: string;
+  readonly intents: number;
+  readonly rest: REST;
   readonly configGateway: GatewayConfig;
   shardManager: ShardManager;
   gateway: GatewayConfig;
@@ -39,13 +39,14 @@ class Client extends TypedEmitter {
   ping: number;
   user?: ClientUser;
   presence: ClientPresence;
-  application: ClientApplication;
-  privatactions: ActionManager;
+  application: ClientApplication | undefined;
+  private actions: ActionManager;
+  guild: any;
 
   /**
    * Represents the Client
    * @param opts - The client options
-   * 
+   *
    * @example
    * const client = new Client({
    *  token: `Client token goes here`,
@@ -61,7 +62,7 @@ class Client extends TypedEmitter {
      * The token of the client
      * @name Client#token¿
      */
-     this.token = opts.token;
+    this.token = opts.token;
 
     /**
      * The intents of the client
@@ -74,7 +75,6 @@ class Client extends TypedEmitter {
      * @name Client#rest
      */
     this.rest = new REST(this);
-    
 
     /**
      * The Gateway Configuration of the client
@@ -93,7 +93,7 @@ class Client extends TypedEmitter {
     /**
      * The guild manager of the client
      */
-    this.guilds  = new GuildManager(this);
+    this.guilds = new GuildManager(this);
     /**
      * The user manager of the client
      */
@@ -114,7 +114,7 @@ class Client extends TypedEmitter {
      * The client user
      * @type {ClientUser|undefined}
      */
-    this.user = null;
+    this.user = undefined;
     /**
      * The client presence manager
      * @type {ClientPresence}
@@ -123,7 +123,7 @@ class Client extends TypedEmitter {
     /**
      * The application manager of the client
      */
-    this.application = null;
+    this.application = undefined;
     /**
      * The action manager of the client
      */
@@ -146,7 +146,7 @@ class Client extends TypedEmitter {
   }
 
   public reconnectAll() {
-    for(var [key, shardID] of this.shardManager.shards){
+    for (var [key, shardID] of this.shardManager.shards) {
       this.shardManager.reconnect(shardID);
     }
   }

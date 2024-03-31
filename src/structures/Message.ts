@@ -1,34 +1,54 @@
-const { Base } = require("./Base.js");
-const { User } = require("./User.js");
-const { Collection } = require("../utils/Collection.js");
-const Endpoints = require("../rest/Endpoints.js");
-const { MessageReactions } = require("./Managers/ReactionMessage.js");
-const { Member } = require("./Member.js");
-const { readOnly, typeChannel, getAllStamps } = require("../utils/utils.js");
-const { MessagePayload } = require("./Payloads/MessagePayload.js");
-const { EditMessagePayload } = require("./Payloads/EditMessagePayload.js");
-const DefaultChannel = require("./DefaultChannel.js");
+import { Client } from "../client/Client";
+import Endpoints from "../rest/Endpoints.js";
+import { Collection } from "../utils/Collection";
+import { getAllStamps, typeChannel } from "../utils/utils";
+import { Base } from "./Base";
+import { Guild } from "./Guild";
+import { MessageReactions } from "./Managers/ReactionMessage";
+import { Member } from "./Member.js";
+import { EditMessagePayload } from "./Payloads/EditMessagePayload";
+import { MessagePayload } from "./Payloads/MessagePayload";
+import { User } from "./User";
 
-/**
- * @typedef {import('./TextChannel.js').TextChannel} TextChannel
- * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
- * @typedef {import('./ThreadChannel.js').ThreadChannel} ThreadChannel
- * @typedef {import('./Guild.js').Guild} Guild
- */
+export interface MentionsObject {
+  user: Collection;
+  roles: Collection;
+  channels: Collection;
+}
 
 /**
  * Represents a Discord message
- * @extends {Base}
  */
 class Message extends Base {
-  #justUser;
-  #data;
+  private justUser: User;
+  type: any;
+  channelId: any;
+  guildId: any;
+  author: any;
+  user: any;
+  content: any;
+  mentions: MentionsObject;
+  channel: ;
+  guild: Guild;
+  member: any;
+  reactions: any;
+  tts: any;
+  flags: any;
+  sended: any;
+  embeds: any;
+  attachments: any;
+  stickers: Collection;
+  pinned: any;
+  webhookId: any;
+  thread: any;
+  private data: any;
 
-  constructor(data, client) {
+  constructor(data: MessagePayload, client: Client) {
     super(client);
 
-    this.#data = data;
-    this.#justUser = data.author || data.user;
+    this.data = data;
+    this.justUser = data.author || data.user;
+
     /**
      * @type {string}
      * Represents the ID of the Message
@@ -144,6 +164,9 @@ class Message extends Base {
      */
     this.pinned = data.pinned;
     this._patch(data);
+  }
+  getCreatedAt(getCreatedAt: any): any {
+    throw new Error("Method not implemented.");
   }
 
   _patch(data) {
@@ -294,9 +317,9 @@ class Message extends Base {
 
   get _user() {
     if (this.webhookId) {
-      return this.#data.user;
+      return this.data.user;
     } else {
-      var x = new User(this.#justUser, this.client);
+      var x = new User(this.justUser, this.client);
       this.client.users.cache.set(x.id, x);
       return x;
     }

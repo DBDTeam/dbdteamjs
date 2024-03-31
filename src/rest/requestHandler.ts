@@ -1,34 +1,66 @@
-const { resolveImage } = require("../utils/ImageResolver.js");
-const Endpoints = require("./Endpoints.js");
-const https = require("https");
+import https from "https";
+import { type Client } from "../client/Client";
+import { resolveImage } from "../utils/ImageResolver";
+import * as Endpoints from "./Endpoints";
 
-class RequestHandler {
-  #lastRequestTime;
-  #requestInterval;
-  #requestCount;
+enum Methods {
+  get = "GET",
+  post = "POST",
+  delete = "DELETE",
+  patch = "PATCH",
+  put = "PUT",
+}
+
+interface ResponseFromApi {
+  data?: Record<any, any>;
+  status: number;
+  error: boolean;
+}
+
+interface ErrorResponseFromApi extends ResponseFromApi {
+  d?: Record<string, any>;
+  shard: number | string | undefined | null;
+  type: string;
+  time: number;
+}
+
+export class RequestHandler {
+  private lastRequestTime: number;
+  private requestInterval: number;
+  private requestCount: number;
+  public client: Client;
+  public options: Record<string, any>;
+  public ping: number;
   /**
    *
-   * @param {import("../client/Client").Client} client
+   * @param client
    */
-  constructor(client) {
+  constructor(client: Client) {
     this.client = client;
     this.options = {
-      agent: client?.rest?.agent || null,
+      agent: client?.gateway?.agent || null,
       baseURL: Endpoints.BASE_URL,
     };
     this.ping = 0;
-    this.#requestCount = 0;
-    this.#lastRequestTime = Date.now();
-    this.#requestInterval = 300;
+    this.requestCount = 0;
+    this.lastRequestTime = Date.now();
+    this.requestInterval = 300;
   }
 
-  async request(method, url, auth, body, reason, files) {
+  public async request(
+    method: EnumAsUnion<Methods>,
+    url: string,
+    auth: boolean,
+    body?: Record<string, any>,
+    reason?: string,
+    files?: Array<Record<string, any>>
+  ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const finalURL = `https://discord.com${this.options.baseURL}${url}`;
 
     try {
       await this.waitIfNeeded();
 
-      var headers = {
+      var headers: Record<string, any> = {
         "User-Agent": "DiscordBot (https://discord.com)",
       };
       if (method !== "DELETE") {
@@ -56,10 +88,10 @@ class RequestHandler {
       const response = await this.makeResponse(
         finalURL,
         options,
-        body,
-        files,
         method,
-        headers
+        headers,
+        body,
+        files
       );
 
       return response;
@@ -69,19 +101,28 @@ class RequestHandler {
     }
   }
 
-  makeResponse(finalURL, options, body, files, method, headers) {
+  makeResponse(
+    finalURL: string,
+    options: Record<string, any>,
+    method: EnumAsUnion<Methods>,
+    headers: Record<string, any>,
+    body?: Record<string, any>,
+    files?: Array<Record<string, any>>
+  ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const a = Date.now();
-    return new Promise(async (resolve, reject) => {
+    return new Promise(async (resolve: any, reject: any) => {
       const req = https.request(finalURL, options, (res) => {
         let data = "";
-        res.on("data", (chunk) => {
+        res.on("data", (chunk: string) => {
           data += chunk;
         });
         headers.Authorization = `Bot <censored>`;
         res.on("end", () => {
           this.client.emit("debug", "An API Request was responsed correctly.");
           data?.includes("{") ? (data = JSON.parse(data)) : "";
-          if (!(res.statusCode >= 200 && res.statusCode < 300)) {
+          if (
+            !(res.statusCode && res.statusCode >= 200 && res.statusCode < 300)
+          ) {
             const errMsg = {
               type: "Request Handler Errror",
               d: {
@@ -108,9 +149,9 @@ class RequestHandler {
       });
 
       if (["PATCH", "POST", "PUT"].includes(options.method)) {
-        if (body?.data && !files) {
+        if (body?.data && !files?.[0]) {
           req.write(JSON.stringify(body?.data));
-        } else if (files) {
+        } else if (files?.[0]) {
           if (body?.data) {
             req.write(`--boundary\r\n`);
             req.write(
@@ -143,22 +184,20 @@ class RequestHandler {
 
   async waitIfNeeded() {
     const currentTime = Date.now();
-    const timeSinceLastRequest = currentTime - this.#lastRequestTime;
-    if (timeSinceLastRequest >= this.#requestInterval) {
-      this.#requestCount = 0;
+    const timeSinceLastRequest = currentTime - this.lastRequestTime;
+    if (timeSinceLastRequest >= this.requestInterval) {
+      this.requestCount = 0;
     }
 
-    this.#requestCount++;
-    this.#lastRequestTime = currentTime;
+    this.requestCount++;
+    this.lastRequestTime = currentTime;
 
-    if (this.#requestCount % 3 === 0) {
+    if (this.requestCount % 3 === 0) {
       await this._sleep(1500);
     }
   }
 
-  _sleep(ms) {
+  _sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   }
 }
-
-module.exports = RequestHandler;

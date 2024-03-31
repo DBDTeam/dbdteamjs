@@ -1,10 +1,10 @@
-const { User } = require("../structures/User.js");
-const Endpoints = require("../rest/Endpoints.js");
-const { resolveImage } = require("../utils/ImageResolver.js");
+import { User } from "../structures/User";
+import Endpoints from "../rest/Endpoints.js";
+import { resolveImage } from "../utils/ImageResolver.js";
 
 interface EditClientUserPayload {
-  username: string | undefined,
-  avatar: string | undefined,
+  username: string | undefined;
+  avatar: string | undefined;
 }
 
 /**
@@ -25,7 +25,6 @@ class ClientUser extends User {
    * @returns {Promise<ClientUser>}
    */
   async edit(object: EditClientUserPayload) {
-
     object.avatar = await resolveImage(object.avatar);
 
     const result = await this.client.rest.request(
@@ -85,4 +84,4 @@ class ClientUser extends User {
   }
 }
 
-export { ClientUser }
+export { ClientUser };

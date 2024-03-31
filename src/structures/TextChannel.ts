@@ -121,4 +121,4 @@ class TextChannel extends Channel {
   }
 }
 
-module.exports = { TextChannel };
+export { TextChannel };

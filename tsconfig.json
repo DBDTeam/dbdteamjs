@@ -6,9 +6,9 @@
       "declaration": true,
       "skipLibCheck": true,
       "strict": true,
-      "typeRoots": ["./node_modules/@types", "./typings"],
+      "typeRoots": ["./node_modules/@types", "./typings/index.d.ts"],
       "paths": {
-        "@types": ["./node_modules/@types/node", "./typings/index.d.ts"]
+        "@types": ["./typings/index.d.ts"]
       },
       "outDir": "./lib"
    }
