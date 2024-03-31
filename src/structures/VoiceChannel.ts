@@ -110,4 +110,4 @@ class VoiceChannel extends Channel {
   }
 }
 
-module.exports = { VoiceChannel };
+export { VoiceChannel };

@@ -1,8 +1,21 @@
-import { type InteractionBase } from "../src/structures/Interactions/BaseInteraction";
 import type { Message } from "../src/package";
 
-// export declare class Client<Ready extends boolean = boolean> extends EventEmitter<ClientEvents> {}
+export declare global {
+  type StringValues<T> = {
+    [K in keyof T]: T[K] extends string ? T[K] : never;
+  }[keyof T];
 
+  type NumberValues<T> = {
+    [K in keyof T]: T[K] extends number ? T[K] : never;
+  }[keyof T];
+
+  /**
+   * Usage : type EnumValues = EnumAsUnion<typeof anEnum>
+   */
+  type EnumAsUnion<T> = `${StringValues<T>}` | NumberValues<T>;
+
+  type ProbablyPromise<V = unknown> = Promise<V> | V;
+}
 
 export interface ClientEvents {
   debug: (...args: unknown[]) => unknown;
@@ -10,10 +23,6 @@ export interface ClientEvents {
   interactionCreate: (interaction: BaseInteraction) => unknown;
   ready: () => unknown;
 }
-
-// export class Message<InGuild extends boolean = boolean> extends Base {
-//   public author: User;
-// }
 
 type MentionType = "users" | "roles" | "everyone";
 

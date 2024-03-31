@@ -4,7 +4,7 @@ import { Collection } from "../../utils/Collection.js";
 
 class ActionManager {
   actions: Collection;
-  
+
   constructor(private client: Client) {
     this.client = client;
     this.actions = new Collection();
@@ -60,14 +60,14 @@ class ActionManager {
     this._r("READY");
   }
 
-  _handle(action, d, shard) {
+  _handle(action: string, d: Record<string, any>, shard: number) {
     if (this.actions.get(action)) {
       this.actions.get(action)(this.client, d, shard);
     }
   }
-  _r(e) {
+  _r(e: any) {
     this.actions.set(e, require("./Events/" + e));
   }
 }
 
-module.exports = { ActionManager };
+export { ActionManager };

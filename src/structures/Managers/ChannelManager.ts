@@ -1,29 +1,34 @@
-const { readOnly, typeChannel } = require("../../utils/utils");
-const { Collection } = require("../../utils/Collection");
-const Endpoints = require("../../rest/Endpoints");
-const RequestHandler = require("../../rest/requestHandler");
+import { type Client } from "../../client/Client";
+import * as Endpoints from "../../rest/Endpoints";
+import { Collection } from "../../utils/Collection";
+import { typeChannel } from "../../utils/utils";
 
 class GuildChannelManager {
-  constructor(guildId, client) {
+  private client: Client;
+  private guildId: string;
+  public cache: Collection;
+
+  constructor(guildId: string, client: Client) {
     this.client = client;
-    readOnly(this, "client", client);
     this.guildId = guildId;
-    readOnly(this, "guildId", guildId);
     this.cache = new Collection();
     this._fetchAllChannels();
   }
 
   async _fetchAllChannels() {
     try {
-      var allChannels = await new RequestHandler(this.client).request(
+      const result = await this.client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
       );
       var _return = new Collection();
-      allChannels = allChannels.data;
+      if (!result) return null;
+      var allChannels = result.data;
 
-      for (var i of allChannels) {
+      if (!allChannels) return null;
+
+      for (const i of allChannels as Array<any>) {
         var guild =
           this.client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
@@ -39,19 +44,22 @@ class GuildChannelManager {
     }
   }
 
-  async fetch(id) {
+  async fetch(id: string) {
     if (!id || id?.length >= 17 || id?.length <= 18) {
       var res = await this._fetchAllChannels();
 
       return res;
     } else {
-      var channel = await this.client.rest.request(
+      const response = await this.client.rest.request(
         "GET",
         Endpoints.Channel(id),
         true
       );
 
-      channel = channel.data;
+      if (!response) return null;
+      if (!response.data) return null;
+
+      const channel: Record<string, any> = response.data;
       this.cache.set(channel.id, channel);
       this.client.channels.cache.set(channel.id, channel);
       return channel;

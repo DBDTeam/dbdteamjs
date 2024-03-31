@@ -1,5 +1,5 @@
 const { Collection } = require("../utils/Collection");
-const { Channel } = require("./DefaultChannel");
+const { Channel } = require("./BaseChannel.js");
 
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel

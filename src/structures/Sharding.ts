@@ -1,12 +1,13 @@
-import WebSocket from "ws"
-import {EventEmitter} from "node:events"
-import { type Client } from "../client/Client"
+import { EventEmitter } from "node:events";
+import WebSocket from "ws";
+import { type Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
 
 export interface GatewayConfig {
   url: string;
   mobilePlatform: boolean;
   totalShards: number | undefined;
+  agent: string;
 }
 
 class Shard extends EventEmitter {
@@ -27,9 +28,14 @@ class Shard extends EventEmitter {
   public totalShards: number;
   public restartTimes: number;
 
-  constructor(client: Client, shardID: number, totalShards: number, gateway: GatewayConfig) {
+  constructor(
+    client: Client,
+    shardID: number,
+    totalShards: number,
+    gateway: GatewayConfig
+  ) {
     super();
-    this.time = Date.now()
+    this.time = Date.now();
     this.client = client;
     this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
     this.mobilePlatform = gateway?.mobilePlatform
@@ -61,7 +67,9 @@ class Shard extends EventEmitter {
       );
       this.ws.on("open", () => this.openEvent());
       this.ws.on("message", (data: any) => this.messageEvent(data));
-      this.ws.on("close", (code: number, reason: string) => this.closeEvent(code, reason));
+      this.ws.on("close", (code: number, reason: string) =>
+        this.closeEvent(code, reason)
+      );
     } catch (error) {
       this.client.emit("shardError", error);
     }
@@ -70,10 +78,7 @@ class Shard extends EventEmitter {
   async openEvent() {
     this.client.ping = Date.now() - this.latency;
     this.client.emit("shardConnect", this.shardID);
-    this.heartbeatInterval = setInterval(
-      () => this.heartbeat(),
-      this.interval
-    );
+    this.heartbeatInterval = setInterval(() => this.heartbeat(), this.interval);
     this.identify();
     this.authenticated = true;
   }

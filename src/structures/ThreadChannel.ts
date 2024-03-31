@@ -205,4 +205,4 @@ class ThreadChannel extends Channel {
   }
 }
 
-module.exports = { ThreadChannel };
+export { ThreadChannel };
