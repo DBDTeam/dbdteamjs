@@ -1,4 +1,4 @@
-const { setObj } = require("../../utils/utils");
+import { setObj } from "../../utils/utils";
 
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType

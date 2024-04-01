@@ -1,18 +1,26 @@
-const { Collection } = require("../../utils/Collection");
-const { setObj } = require("../../utils/utils");
-const Endpoints = require("../../rest/Endpoints");
-const { Message } = require("../Message");
+import { Collection } from "../../utils/Collection";
+import { setObj } from "../../utils/utils";
+import * as Endpoints from "../../rest/Endpoints";
+import { Message } from "../Message";
+import { type Client } from "../../client/Client"
+import { Guild } from "../Guild";
+import { Channel } from "../BaseChannel";
+import { VoiceChannel } from "../VoiceChannel";
+import { TextChannel } from "../TextChannel";
 
 class ChannelMessageManager {
-  #client;
-  constructor(channel, client) {
+  private client: Client;
+  public guild: Guild;
+  public channel: Channel | VoiceChannel | TextChannel;
+  public cache: Collection;
+  constructor(channel: Channel, client: Client) {
     this.guild = channel.guild;
     this.channel = channel;
-    this.#client = client;
+    this.client = client;
     this.cache = new Collection();
   }
 
-  async fetch(msgId = {}) {
+  async fetch(msgId: Record<any, any>) {
     if (typeof msgId === "object" && msgId instanceof Object) {
       const config = {
         limit: 50,
@@ -49,14 +57,16 @@ class ChannelMessageManager {
           data.round;
       }
 
-      const messages = await this.#client.rest.request("GET", endpoint, true);
+      const messages = await this.client.rest.request("GET", endpoint, true);
+
+      if(!messages) return;
 
       if (messages.error) {
         return null;
       } else {
         var response = [];
-        for (var i of messages.data) {
-          const msg = new Message(i, this.#client);
+        for (var i of messages.data as Array<any>) {
+          const msg = new Message(i, this.client);
 
           if (this.channel.messages.cache.get(i.id)) {
             if (!msg.channel) {
@@ -71,18 +81,21 @@ class ChannelMessageManager {
         return response;
       }
     } else if (typeof msgId === "string") {
-      const response = await this.#client.rest.request(
+      const response = await this.client.rest.request(
         "GET",
         Endpoints.ChannelMessage(this.channel.id, msgId),
         true
       );
 
+      if(!response) return null;
+
       if (response.error) {
         return null;
       } else {
+        if(!response.data) return null;
         const msg = new Message(
           { ...response.data, guild: this.guild },
-          this.#client
+          this.client
         );
         if (!msg.channel) {
           msg.channel = this.channel;

@@ -1,4 +1,4 @@
-const { setObj } = require("../../utils/utils");
+import { setObj } from "../../utils/utils";
 
 /**
  * At least one of the options must be placed and not undefined.

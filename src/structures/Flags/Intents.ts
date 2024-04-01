@@ -1,4 +1,4 @@
-class IntentsBitFields {
+export class IntentsBitFields {
     #Intents = {
         "Guilds": 1 << 0,
         "GuildMembers": 1 << 1,
@@ -65,5 +65,3 @@ class IntentsBitFields {
         this.#iced = true
     }
  }
-
-module.exports = { IntentsBitFields }

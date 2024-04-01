@@ -1,5 +1,7 @@
-const Endpoints = require("../../rest/Endpoints.js");
-const { getId } = require("../../utils/utils.js");
+import * as Endpoints from "../../rest/Endpoints.js";
+import { getId } from "../../utils/utils.js";
+
+import { type Client } from "../../client/Client"
 
 class MessageReactions {
   #client;

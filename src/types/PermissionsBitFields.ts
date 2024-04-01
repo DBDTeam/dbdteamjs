@@ -1,4 +1,4 @@
-const PermissionsBitField = {
+export const PermissionsBitField = {
     Roles: {
         "CreateInstantInvite": 0x00000001,
         "KickMembers": 0x00000002,
@@ -56,5 +56,3 @@ const PermissionsBitField = {
         "Stream": 0x00000200
     }
 }
-
-module.exports = { PermissionsBitField }

@@ -1,26 +1,33 @@
-const { readOnly, typeChannel } = require("../../utils/utils");
-const { Collection } = require("../../utils/Collection");
-const Endpoints = require("../../rest/Endpoints");
+import { typeChannel } from "../../utils/utils";
+import { Collection } from "../../utils/Collection";
+import * as Endpoints from "../../rest/Endpoints";
+import { type Client } from "../../client/Client"
 
 class GuildChannelManager {
-  constructor(guildId, client) {
-    readOnly(this, "client", client);
-    readOnly(this, "guildId", guildId);
+  readonly client: Client;
+  readonly guildId: string;
+  public cache: Collection;
+  constructor(guildId: string, client: Client) {
+    this.client = client
+    this.guildId = guildId
     this.cache = new Collection();
     this._fetchAllChannels();
   }
 
   async _fetchAllChannels() {
     try {
-      var allChannels = await this.client.rest.request(
+      const response = await this.client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
       );
       var _return = new Collection();
-      allChannels = allChannels.data;
 
-      for (var i of allChannels) {
+      if (!response) return;
+
+      var allChannels = response.data;
+
+      for (var i of allChannels as Array<any>) {
         var guild =
           this.client.channels.cache.get(i.id).guild ||
           this.cache.get(i.id).guild;
@@ -36,19 +43,24 @@ class GuildChannelManager {
     }
   }
 
-  async fetch(id) {
+  async fetch(id: string | undefined | null) {
     if (!id || id?.length >= 17 || id?.length <= 18) {
       var res = await this._fetchAllChannels();
 
       return res;
     } else {
-      var channel = await this.client.rest.request(
+      const response = await this.client.rest.request(
         "GET",
-        Endpoints.CHANNEL(id),
+        Endpoints.Channel(id),
         true
       );
 
-      channel = channel.data;
+      if (!response) return null;
+
+      var channel = response.data;
+
+      if (!channel) return null;
+
       this.cache.set(channel.id, channel);
       this.client.channels.cache.set(channel.id, channel);
       return channel;
@@ -56,4 +68,4 @@ class GuildChannelManager {
   }
 }
 
-module.exports = { GuildChannelManager };
+export { GuildChannelManager };

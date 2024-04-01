@@ -1,4 +1,4 @@
-const ChannelTypes = {
+export const ChannelTypes = {
     "Text": 0,
     "DM": 1,
     "Voice": 2,
@@ -13,5 +13,3 @@ const ChannelTypes = {
     "Forum": 15,
     "Media": 16,
 }
-
-module.exports = { ChannelTypes }

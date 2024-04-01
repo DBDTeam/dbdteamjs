@@ -52,7 +52,7 @@ export class RequestHandler {
     url: string,
     auth: boolean,
     body?: Record<string, any>,
-    reason?: string,
+    reason?: string | null | undefined,
     files?: Array<Record<string, any>>
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const finalURL = `https://discord.com${this.options.baseURL}${url}`;
