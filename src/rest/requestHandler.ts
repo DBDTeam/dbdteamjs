@@ -11,13 +11,13 @@ enum Methods {
   put = "PUT",
 }
 
-interface ResponseFromApi {
+export interface ResponseFromApi {
   data?: Record<any, any>;
   status: number;
   error: boolean;
 }
 
-interface ErrorResponseFromApi extends ResponseFromApi {
+export interface ErrorResponseFromApi extends ResponseFromApi {
   d?: Record<string, any>;
   shard: number | string | undefined | null;
   type: string;

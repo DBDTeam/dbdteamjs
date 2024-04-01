@@ -5,7 +5,7 @@ import { type Client } from "../../client/Client"
 import { type Guild } from "../Guild";
 import { Member } from "../Member";
 
-interface FetchGuildMemberOpts {
+export interface FetchWithLimitAndAfter {
   limit?: number,
   after?: number
 }
@@ -22,7 +22,7 @@ class GuildMemberManager {
     this.cache = new Collection();
   }
 
-  async _fetchAllMembers(config: FetchGuildMemberOpts) {
+  async _fetchAllMembers(config: FetchWithLimitAndAfter) {
     var endpoint = Endpoints.GuildMembers(this.guildId);
 
     const conditions = {
