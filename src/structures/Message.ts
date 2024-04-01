@@ -1,17 +1,22 @@
+import { APIMessage } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import Endpoints from "../rest/Endpoints.js";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
+import { Channel } from "./BaseChannel";
 import { Guild } from "./Guild";
 import { MessageReactions } from "./Managers/ReactionMessage";
 import { Member } from "./Member.js";
 import { EditMessagePayload } from "./Payloads/EditMessagePayload";
 import { MessagePayload } from "./Payloads/MessagePayload";
+import { TextChannel } from "./TextChannel";
+import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
+import { VoiceChannel } from "./VoiceChannel";
 
 export interface MentionsObject {
-  user: Collection;
+  users: Collection;
   roles: Collection;
   channels: Collection;
 }
@@ -28,7 +33,7 @@ class Message extends Base {
   user: any;
   content: any;
   mentions: MentionsObject;
-  channel: ;
+  channel: TextChannel|VoiceChannel|Channel|ThreadChannel;
   guild: Guild;
   member: any;
   reactions: any;
@@ -41,6 +46,7 @@ class Message extends Base {
   pinned: any;
   webhookId: any;
   thread: any;
+  readonly nonce:number;
   private data: any;
 
   constructor(data: MessagePayload, client: Client) {
@@ -157,7 +163,7 @@ class Message extends Base {
      * @type {number}
      * @readonly
      */
-    readOnly(this, "nonce", data.nonce);
+    this.nonce = data.nonce
     /**
      * If the message is pinned
      * @type {boolean}
@@ -169,7 +175,7 @@ class Message extends Base {
     throw new Error("Method not implemented.");
   }
 
-  _patch(data) {
+  _patch(data: Record<any,any>) {
     if (!this.member) {
       this.member = new Member(
         { ...data.member, id: this.user.id },
@@ -220,7 +226,7 @@ class Message extends Base {
    * })
    * @returns {Promise<Message>}
    */
-  async reply(obj) {
+  async reply(obj: MessagePayload) {
     const message = new MessagePayload(obj, obj?.files);
 
     var result = await this.client.rest.request(
@@ -232,7 +238,9 @@ class Message extends Base {
       message.files
     );
 
-    if (!result.error) {
+    if(!result) return null;
+
+    if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
@@ -253,7 +261,7 @@ class Message extends Base {
    * })
    * @returns {Promise<Message>}
    */
-  async edit(obj) {
+  async edit(obj: EditMessagePayload) {
     const message = new EditMessagePayload(obj, obj.files);
 
     var result = await this.client.rest.request(

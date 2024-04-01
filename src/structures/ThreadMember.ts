@@ -1,6 +1,9 @@
-const { readOnly, getAllStamps } = require("../utils/utils");
-const { Member } = require("./Member");
-const Endpoints = require("../rest/Endpoints");
+import { getAllStamps } from "../utils/utils";
+import { Member } from "./Member";
+import * as Endpoints from "../rest/Endpoints";
+import { APIThreadMember } from "discord-api-types/v10";
+import { type Guild } from "./Guild";
+import { ThreadChannel, type Client } from "../package";
 
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
@@ -10,16 +13,31 @@ const Endpoints = require("../rest/Endpoints");
  * @typedef {import('../client/Client').Client} Client
  */
 
+interface StampInformation {
+  stamp: number;
+  unix: number;
+  date: Date;
+}
+
 class ThreadMember {
-  #client;
+  private client: Client;
+  id: string | undefined;
+  guild: Guild;
+  flags:number;
+  member: Member;
+  threadId: string;
+  thread: ThreadChannel | undefined | null;
+  joined: StampInformation
+  readonly remove:Function;
   /**
    * Represents a Thread Member
    * @param {object} data - The Thread Member payload
    * @param {Guild} guild - The Guild where the user is
    * @param {Client} client - The Client
    */
-  constructor(data, guild, client) {
-    this.#client = client;
+  constructor(data: Record<string, any>, guild: Guild, client: Client) {
+    this.thread = null;
+    this.client = client;
     /**
      * The thread user ID
      * @type {string}
@@ -29,7 +47,7 @@ class ThreadMember {
      * The Guild this member is from
      * @type {Guild}
      */
-    this.guild = data.guild || guild;
+    this.guild = guild;
     /**
      * The flags of the Thread Member
      * @type {number}
@@ -40,19 +58,19 @@ class ThreadMember {
      * @type {Member}
      */
     this.member = data.member
-      ? new Member({ ...data.member, id: this.id }, guild, this.#client)
+      ? new Member({ ...data.member, id: this.id }, guild, this.client)
       : this.guild.members.cache.get(this.id);
     /**
      * The ID of the Thread
      * @type {string}
      */
     this.threadId = data.id;
-    if (this.#client.channels.cache.get(data.id)) {
+    if (this.client.channels.cache.get(data.id)) {
       /**
        * The Thread Channel (if it can be finded in the cache)
        * @type {ThreadChannel}
        */
-      this.thread = this.#client.channels.cache.get(data.id);
+      this.thread = this.client.channels.cache.get(data.id);
     }
     /**
      * The time information when the user joined to the Thread
@@ -63,7 +81,7 @@ class ThreadMember {
      * @async
      * @readonly
      */
-    readOnly(this, "remove", () => this.kick());
+    this.remove = (...args) => this.kick(args)
   }
 
   /**

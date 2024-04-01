@@ -90,4 +90,4 @@ class MessageReactions {
   }
 }
 
-module.exports = { MessageReactions };
+export { MessageReactions };

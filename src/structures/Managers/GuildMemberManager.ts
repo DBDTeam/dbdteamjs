@@ -107,4 +107,4 @@ class GuildMemberManager {
   }
 }
 
-module.exports = { GuildMemberManager };
+export { GuildMemberManager };
