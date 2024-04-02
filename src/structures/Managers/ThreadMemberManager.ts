@@ -1,19 +1,30 @@
-const { Collection } = require("../../utils/Collection");
-const { readOnly } = require("../../utils/utils");
-const { ThreadMember } = require("../ThreadMember");
-const Endpoints = require("../../rest/Endpoints");
+import { Collection } from "../../utils/Collection";
+import { ThreadMember } from "../ThreadMember";
+import * as Endpoints from "../../rest/Endpoints";
+import { type Client } from "../../client/Client"
+import { type ThreadChannel } from "../ThreadChannel";
+import { type Guild } from "../Guild";
+import { FetchWithLimitAndAfter } from "./GuildMemberManager";
+import { ErrorResponseFromApi, ResponseFromApi } from "../../rest/requestHandler";
+export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
+  before: string;
+}
 
 class ThreadMemberManager {
-  #client;
-  constructor(client, thread) {
+  private client: Client;
+  id:string;
+  guild: Guild;
+  memberCount:number;
+  cache:Collection;
+  constructor(client: Client, thread: ThreadChannel) {
     this.id = thread.id;
-    readOnly(this, "guild", thread.guild);
-    this.#client = client;
+    this.guild = thread.guild
+    this.client = client;
     this.memberCount = 0;
     this.cache = new Collection();
   }
 
-  async _fetchAllMembersInThread(obj) {
+  private async _fetchAllMembersInThread(obj:FetchWithLimitAfterAndBefore) {
     var endpoint =
       Endpoints.ChannelThreadMembers(this.id) + `?with_member=true`;
 
@@ -30,33 +41,33 @@ class ThreadMemberManager {
     if (obj?.before && typeof obj?.before == "string") {
       endpoint += "&before=" + obj?.before;
     }
-    const response = await this.#client.rest.request("GET", endpoint, true);
+    const response = await this.client.rest.request("GET", endpoint, true);
 
-    if (response.error) {
+    if (response?.error || !response || !response.data) {
       return null;
     } else {
-      for (var m of response.data) {
-        var x = new ThreadMember(m, this.guild, this.#client);
+      for (var m of response.data as Array<any>) {
+        var x = new ThreadMember(m, this.guild, this.client);
         this.cache.set(x.id, x);
       }
 
       return this.cache;
     }
   }
-  async fetch(memberId) {
+  async fetch(memberId: string | FetchWithLimitAfterAndBefore) {
     if (typeof memberId === "string") {
-      const result = await this.#client.rest.request(
+      const result = await this.client.rest.request(
         "GET",
         Endpoints.ChannelThreadMember(this.id, memberId)
       );
 
-      if (result?.error) {
+      if (result?.error || !result) {
         return result;
       } else {
-        var x = new ThreadMember(result.data, this.guild, this.#client);
+        var x = new ThreadMember(result.data as Record<string, any>, this.guild, this.client);
         this.cache.set(x.id, x);
 
-        return m;
+        return x;
       }
     } else if (
       typeof memberId === "object" ||
@@ -67,10 +78,8 @@ class ThreadMemberManager {
     }
   }
 
-  async remove(memberId) {
-    memberId = memberId?.id || memberId;
-
-    const response = await this.#client.rest.request(
+  async remove(memberId:string) {
+    const response = await this.client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.id, memberId),
       true
@@ -80,4 +89,4 @@ class ThreadMemberManager {
   }
 }
 
-module.exports = { ThreadMemberManager };
+export { ThreadMemberManager };

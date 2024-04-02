@@ -273,7 +273,9 @@ class Message extends Base {
       message.files
     );
 
-    if (!result.error) {
+    if(!result) return;
+
+    if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
@@ -297,7 +299,9 @@ class Message extends Base {
       { data: { flags: 4 } }
     );
 
-    if (!result.error) {
+    if(!result) return;
+
+    if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
@@ -333,14 +337,15 @@ class Message extends Base {
     }
   }
 
-  async _getChannel(channelId) {
-    var channel = await this.client.rest.request(
+  async _getChannel(channelId: string) {
+    const result = await this.client.rest.request(
       "GET",
       Endpoints.Channel(channelId),
       true
     );
 
-    if (!channel?.error) {
+    if (!result?.error || result) {
+      var channel:Record<any,any> = result as Record<any,any>
       channel.guild = this.guild;
 
       channel = typeChannel(channel.data, this.client);

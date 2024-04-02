@@ -1,7 +1,38 @@
+import {
+  APIChannelPatchOverwrite,
+  APIGuildForumDefaultReactionEmoji,
+  APIGuildForumTag,
+  ChannelType,
+  ForumLayoutType,
+  SortOrderType,
+  VideoQualityMode,
+} from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { typeChannel } from "../../utils/utils";
+
+export interface ChannnelCreatePayload {
+  name: string;
+  type: ChannelType;
+  topic?: string;
+  bitrate?: number;
+  user_limit?: number;
+  rate_limit_per_user?: number;
+  position?: number;
+  permission_overwrites?: APIChannelPatchOverwrite[];
+  parent_id?: string;
+  nsfw?: boolean;
+  rtc_region?: string;
+  video_quality_mode?: VideoQualityMode;
+  default_auto_archive_duration?: number;
+  default_reaction_emoji?: APIGuildForumDefaultReactionEmoji;
+  available_tags?: APIGuildForumTag;
+  default_sort_order?: SortOrderType;
+  default_forum_layout?: ForumLayoutType;
+  default_thread_rate_limit_per_user?: number;
+  reason?: string
+}
 
 class GuildChannelManager {
   private client: Client;
@@ -66,31 +97,35 @@ class GuildChannelManager {
     }
   }
 
-  async create(channelObj = {}) {
+  async create(channelObj: ChannnelCreatePayload) {
     const reason = channelObj?.reason;
-    const response = this.client.rest.request(
+    const response = await this.client.rest.request(
       "POST",
       Endpoints.GuildChannels(this.guildId),
       true,
       channelObj,
       reason
-    );
+    )
 
-    if (response.error) {
+    if(!response) return response;
+
+    if (response?.error) {
       return response.error;
     } else {
       return await typeChannel(response.data, this.client);
     }
   }
 
-  async delete(channelId, reason) {
-    const response = this.client.rest.request(
+  async delete(channelId: string, reason?: string) {
+    const response = await this.client.rest.request(
       "DELETE",
       Endpoints.Channel(channelId),
       true,
-      channelObj,
+      undefined,
       reason
     );
+
+    if(!response) return response;
 
     if (response.error) {
       return response.error;
@@ -101,22 +136,26 @@ class GuildChannelManager {
 }
 
 class ChannelManager {
-  constructor(client) {
-    readOnly(this, "client", client);
+  readonly client: Client;
+  public cache:Collection;
+  constructor(client: Client) {
+    this.client = client;
     this.cache = new Collection();
   }
 
-  async fetch(id) {
-    var channel = await this.client.rest.request(
+  async fetch(id: string) {
+    const response = await this.client.rest.request(
       "GET",
-      Endpoints.CHANNEL(id),
+      Endpoints.Channel(id),
       true
     );
 
-    channel = channel.data;
+    if(!response) return response;
 
-    return channel;
+    if(!response.error) return response;
+
+    return response.data;
   }
 }
 
-module.exports = { GuildChannelManager, ChannelManager };
+export { GuildChannelManager, ChannelManager };

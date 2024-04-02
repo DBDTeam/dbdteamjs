@@ -50,7 +50,7 @@ export class RequestHandler {
   public async request(
     method: EnumAsUnion<Methods>,
     url: string,
-    auth: boolean,
+    auth: boolean = true,
     body?: Record<string, any>,
     reason?: string | null | undefined,
     files?: Array<Record<string, any>>

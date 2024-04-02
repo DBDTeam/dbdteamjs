@@ -21,7 +21,7 @@ interface StampInformation {
 
 class ThreadMember {
   private client: Client;
-  id: string | undefined;
+  id: string;
   guild: Guild;
   flags:number;
   member: Member;
@@ -81,7 +81,7 @@ class ThreadMember {
      * @async
      * @readonly
      */
-    this.remove = (...args) => this.kick(args)
+    this.remove = () => this.kick()
   }
 
   /**
@@ -91,9 +91,9 @@ class ThreadMember {
    */
 
   async kick() {
-    const response = await this.#client.rest.request(
+    const response = await this.client.rest.request(
       "DELETE",
-      Endpoints.ChannelThreadMember(this.id),
+      Endpoints.ChannelThreadMember(this.threadId, this.id),
       true
     );
 
@@ -101,4 +101,4 @@ class ThreadMember {
   }
 }
 
-module.exports = { ThreadMember };
+export { ThreadMember };
