@@ -1,11 +1,7 @@
 import { User } from "../structures/User";
-import Endpoints from "../rest/Endpoints.js";
+import * as Endpoints from "../rest/Endpoints.js";
 import { resolveImage } from "../utils/ImageResolver.js";
-
-interface EditClientUserPayload {
-  username: string | undefined;
-  avatar: string | undefined;
-}
+import { EditClientUserPayload } from "../interfaces/client/Client";
 
 /**
  * @extends {User}
@@ -25,7 +21,9 @@ class ClientUser extends User {
    * @returns {Promise<ClientUser>}
    */
   async edit(object: EditClientUserPayload) {
-    object.avatar = await resolveImage(object.avatar);
+    if(object.avatar) {
+      object.avatar = await resolveImage(object.avatar);
+    }
 
     const result = await this.client.rest.request(
       "PATCH",
@@ -38,7 +36,10 @@ class ClientUser extends User {
         },
       }
     );
-    if (result.error) {
+
+    if(!result) return result;
+
+    if (result.error || !this.client.user) {
       return result;
     } else {
       var bot = new ClientUser(result.data, this.client);
@@ -59,7 +60,7 @@ class ClientUser extends User {
    *
    * @returns {Promise<ClientUser>}
    */
-  async editUsername(username) {
+  async editUsername(username: string) {
     return await this.edit({ username });
   }
 
@@ -77,7 +78,7 @@ class ClientUser extends User {
    * @returns {Promise<ClientUser>}
    */
 
-  async editAvatar(url) {
+  async editAvatar(url: string) {
     const imageUrl = await resolveImage(url);
 
     return await this.edit({ avatar: imageUrl });

@@ -4,10 +4,11 @@ import { ActionManager } from "../structures/Actions/ActionManager";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
 import { UserManager } from "../structures/Managers/UserManager";
-import { GatewayConfig, ShardManager } from "../structures/Sharding";
+import { ShardManager } from "../structures/Sharding";
 import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
+import { ClientOptions, GatewayConfig } from "../interfaces/client/Client";
 
 /**
  * @typedef ClientOptions
@@ -15,12 +16,6 @@ import { ClientUser } from "./ClientUser";
  * @property {number} intents - The intents of the client
  * @property {GatewayConfig} gateway - The client gateway configuration
  */
-
-export interface ClientOptions {
-  token: string;
-  intents: number;
-  gateway: GatewayConfig;
-}
 
 /**
  * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}

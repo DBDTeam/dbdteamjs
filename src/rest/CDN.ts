@@ -1,29 +1,13 @@
+import { CDNOptions } from "../interfaces/rest/cdn";
 import { Guild } from "../structures/Guild";
-import { GuildRole } from "../structures/Role";
 import { User } from "../structures/User";
-
 import { setObj } from "../utils/utils";
-
-export interface CDNOptions {
-  /**
-   * - The size of the image.
-   */
-  size?: number;
-  /**
-   * - The extension of the image file.
-   */
-  extension?: string;
-  /**
-   * - Whether the image is dynamic or not.
-   */
-  dynamic?: boolean;
-}
 
 /**
  * Default options for CDN requests
  */
 const OPTIONS: CDNOptions = {
-  size: 64,
+  size: 1024,
   extension: "jpg",
   dynamic: false,
 };
@@ -207,10 +191,10 @@ export class CDN {
    * @param options - Optional options for the icon.
    * @returns The role icon URL.
    */
-  roleIcon(role: GuildRole, options: CDNOptions) {
-    const data = this._getInfo(options, EXTENSIONS.NOTGIF, role.icon);
+  roleIcon(roleIcon: string, options: CDNOptions) {
+    const data = this._getInfo(options, EXTENSIONS.NOTGIF, roleIcon);
     return this.BASE_URL(
-      `/role-icons/${role.id}/${role.icon}.${data.extension}?size=${data.size}`
+      `/role-icons/${roleIcon}/${roleIcon}.${data.extension}?size=${data.size}`
     );
   }
 

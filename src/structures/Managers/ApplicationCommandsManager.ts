@@ -111,7 +111,7 @@ class ApplicationCommandManager {
   private client: Client;
   public target: string;
   public cache: Collection;
-  constructor(client: Client, guildId: string | null | undefined) {
+  constructor(client: Client, guildId: string | null | undefined = "global") {
     this.client = client;
     this.target = guildId || "global";
     this.cache = new Collection();
@@ -231,4 +231,4 @@ class ApplicationCommandManager {
   }
 }
 
-module.exports = { ApplicationCommandManager };
+export { ApplicationCommandManager };

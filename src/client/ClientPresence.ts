@@ -1,13 +1,6 @@
 import { type Client } from "./Client";
-
-import { PresenceStatus, ActivityPayload } from "../types/Presences";
-
-interface PresencePayload {
-  activities: Array<ActivityPayload>,
-  status: PresenceStatus,
-  afk: boolean,
-  since: number,
-}
+import { PresenceStatus, ActivityPayload } from "../types/Presences"
+import { ClientPresencePayload } from "../interfaces/client/Client";
 
 /**
   * Represents the client presence (WS presence)
@@ -45,7 +38,7 @@ class ClientPresence {
    * @returns {Promise<boolean>}
    * @async
    */
-  async update(obj: PresencePayload, shardId: number = 0) {
+  async update(obj: ClientPresencePayload, shardId: number = 0) {
     const shard = this.client.shardManager.shards.get(shardId);
     if (!shard) {
       this.client.emit("error", {

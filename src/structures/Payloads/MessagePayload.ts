@@ -1,4 +1,7 @@
+import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { setObj } from "../../utils/utils";
+import { MessagePayloadData } from "@types";
+import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
@@ -33,9 +36,13 @@ import { setObj } from "../../utils/utils";
  * @property {Array<Object> | undefined} [attachments] - The attachments of the message. (if any)
  */
 class MessagePayload {
-  #MENTIONS = ["users", "roles", "everyone"];
+  private MENTIONS = [
+    AllowedMentionsTypes.User,
+    AllowedMentionsTypes.Role,
+    AllowedMentionsTypes.Everyone,
+  ];
 
-  #Data = {
+  private Data: Record<any, any> = {
     content: "",
     tts: false,
     embeds: null,
@@ -48,81 +55,90 @@ class MessagePayload {
     attachments: null,
   };
 
-  #d;
-  #files;
-  #f;
+  readonly d: Record<any, any>;
+  readonly file: Record<any, any>;
+  private f: any;
 
   /**
    * Creates a message payload to send messages.
    * @param {MessagePayloadData} data
    * @param {Files} files
    */
-  constructor(data = {}, files = []) {
-    this.#d =
+  constructor(
+    data: MessagePayloadData | string,
+    files: MessagePayloadFileData | Array<any> = ([] = [])
+  ) {
+    this.d =
       typeof data === "string"
         ? { content: data }
-        : setObj(this.#Data, data, { sticker_ids: "stickers" });
-    this.#files = [];
-    this.#f = files;
+        : setObj(this.Data, data, { sticker_ids: "stickers" });
+    this.file = [];
+    this.f = files;
 
-    if (this.#d.reply) {
-      this.#d.message_reference = {};
-      if (this.#d.reply.mention) {
-        this.#d.allowed_mentions = {};
-        this.#d.allowed_mentions.replied_user = true;
+    if (this.d.reply) {
+      this.d.message_reference = {};
+      if (this.d.reply.mention) {
+        this.d.allowed_mentions = {};
+        this.d.allowed_mentions.replied_user = true;
       }
 
-      if (this.#d.reply.error === true) {
-        this.#d.message_reference.fail_if_not_exists = true;
+      if (this.d.reply.error === true) {
+        this.d.message_reference.fail_if_not_exists = true;
       }
 
-      this.#d.message_reference.message_id = this.#d.reply.id;
+      this.d.message_reference.message_id = this.d.reply.id;
     }
 
-    if (this.#d.mentions) {
-      this.#d.allowed_mentions = {};
-      if (this.#d.mentions.parse) {
-        this.#d.allowed_mentions.parse = this.#MENTIONS.filter((mention) =>
-          this.#d.allowed_mentions.parse.some(
-            (allowedMention) =>
+    if (this.d.mentions) {
+      this.d.allowed_mentions = {};
+      if (this.d.mentions.parse) {
+        this.d.allowed_mentions.parse = this.MENTIONS.filter((mention) =>
+          this.d.allowed_mentions.parse.some(
+            (allowedMention: AllowedMentionsTypes) =>
               mention.toLowerCase() === allowedMention?.toLowerCase()
           )
         );
       }
 
-      this.#d.allowed_mentions.users = this.#d.mentions.users?.[0]
-        ? this.#d.mentions.users
+      this.d.allowed_mentions.users = this.d.mentions.users?.[0]
+        ? this.d.mentions.users
         : null;
-      this.#d.allowed_mentions.roles = this.#d.mentions.roles?.[0]
-        ? this.#d.mentions.roles
+      this.d.allowed_mentions.roles = this.d.mentions.roles?.[0]
+        ? this.d.mentions.roles
         : null;
     }
 
-    if (typeof this.#f === "object") {
-      for (const i in this.#f) {
-        this.#d.attachments = [];
-        if (this.#f[i].url && this.#f[i].name) {
-          this.#files.push({ name: this.#f[i].name, url: this.#f[i].url });
-          this.#d.attachments.push({
+    if (typeof this.f === "object") {
+      var i: number = 0;
+      const filesArray = Array.isArray(this.f) ? this.f : [this.f];
+      for (const currentItem of filesArray) {
+        if (
+          typeof currentItem === "object" &&
+          "url" in currentItem &&
+          "name" in currentItem
+        ) {
+          this.file.push({ name: currentItem.name, url: currentItem.url });
+          this.d.attachments.push({
             id: i,
-            filename: this.#f[i].name,
-            description: this.#f[i].description,
+            filename: currentItem.name,
+            description: currentItem.description,
           });
+          i++;
         }
       }
     }
 
-    delete this.#d.reply;
-    delete this.#d.mentions;
+    delete this.d.reply;
+    delete this.d.mentions;
   }
 
-  get payload() {
-    return this.#d;
+  get payload(): MessagePayloadData {
+    return this.d;
   }
 
-  get files() {
-    return this.#files;
+  get files(): MessagePayloadFileData {
+    return this.files;
   }
 }
 
-module.exports = { MessagePayload };
+export { MessagePayload };

@@ -2,13 +2,7 @@ import { EventEmitter } from "node:events";
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
-
-export interface GatewayConfig {
-  url: string;
-  mobilePlatform: boolean;
-  totalShards: number | undefined;
-  agent: string;
-}
+import { GatewayConfig } from "../interfaces/client/Client";
 
 class Shard extends EventEmitter {
   private client: Client;

@@ -1,6 +1,6 @@
 import { APIMessage } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import Endpoints from "../rest/Endpoints.js";
+import * as Endpoints from "../rest/Endpoints.js";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
