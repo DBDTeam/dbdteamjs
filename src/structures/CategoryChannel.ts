@@ -1,6 +1,6 @@
-const { Collection } = require("../utils/Collection");
-const { Channel } = require("./BaseChannel.js");
-
+import { Collection } from "../utils/Collection";
+import { Channel } from "./BaseChannel.js";
+import { type Client } from "../client/Client"
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel
  * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
@@ -12,13 +12,13 @@ const { Channel } = require("./BaseChannel.js");
  * @extends {Channel}
  */
 class CategoryChannel extends Channel {
-  constructor(data, client) {
+  constructor(data: Record<any, any>, client: Client) {
     super(data, client);
   }
 
   /**
    * Returns the channels that are in the cache.
-   * @type {Map<string, TextChannel | VoiceChannel | Channel | ThreadChannel>}
+   * @type {Collection<string, TextChannel | VoiceChannel | Channel | ThreadChannel>}
    */
   get channels() {
     const categoryChannels = new Collection();

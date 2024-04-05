@@ -8,7 +8,7 @@ import { FetchWithLimitAndAfter } from "./GuildMemberManager";
 
 class UserManager {
   private client: Client;
-  public cache: Collection;
+  public cache: Collection<string, User>;
   constructor(client: Client) {
     this.client = client;
     this.cache = new Collection();
@@ -35,7 +35,7 @@ class GuildMemberManager {
   private client: Client;
   readonly guild: Guild;
   public guildId: string;
-  public cache: Collection;
+  public cache: Collection<string, Member>;
   constructor(client: Client, guild: Guild) {
     this.client = client;
     this.guild = guild;

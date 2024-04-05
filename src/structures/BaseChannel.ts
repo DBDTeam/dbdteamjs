@@ -1,9 +1,17 @@
-const { Base } = require("./Base.js");
-const Endpoints = require("../rest/Endpoints.js");
-const { typeChannel, setObj } = require("../utils/utils.js");
-const {
-  ChannelPermissionManager,
-} = require("./Managers/ChannelPermissionManager.js");
+import { Base } from "./Base.js";
+import * as Endpoints from "../rest/Endpoints.js";
+import { typeChannel, setObj } from "../utils/utils.js";
+import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
+import { type Client } from "../client/Client";
+import { APIGuildCreatePartialChannel, ChannelType, VideoQualityMode } from "discord-api-types/v10";
+import { type Guild } from "./Guild";
+import { type ThreadChannel } from "./ThreadChannel.js";
+import { type VoiceChannel } from "./VoiceChannel.js";
+import { type TextChannel } from "./TextChannel.js";
+import { type CategoryChannel } from "./CategoryChannel.js";
+import { Channel } from "./BaseChannel.js";
+import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler.js";
+import { Nullded } from "../interfaces/other.js";
 
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel
@@ -18,15 +26,39 @@ const {
  * @extends {Base}
  */
 class BaseChannel extends Base {
-  #data;
+  private data: any;
   /**
    * Represents a BaseChannel (for a easier usage)
    * @param {object} data - The Channel payload
    * @param {import("./Interactions/BaseInteraction.js").Client} client - The Client
    */
-  constructor(data, client) {
+  readonly client: Client;
+  id: string;
+  type: ChannelType;
+  name: string;
+  topic: string | Nullded;
+  bitrate: number | Nullded;
+  user_limit: number | Nullded;
+  rate_limit_per_user: number | Nullded;
+  position: number;
+  permission_overwrites: Record<any, any>[];
+  parent_id: number | Nullded;
+  nsfw: number;
+  rtc_region: string | Nullded;
+  video_quality_mode: VideoQualityMode | Nullded;
+  default_auto_archive_duration: number | Nullded;
+  guild: Guild;
+  guildId: string;
+  flags: number;
+  permissions: ChannelPermissionManager;
+  default_reaction_emoji: any;
+  available_tags: any;
+  default_sort_order: any;
+  default_forum_layout: any;
+  default_thread_rate_limit_per_user: any;
+  constructor(data: Record<any, any>, client: Client) {
     super(client);
-    this.#data = data;
+    this.data = data;
     this.client = client;
 
     /**
@@ -113,14 +145,14 @@ class BaseChannel extends Base {
      * The Channel flags
      * @type {number}
      */
-    this.flags = this.flags;
+    this.flags = data.flags;
     /**
      * The Channel permissions manager
      * @type {ChannelPermissionManager}
      */
     this.permissions = new ChannelPermissionManager(
       data.permission_overwrites || [],
-      this,
+      this.id,
       client
     );
   }
@@ -140,7 +172,7 @@ class BaseChannel extends Base {
    * })
    */
 
-  async clone(obj) {
+  async clone(obj: APIGuildCreatePartialChannel): Promise<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | Nullded | ErrorResponseFromApi> {
     const channelObj = {
       name: null,
       type: null,
@@ -178,7 +210,9 @@ class BaseChannel extends Base {
       { data }
     );
 
-    return result?.error ? result : typeChannel(result.data, this.client);
+    if(!result || !result?.data) return null;
+
+    return result?.error ? result as ErrorResponseFromApi : typeChannel(result.data, this.client);
   }
 
   /**
@@ -197,8 +231,7 @@ class BaseChannel extends Base {
    * @async
    */
 
-  async edit(obj) {
-    const reason = obj.reason || null;
+  async edit(obj: APIGuildCreatePartialChannel, reason?: string): Promise<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | Nullded | ErrorResponseFromApi> {
     const channelObj = {
       name: this.name,
       topic: this.topic,
@@ -234,11 +267,12 @@ class BaseChannel extends Base {
       Endpoints.Channel(this.id),
       true,
       { data },
-      null,
       reason
     );
 
-    return result?.error ? result : typeChannel(result.data, this.client);
+    if(!result || !result?.data) return null;
+
+    return result?.error ? result as ErrorResponseFromApi : typeChannel(result.data, this.client);
   }
 
   /**
@@ -247,13 +281,12 @@ class BaseChannel extends Base {
    * @returns {Promise<boolean>}
    */
 
-  async delete(reason) {
+  async delete(reason?: string): Promise<boolean> {
     var result = await this.client.rest.request(
       "DELETE",
       Endpoints.Channel(this.id),
       true,
       {},
-      null,
       reason?.trim() || null
     );
 
@@ -268,7 +301,7 @@ class BaseChannel extends Base {
    * channel.send(`Im sending this message in ${channel.toString()}`)
    */
 
-  toString() {
+  toString(): string {
     return `<#${this.id}>`;
   }
 }

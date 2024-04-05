@@ -13,7 +13,7 @@ import { setObj } from "../../utils/utils";
  * @property {string} [reason=null]  - The reason of the edit.
  */
 
-class MemberEditPayload {
+export class MemberEditPayload {
   #Data = {
     nick: null,
     roles: null,
@@ -31,7 +31,7 @@ class MemberEditPayload {
    * Creates a member edit payload to edit messages.
    * @param {MemberEditPayloadData} data
    */
-  constructor(data = {}) {
+  constructor(data: Record<any, any> = {}) {
     this.#d =
       typeof data == "string"
         ? data
@@ -66,5 +66,3 @@ class MemberEditPayload {
     return this.#d;
   }
 }
-
-module.exports = { MemberEditPayload };

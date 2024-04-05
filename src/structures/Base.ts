@@ -1,18 +1,11 @@
-import { Client } from "../client/Client";
-
 abstract class Base {
-  /**
-   * The client that instantiated this
-   * @name Base#client
-   */
-  readonly client: Client;
   id!: any;
 
   /**
-   * @param client - The client
+   * @param string - The snowflake
    */
-  constructor(client: Client) {
-    this.client = client;
+  constructor(id: string | Record<any, any>) {
+    this.id = typeof id === "string" ? id : (id?.id || id?.user?.id)
   }
 
   _patch(data: unknown) {
@@ -26,23 +19,6 @@ abstract class Base {
   get getEpoch() {
     return 1420070400000n;
   }
-
-  // get getTimestamp() {
-  //   // ?
-  //   // return Date.parse(this.getCreatedAt);
-  // }
-
-  // get _getTimestamp() {
-  //   return this.getBinary + this.getEpoch;
-  // }
-
-  // get getUnixStamp() {
-  //   return Number(this.getTimestamp) / 1000;
-  // }
-
-  // get getCreatedAt() {
-  //   return new Date(Number(this._getTimestamp));
-  // }
 }
 
 export { Base };

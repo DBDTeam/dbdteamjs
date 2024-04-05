@@ -3,7 +3,7 @@
  * @extends {Map}
  * @param {number} limit
  */
-class Collection extends Map {
+class Collection<K extends string, V> extends Map<K, V>  {
   public limit: number | null;
   constructor(limit:number = Infinity) {
     super();
@@ -39,7 +39,7 @@ class Collection extends Map {
 
   hasAny(keys:Array<string>) {
     for (let key of keys) {
-      if (this.has(key)) {
+      if (this.has(key as K)) {
         return true;
       }
     }
@@ -86,17 +86,24 @@ class Collection extends Map {
     return this;
   }
 
-  find(expression: (arg: Collection) => Array<Object>) {
-    var obj = this.toJSON();
+  find(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
+    for (let [key, value] of this.entries()) {
+        if (expression(value, key, this)) {
+            return value;
+        }
+    }
+    return undefined;
+}
 
-    return obj.find(expression);
-  }
-
-  filter(expression: (arg: Collection) => Array<Object>) {
-    var obj = this.toJSON();
-
-    return obj.filter(expression);
-  }
+filter(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
+    const result = new Collection<K, V>();
+    for (let [key, value] of this.entries()) {
+        if (expression(value, key, this)) {
+            result.set(key, value);
+        }
+    }
+    return result;
+}
 }
 
 export { Collection };
