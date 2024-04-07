@@ -1,4 +1,4 @@
-import { APIMessage } from "discord-api-types/v10";
+import { APIChannelMention, APIMessage, APIUser, GatewayMessageCreateDispatchData, RESTPostAPIWebhookWithTokenJSONBody } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import * as Endpoints from "../rest/Endpoints.js";
 import { Collection } from "../utils/Collection";
@@ -14,44 +14,30 @@ import { TextChannel } from "./TextChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
 import { VoiceChannel } from "./VoiceChannel";
-import { MessageMentionsObject } from "../interfaces/message/Mentions";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
-import { MessageEditPayload } from "../interfaces/message/EditMessage";
+
+export type MessageData = APIMessage | GatewayMessageCreateDispatchData & { justUser: APIUser }
 
 /**
  * Represents a Discord message
  */
 class Message extends Base {
+  [x: string]: any;
   private client: Client;
-  private justUser: User;
-  type: any;
-  channelId: any;
-  guildId: any;
-  author: any;
-  user: any;
-  content: any;
-  mentions: MessageMentionsObject;
-  channel: TextChannel | VoiceChannel | Channel | ThreadChannel;
-  guild: Guild;
-  member: any;
-  reactions: any;
-  tts: any;
-  flags: any;
-  sended: any;
-  embeds: any;
-  attachments: any;
-  stickers: Collection<string, any>;
-  pinned: any;
-  webhookId: any;
-  thread: any;
-  readonly nonce: number;
-  private data: any;
+  guildId: string | undefined;
+  author: User;
+  user: User;
+  member: Member
+  mentions: {
+		roles: Collection<string, string>;
+		channels: Collection<string, APIChannelMention>;
+		users: Collection<string, Member | User>;
+	};
+  // channel: TextChannel | VoiceChannel | Channel | ThreadChannel;
+  readonly nonce;
 
-  constructor(data: any, client: Client) {
+  constructor(data: MessageData, client: Client) {
     super(client);
 
-    this.data = data;
-    this.justUser = data.author || data.user;
     this.client = client;
     /**
      * @type {string}
@@ -167,10 +153,10 @@ class Message extends Base {
      * @type {boolean}
      */
     this.pinned = data.pinned;
-    this._patch(data);
+    this.patch(data);
   }
 
-  _patch(data: Record<any, any>) {
+  private patch(data: MessageData) {
     if (!this.member) {
       this.member = new Member(
         { ...data.member, id: this.user.id },
@@ -178,6 +164,7 @@ class Message extends Base {
         this.client
       );
     }
+    
     if ("webhook_id" in data) {
       /**
        * The webhook id of the message (if any)
@@ -221,13 +208,13 @@ class Message extends Base {
    * })
    * @returns {Promise<Message>}
    */
-  async reply(obj: MessagePayloadData | string) {
+  async reply(obj: Omit<MessageCreateBodyRequest, 'message_reference'>) {
     var message;
     if (typeof obj === "string" || obj instanceof String) {
       const data = obj as string
       message = new MessagePayload(data);
     } else {
-      const data = obj as MessagePayloadData
+      const data = obj as MessageData
       message = new MessagePayload(data, data.files);
     }
 
@@ -336,11 +323,11 @@ class Message extends Base {
     return result;
   }
 
-  get _user() {
+  get _user(): User {
     if (this.webhookId) {
       return this.data.user;
     } else {
-      var x = new User(this.justUser, this.client);
+      var x = new User(this.author, this.client);
       this.client.users.cache.set(x.id, x);
       return x;
     }

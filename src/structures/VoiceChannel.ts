@@ -1,4 +1,4 @@
-import { Channel } from "./BaseChannel";
+import { Channel } from "./BaseChannel"; 
 import * as Endpoints from "../rest/Endpoints";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { MessagePayload } from "./Payloads/MessagePayload";
@@ -6,12 +6,6 @@ import { Message } from "./Message";
 import { type Client } from "../client/Client"
 import { VideoQualityMode } from "discord-api-types/v10";
 import { MessagePayloadData } from "../interfaces/message/MessagePayload";
-/**
- * @typedef {import('./TextChannel').TextChannel} TextChannel
- * @typedef {import('./ForumChannel')} ForumChannel
- * @typedef {import('./Guild').Guild} Guild
- * @typedef {import('../client/Client').Client} Client
- */
 
 /** @extends {Channel} */
 class VoiceChannel extends Channel {

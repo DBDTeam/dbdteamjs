@@ -6,6 +6,17 @@
       "declaration": true,
       "skipLibCheck": true,
       "strict": true,
+      
+      /* tyoes */
+      "noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"noImplicitThis": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+      
       "typeRoots": ["./node_modules/@types", "./typings/index.d.ts"],
       "paths": {
         "@types": ["./typings/index.d.ts"]
