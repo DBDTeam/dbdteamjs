@@ -110,7 +110,7 @@ export interface ApplicationCommand extends APIApplicationCommand {
 class ApplicationCommandManager {
   private client: Client;
   public target: string;
-  public cache: Collection;
+  public cache: Collection<string, Record<any, any>>;
   constructor(client: Client, guildId: string | null | undefined = "global") {
     this.client = client;
     this.target = guildId || "global";

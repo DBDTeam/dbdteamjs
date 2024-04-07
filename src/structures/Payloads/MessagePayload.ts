@@ -1,7 +1,6 @@
 import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { setObj } from "../../utils/utils";
-import { MessagePayloadData } from "@types";
-import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
@@ -66,7 +65,7 @@ class MessagePayload {
    */
   constructor(
     data: MessagePayloadData | string,
-    files: MessagePayloadFileData | Array<any> = ([] = [])
+    files: MessagePayloadFileData[] = ([] = [])
   ) {
     this.d =
       typeof data === "string"
@@ -136,7 +135,7 @@ class MessagePayload {
     return this.d;
   }
 
-  get files(): MessagePayloadFileData {
+  get files(): MessagePayloadFileData[] {
     return this.files;
   }
 }

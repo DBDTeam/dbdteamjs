@@ -1,10 +1,11 @@
 import { Collection } from "../../utils/Collection";
 import * as Endpoints from "../../rest/Endpoints";
 import { type Client } from "../../client/Client"
+import { type Guild } from "../Guild";
 
 class GuildManager {
   readonly client: Client;
-  public cache: Collection;
+  public cache: Collection<string, Guild>;
   constructor(client: Client) {
     this.client = client;
     this.cache = new Collection();

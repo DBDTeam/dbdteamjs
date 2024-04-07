@@ -2,7 +2,7 @@ import { Collection } from "../../utils/Collection";
 import * as Endpoints from "../../rest/Endpoints";
 import { User } from "../User";
 import { Member } from "../Member";
-import { type Client } from "../../client/Client"
+import { type Client } from "../../client/Client";
 import { type Guild } from "../Guild";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
 
@@ -71,7 +71,7 @@ class GuildMemberManager {
           x.id,
           new Member(
             x,
-            this.client.guilds.cache.get(this.guildId),
+            this.client.guilds.cache.get(this.guildId) || this.guild,
             this.client
           )
         );
@@ -80,7 +80,7 @@ class GuildMemberManager {
       return this.cache;
     }
   }
-  async fetch(memberId:string | undefined | null) {
+  async fetch(memberId: string | undefined | null) {
     if (typeof memberId === "string") {
       const result = await this.client.rest.request(
         "GET",
@@ -91,7 +91,7 @@ class GuildMemberManager {
       if (result?.error || !result || !result?.data) {
         return result;
       } else {
-        var x:Record<any, any> = { ...result.data, id: result.data.user.id } ;
+        var x: Record<any, any> = { ...result.data, id: result.data.user.id };
         this.client.users.cache.set(x.id, new User(x.user, this.client));
         var m = new Member(
           x,
@@ -113,7 +113,7 @@ class GuildMemberManager {
 
   get me() {
     try {
-      if(!this.client.user) return null;
+      if (!this.client.user) return null;
       var member = this.cache.get(this.client.user.id);
 
       return member;

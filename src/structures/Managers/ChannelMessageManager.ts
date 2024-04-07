@@ -4,16 +4,16 @@ import * as Endpoints from "../../rest/Endpoints";
 import { Message } from "../Message";
 import { type Client } from "../../client/Client"
 import { Guild } from "../Guild";
-import { Channel } from "../BaseChannel";
 import { VoiceChannel } from "../VoiceChannel";
 import { TextChannel } from "../TextChannel";
+import { ThreadChannel } from "../ThreadChannel";
 
-class ChannelMessageManager {
+export class ChannelMessageManager {
   private client: Client;
   public guild: Guild;
-  public channel: Channel | VoiceChannel | TextChannel;
-  public cache: Collection;
-  constructor(channel: Channel, client: Client) {
+  public channel: ThreadChannel | VoiceChannel | TextChannel;
+  public cache: Collection<string, Message>;
+  constructor(channel: TextChannel | VoiceChannel | ThreadChannel, client: Client) {
     this.guild = channel.guild;
     this.channel = channel;
     this.client = client;
@@ -68,7 +68,9 @@ class ChannelMessageManager {
         for (var i of messages.data as Array<any>) {
           const msg = new Message(i, this.client);
 
-          if (this.channel.messages.cache.get(i.id)) {
+          if(!this.channel.messages) return null;
+
+          if (this.channel?.messages.cache.get(i.id)) {
             if (!msg.channel) {
               msg.channel = this.channel;
             }
@@ -108,5 +110,3 @@ class ChannelMessageManager {
     }
   }
 }
-
-module.exports = { ChannelMessageManager };

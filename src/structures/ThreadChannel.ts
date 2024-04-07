@@ -1,10 +1,17 @@
-const { setObj, typeChannel, getAllStamps } = require("../utils/utils");
-const { Channel } = require("./DefaultChannel");
-const Endpoints = require("../rest/Endpoints");
-const { ThreadMemberManager } = require("./Managers/ThreadMemberManager");
-const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
-const { MessagePayload } = require("./Payloads/MessagePayload");
-const { Message } = require("./Message");
+import { setObj, typeChannel, getAllStamps } from "../utils/utils";
+import { Channel } from "./BaseChannel";
+import * as Endpoints from "../rest/Endpoints";
+import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
+import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
+import { MessagePayload } from "./Payloads/MessagePayload";
+import { Message } from "./Message";
+import { type Client } from "../client/Client"
+import { TextChannel } from "./TextChannel";
+import { Member } from "./Member";
+import { MessagePayloadData } from "../interfaces/message/MessagePayload";
+import { VoiceChannel } from "./VoiceChannel";
+import { CategoryChannel } from "./CategoryChannel";
+import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
@@ -16,15 +23,27 @@ const { Message } = require("./Message");
 
 /** @extends {Channel} */
 class ThreadChannel extends Channel {
-  #client;
+  readonly client: Client;
+  message_count: number;
+  locked: boolean;
+  created: Record<any, any>;
+  auto_archive_duration: number;
+  archived: boolean;
+  archive_stamp: Record<any, any>;
+  channel_id: string;
+  channel?: TextChannel | Channel;
+  owner_id: string;
+  owner?: Member;
+  members: ThreadMemberManager;
+  messages: ChannelMessageManager;
   /**
    * Represents a ThreadChannel
    * @param {Object} data - The ThreadChannel payload
    * @param {Client} client - The Client
    */
-  constructor(data, client) {
+  constructor(data: any, client: Client) {
     super(data, client);
-    this.#client = this.client;
+    this.client = client;
     /**
      * The Guild
      * @type {Guild}
@@ -34,7 +53,7 @@ class ThreadChannel extends Channel {
      * The message count of the thread (stops when reaches 50 messages)
      * @type {number}
      */
-    this.messageCount = data.total_message_sent;
+    this.message_count = data.total_message_sent;
     /**
      * If the ThreadChannel is locked
      * @type {boolean | undefined}
@@ -49,7 +68,7 @@ class ThreadChannel extends Channel {
      * The auto archive dration of the ThreadChannel in seconds.
      * @type {number}
      */
-    this.autoArchiveDuration = data.thread_metadata?.auto_archive_duration;
+    this.auto_archive_duration = data.thread_metadata?.auto_archive_duration;
     /**
      * If the ThreadChannel is archived
      * @type {boolean}
@@ -59,46 +78,46 @@ class ThreadChannel extends Channel {
      * The time information when the ThreadChannel was archived (only if the ThreadChannel is archived)
      * @type {object | undefined}
      */
-    this.archiveStamp = getAllStamps(data.thread_metadata?.archive_timestamp);
+    this.archive_stamp = getAllStamps(data.thread_metadata?.archive_timestamp);
     /**
      * The cooldown of the ThreadChannel in seconds.
      * @type {string | undefined}
      */
-    this.rateLimitPerUser = data.rate_limit_per_user;
+    this.rate_limit_per_user = data.rate_limit_per_user;
     /**
      * The Channel Id where the ThreadChannel was created.
      * @type {number}
      */
-    this.channelId = data.parent_id;
-    if (this.#client.channels.cache.get(this.channelId)) {
+    this.channel_id = data.parent_id;
+    if (this.client.channels.cache.get(this.channel_id)) {
       /**
        * The Channel where the ThreadChannel was created.
        * @type {ForumChannel | TextChannel | VoiceChannel | undefined}
        */
-      this.channel = this.#client.channels.cache.get(this.channelId);
-    }
+      this.channel = this.client.channels.cache.get(this.channel_id) as TextChannel;
+    } // pa cuando no em cambies de rubro xd
     /**
      * The owner id of the ThreadChannel (The owner id means the creator of the ThreadChannel)
      * @type {number}
      */
-    this.ownerId = data.owner_id;
-    if (this.guild?.members?.cache?.get(this.ownerId)) {
+    this.owner_id = data.owner_id;
+    if (this.guild?.members?.cache?.get(this.owner_id)) {
       /**
        * The owner of the ThreadChannel (The owner means the creator of the ThreadChannel)
        * @type {number | undefined}
        */
-      this.ownerId = this.guild.members.cache.get(this.ownerId);
+      this.owner = this.guild.members.cache.get(this.owner_id);
     }
     /**
      * The ThreadMemberManager of the ThreadChannel.
      * @type {ThreadMemberManager}
      */
-    this.members = new ThreadMemberManager(this.#client, this);
+    this.members = new ThreadMemberManager(this.client, this);
     /**
      * The ChannelMessageManager of the ThreadChannel.
      * @type {ChannelMessageManager}
      */
-    this.messages = new ChannelMessageManager(this, this.#client);
+    this.messages = new ChannelMessageManager(this, this.client);
   }
 
   /**
@@ -108,7 +127,7 @@ class ThreadChannel extends Channel {
    * @async
    */
 
-  async edit(obj) {
+  async edit(obj: any): Promise<Channel | VoiceChannel | TextChannel | CategoryChannel | ThreadChannel | null | ErrorResponseFromApi> {
     const thread = {
       name: this.name,
       archived: false,
@@ -126,20 +145,22 @@ class ThreadChannel extends Channel {
       auto_archive_duration: ["autoArchiveDuration"],
     });
 
-    const response = await this.#client.rest.request(
+    const response = await this.client.rest.request(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
       { data }
     );
 
+    if(!response) return null;
+
     return response?.error
-      ? response
-      : typeChannel(response.data, this.#client);
+      ? response as ErrorResponseFromApi
+      : typeChannel(response.data, this.client);
   }
 
   async leave() {
-    const response = await this.#client.rest.request(
+    const response = await this.client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.id, "@me"),
       true
@@ -148,10 +169,10 @@ class ThreadChannel extends Channel {
     return response?.error ? response : true;
   }
 
-  async archivedThreads(config) {
-    config = setObj({ before: null, limit: 5 }, config);
+  async archivedThreads(config: any) {
+    config = setObj({ before: null, limit: 5, type: "public" }, config);
 
-    var endpoint = Endpoints.ChannelThreadsArchived(this.id);
+    var endpoint = Endpoints.ChannelThreadsArchived(this.id, config.type);
 
     if (config.before) {
       // @ts-ignore
@@ -179,10 +200,10 @@ class ThreadChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(obj) {
+  async createMessage(obj: MessagePayloadData) {
     const message = new MessagePayload(obj, obj.files);
 
-    var result = await this.#client.rest.request(
+    var result = await this.client.rest.request(
       "POST",
       Endpoints.ChannelMessages(this.id),
       true,
@@ -191,14 +212,16 @@ class ThreadChannel extends Channel {
       message.files
     );
 
+    if(!result) return;
+
     if (!result.error) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data?.author.id),
       };
 
-      return new Message(result.data, this.#client);
+      return new Message(result.data, this.client);
     } else {
       return result;
     }

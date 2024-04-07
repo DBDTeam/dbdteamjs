@@ -33,7 +33,7 @@ class Member extends Base {
   communicationDisabled: any;
   timeouted: any;
 
-  constructor(data: Record<any, any>, guild: Guild, client: Client) {
+  constructor(data: Record<any, any>, guild: Guild | string, client: Client) {
     super(client);
     this.d = data;
     this.client = client;
@@ -42,7 +42,7 @@ class Member extends Base {
     this.TIMEOUTED = new Date(data.communication_disabled_until);
 
     this.id = data.id;
-    this.guild = guild;
+    this.guild = guild || client.guilds.cache.get(guild);
 
     this.joined = getAllStamps(this);
     this.user = this.author;
@@ -52,7 +52,7 @@ class Member extends Base {
     this.flags = data.flags;
     this.permissions = data.permissions;
     this.role_ids = data.roles;
-    this.roles = new MemberRolesManager(this.guild, data, this.client);
+    this.roles = new MemberRolesManager(this.guild, this, this.client);
     this.presence = null;
 
     this._patch(data);
@@ -120,7 +120,7 @@ class Member extends Base {
       };
     }
   }
-
+  leave() {}
   get kickable() {
     var _p = 0;
     var _h =

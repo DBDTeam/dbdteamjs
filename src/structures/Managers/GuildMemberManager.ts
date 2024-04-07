@@ -1,20 +1,20 @@
 import { Collection } from "../../utils/Collection";
 import * as Endpoints from "../../rest/Endpoints";
 import { User } from "../User";
-import { type Client } from "../../client/Client"
+import { type Client } from "../../client/Client";
 import { type Guild } from "../Guild";
 import { Member } from "../Member";
 
 export interface FetchWithLimitAndAfter {
-  limit?: number,
-  after?: number
+  limit?: number;
+  after?: number;
 }
 
 class GuildMemberManager {
   private client: Client;
   public guild: Guild;
   public guildId: string;
-  public cache: Collection;
+  public cache: Collection<string, Member>;
   constructor(client: Client, guild: Guild) {
     this.client = client;
     this.guild = guild;
@@ -41,7 +41,7 @@ class GuildMemberManager {
     }
     const response = await this.client.rest.request("GET", endpoint, true);
 
-    if(!response) return null;
+    if (!response) return null;
 
     if (response.error) {
       return null;
@@ -52,7 +52,7 @@ class GuildMemberManager {
           x.id,
           new Member(
             x,
-            this.client.guilds.cache.get(this.guildId),
+            this.client.guilds.cache.get(this.guildId) || this.guild,
             this.client
           )
         );
@@ -69,13 +69,16 @@ class GuildMemberManager {
         true
       );
 
-      if(!result) return null;
+      if (!result) return null;
 
       if (result?.error) {
         return result;
       } else {
-        if(!result.data) return null;
-        var x: Record<string, any> = { ...result.data, id: result.data.user.id };
+        if (!result.data) return null;
+        var x: Record<string, any> = {
+          ...result.data,
+          id: result.data.user.id,
+        };
         this.client.users.cache.set(x.id, new User(x.user, this.client));
         var m = new Member(
           x,
@@ -97,7 +100,7 @@ class GuildMemberManager {
 
   get me() {
     try {
-      if(!this.client.user) return null;
+      if (!this.client.user) return null;
       var member = this.cache.get(this.client.user.id);
 
       return member;

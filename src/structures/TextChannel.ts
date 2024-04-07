@@ -1,9 +1,11 @@
-const { readOnly, getAllStamps, setObj } = require("../utils/utils");
-const { Channel } = require("./DefaultChannel");
-const Endpoints = require("../rest/Endpoints");
-const { Message } = require("./Message");
-const { MessagePayload } = require("./Payloads/MessagePayload");
-const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
+import { getAllStamps } from "../utils/utils";
+import { Channel } from "./BaseChannel";
+import * as Endpoints from "../rest/Endpoints";
+import { Message } from "./Message";
+import { MessagePayload } from "./Payloads/MessagePayload";
+import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
+import { type Client } from "../client/Client";
+import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 
 /** @extends {Channel} */
 class TextChannel extends Channel {
@@ -13,7 +15,14 @@ class TextChannel extends Channel {
    * @param {object} data
    * @param {?} client
    */
-  constructor(data, client) {
+  last_message_id: string;
+  readonly last_pin: Record<any, any>;
+  rate_limit_per_user: number;
+  messages: ChannelMessageManager;
+  readonly cooldown: number;
+  readonly sendMessage: Function;
+  readonly send: Function;
+  constructor(data: any, client: Client) {
     super(data, client);
     this.#client = this.client;
     /**
@@ -25,7 +34,7 @@ class TextChannel extends Channel {
      * The Text Channel permissions overwrites
      * @type {object}
      */
-    this.permissionOverwrites = data.permission_overwrites;
+    this.permission_overwrites = data.permission_overwrites;
     /**
      * The Text Channel topic
      * @type {string | undefined}
@@ -40,22 +49,22 @@ class TextChannel extends Channel {
      * The last Text Channel message
      * @type {string | undefined}
      */
-    this.lastMessageId = data.last_message_id;
+    this.last_message_id = data.last_message_id;
     /**
      * The Text Channel parent id (category id)
      * @type {string}
      */
-    this.parentId = data.parent_id;
+    this.parent_id = data.parent_id;
     /**
      * The Text Channel last pin time information
      * @type {object}
      */
-    this.lastPinStamp = getAllStamps(data.last_pin_timestamp);
+    this.last_pin = getAllStamps(data.last_pin_timestamp);
     /**
      * The Text Channel cooldown per user in seconds
      * @type {number}
      */
-    this.rateLimitPerUser = data.rate_limit_per_user;
+    this.rate_limit_per_user = data.rate_limit_per_user;
     /**
      * The Text Channel message manager
      * @type {ChannelMessageManager}
@@ -66,17 +75,17 @@ class TextChannel extends Channel {
      * @readonly
      * @type {number}
      */
-    readOnly(this, "coldown", this.rateLimitPerUser);
+    this.cooldown = this.rate_limit_per_user;
     /**
      * Creates a message in the Text Channel
      * @readonly
      */
-    readOnly(this, "sendMessage", (arg) => this.createMessage(arg));
+    this.sendMessage = (...args: any) => this.createMessage(args);
     /**
      * Creates a message in the Text Channel
      * @readonly
      */
-    readOnly(this, "send", (arg) => this.createMessage(arg));
+    this.send = (...args: any) => this.createMessage(args);
   }
 
   /**
@@ -95,7 +104,7 @@ class TextChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(obj) {
+  async createMessage(obj: MessagePayloadData) {
     const message = new MessagePayload(obj, obj.files);
 
     var result = await this.#client.rest.request(
@@ -107,11 +116,13 @@ class TextChannel extends Channel {
       message.files
     );
 
+    if (!result) return null;
+
     if (!result.error) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data?.author.id),
       };
 
       return new Message(result.data, this.#client);

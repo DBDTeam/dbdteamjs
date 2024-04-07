@@ -1,10 +1,11 @@
-const { Channel } = require("./DefaultChannel");
-const Endpoints = require("../rest/Endpoints");
-const { readOnly } = require("../utils/utils");
-const { ChannelMessageManager } = require("./Managers/ChannelMessageManager");
-const { MessagePayload } = require("./Payloads/MessagePayload");
-const { Message } = require("./Message");
-
+import { Channel } from "./BaseChannel";
+import * as Endpoints from "../rest/Endpoints";
+import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
+import { MessagePayload } from "./Payloads/MessagePayload";
+import { Message } from "./Message";
+import { type Client } from "../client/Client"
+import { VideoQualityMode } from "discord-api-types/v10";
+import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
  * @typedef {import('./ForumChannel')} ForumChannel
@@ -14,13 +15,24 @@ const { Message } = require("./Message");
 
 /** @extends {Channel} */
 class VoiceChannel extends Channel {
+  bitrate: number;
+  user_limit: number;
+  rate_limit_per_user: number;
+  region: string;
+  video_quality: VideoQualityMode;
+  session_id: string;
+  sendMessage: Function;
+  send: Function;
+  readonly client: Client;
   /**
    * Represents a Voice Channel
    * @param {object} data - Voice Channel Payload
    * @param {Client} client
    */
-  constructor(data, client) {
+  constructor(data: any, client: Client) {
     super(data, client);
+
+    this.client = client;
 
     /**
      * The actual bitrate of the Voice Channel
@@ -31,12 +43,12 @@ class VoiceChannel extends Channel {
      * The maximum amount of users that are able to be in the Voice Channel
      * @type {number | undefined}
      */
-    this.userLimit = data.user_limit;
+    this.user_limit = data.user_limit;
     /**
      * The cooldown of the Text Channel of the Voice Channel in seconds
      * @type {number}
      */
-    this.rateLimitPerUser = data.rate_limit_per_user;
+    this.rate_limit_per_user = data.rate_limit_per_user;
     /**
      * The region of the Voice Channel
      * @type {string}
@@ -46,27 +58,26 @@ class VoiceChannel extends Channel {
      * The video quality of the Voice Channel
      * @type {string}
      */
-    this.videoQuality = data.video_quality_mode;
+    this.video_quality = data.video_quality_mode;
     /**
      * The session Id to join the Voice Channel
      * @type {string}
      */
-    this.sessionId = data.session_id;
+    this.session_id = data.session_id;
     /**
      * Voice channel message manager
      * @type {ChannelMessageManager}
      */
-    this.messages = new ChannelMessageManager(this, this.client);
     /**
-     * Sends a message (alias of the method createMessage)
+     * Creates a message in the Text Channel
      * @readonly
      */
-    readOnly(this, "sendMessage", (arg) => this.createMessage(arg));
+    this.sendMessage = (...args: any) => this.createMessage(args);
     /**
-     * Sends a message (alias of the method createMessage)
+     * Creates a message in the Text Channel
      * @readonly
      */
-    readOnly(this, "send", (arg) => this.createMessage(arg));
+    this.send = (...args: any) => this.createMessage(args);
   }
 
   /**
@@ -84,7 +95,7 @@ class VoiceChannel extends Channel {
    * })
    * @returns {Promise<Message | Object>}
    */
-  async createMessage(obj) {
+  async createMessage(obj: MessagePayloadData) {
     const message = new MessagePayload(obj, obj.files);
 
     var result = await this.client.rest.request(
@@ -96,11 +107,13 @@ class VoiceChannel extends Channel {
       message.files
     );
 
+    if(!result) return null;
+
     if (!result.error) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data?.author.id),
       };
 
       return new Message(result.data, this.client);

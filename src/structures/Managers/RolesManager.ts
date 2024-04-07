@@ -5,30 +5,15 @@ import { GuildRole } from "../Role";
 import { type Client } from "../../client/Client"
 import { type Guild } from "../Guild"
 import { type Member } from "../Member";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../rest/requestHandler";
+import { ErrorResponseFromApi, Methods, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { APIRole } from "discord-api-types/v10";
-
-export interface GuildRoleCreatePayload {
-  name: string;
-  permissions?: string,
-  color?: number,
-  hoist?: boolean,
-  icon?: string,
-  unicode_emoji?: Record<string, any>,
-  mentionable?: boolean,
-  reason?: string | null,
-};
-
-export interface GuildMemberRoleOptions {
-  roles: string[];
-  reason?: string | undefined | null;
-}
+import { GuildMemberRoleOptions, GuildRoleCreatePayload } from "../../interfaces/member/role";
 
 export class MemberRolesManager {
   private client: Client;
   readonly guild: Guild;
   readonly member: Member;
-  public cache: Collection;
+  public cache: Collection<string, GuildRole>;
   constructor(guild: Guild, member: Member, client: Client) {
     this.guild = guild
     this.member = member
@@ -38,6 +23,7 @@ export class MemberRolesManager {
   }
   private patch() {
     for (var i in this.member.roles || []) {
+      if(!this.guild.roles) return null;
       var roleFound = this.guild.roles.cache.get(this.member.roles[i]);
       this.cache.set(this.member.roles[i], roleFound);
     }
@@ -104,12 +90,13 @@ export class MemberRolesManager {
     return { error: errors, success };
   }
 
-  async fetch(roleId: string | null | undefined = null): Promise<Collection | null> {
+  async fetch(roleId: string | null | undefined = null): Promise<Collection<string, GuildRole> | null> {
+    if(!this.guild.roles) return null;
     var response = await this.guild.roles.fetch(roleId);
 
     if (!response) return null;
-
-    if (!response.error) {
+    var check = response as ErrorResponseFromApi
+    if (!check.error) {
       if (response instanceof Collection) {
         var i = response
           .toJSON()
@@ -123,21 +110,21 @@ export class MemberRolesManager {
       }
     }
 
-    return response;
+    return response as Collection<string, GuildRole>;
   }
 }
 
 export class GuildRolesManager {
   private client: Client;
   public guild: Guild;
-  public cache: Collection;
+  public cache: Collection<string, GuildRole>;
   constructor(guild: Guild, client: Client) {
     this.client = client;
     this.guild = guild;
     this.cache = new Collection();
   }
 
-  async fetch(roleId: string | null | undefined): Promise<Collection | GuildRole> {
+  async fetch(roleId: string | null | undefined): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi> {
     const response = await this.client.rest.request(
       "GET",
       Endpoints.GuildRoles(this.guild.id),
@@ -161,7 +148,7 @@ export class GuildRolesManager {
       return r;
   }
 
-  async delete(deleteObject: GuildMemberRoleOptions): Promise<{ error: ErrorResponseFromApi[], success: ResponseFromApi[] } | Collection> {
+  async delete(deleteObject: GuildMemberRoleOptions): Promise<{ error: ErrorResponseFromApi[], success: ResponseFromApi[] } | Collection<string, GuildRole>> {
     var roles = deleteObject.roles
 
     var reason = deleteObject.reason;

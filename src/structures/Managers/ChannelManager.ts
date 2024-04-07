@@ -11,6 +11,11 @@ import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { typeChannel } from "../../utils/utils";
+import { type Channel } from "../BaseChannel";
+import { type VoiceChannel } from "../VoiceChannel";
+import { type TextChannel } from "../TextChannel";
+import { type ThreadChannel } from "../ThreadChannel";
+import { type CategoryChannel } from "../CategoryChannel";
 
 export interface ChannnelCreatePayload {
   name: string;
@@ -31,13 +36,16 @@ export interface ChannnelCreatePayload {
   default_sort_order?: SortOrderType;
   default_forum_layout?: ForumLayoutType;
   default_thread_rate_limit_per_user?: number;
-  reason?: string
+  reason?: string;
 }
 
 class GuildChannelManager {
   private client: Client;
   private guildId: string;
-  public cache: Collection;
+  public cache: Collection<
+    string,
+    Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
+  >;
 
   constructor(guildId: string, client: Client) {
     this.client = client;
@@ -105,9 +113,9 @@ class GuildChannelManager {
       true,
       channelObj,
       reason
-    )
+    );
 
-    if(!response) return response;
+    if (!response) return response;
 
     if (response?.error) {
       return response.error;
@@ -125,7 +133,7 @@ class GuildChannelManager {
       reason
     );
 
-    if(!response) return response;
+    if (!response) return response;
 
     if (response.error) {
       return response.error;
@@ -137,7 +145,10 @@ class GuildChannelManager {
 
 class ChannelManager {
   readonly client: Client;
-  public cache:Collection;
+  public cache: Collection<
+    string,
+    Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
+  >;
   constructor(client: Client) {
     this.client = client;
     this.cache = new Collection();
@@ -150,9 +161,9 @@ class ChannelManager {
       true
     );
 
-    if(!response) return response;
+    if (!response) return response;
 
-    if(!response.error) return response;
+    if (!response.error) return response;
 
     return response.data;
   }

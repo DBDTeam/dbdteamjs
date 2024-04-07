@@ -256,9 +256,9 @@ class ShardManager extends EventEmitter {
     }
   }
 
-  public async reconnect(shardID: number) {
+  public async reconnect(shardID: string) {
     this.client.emit("debug", "Trying to reconnect...", shardID);
-    const shard = this.shards.get(shardID);
+    const shard = this.shards.get(shardID) as Shard;
     if (!shard) {
       this.client.emit("debug", "Shard doesn't exists", shardID);
       return;
@@ -268,7 +268,7 @@ class ShardManager extends EventEmitter {
 
   public async disconnect() {
     this.client.emit("debug", "Shards being disconnected...");
-    for (const shard of this.shards.values()) {
+    for (var shard of this.shards.toJSON() as Shard[]) {
       await shard.disconnect();
     }
   }

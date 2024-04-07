@@ -28,7 +28,7 @@ export class RequestHandler {
   }
 
   public async request(
-    method: EnumAsUnion<Methods>,
+    method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     url: string,
     auth: boolean = true,
     body?: Record<string, any>,
@@ -84,7 +84,7 @@ export class RequestHandler {
   makeResponse(
     finalURL: string,
     options: Record<string, any>,
-    method: EnumAsUnion<Methods>,
+    method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     headers: Record<string, any>,
     body?: Record<string, any>,
     files?: Array<Record<string, any>>

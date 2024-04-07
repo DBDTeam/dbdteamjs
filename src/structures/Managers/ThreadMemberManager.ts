@@ -1,30 +1,33 @@
 import { Collection } from "../../utils/Collection";
 import { ThreadMember } from "../ThreadMember";
 import * as Endpoints from "../../rest/Endpoints";
-import { type Client } from "../../client/Client"
+import { type Client } from "../../client/Client";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type Guild } from "../Guild";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../rest/requestHandler";
+import {
+  ErrorResponseFromApi,
+  ResponseFromApi,
+} from "../../interfaces/rest/requestHandler";
 export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
   before: string;
 }
 
 class ThreadMemberManager {
   private client: Client;
-  id:string;
+  id: string;
   guild: Guild;
-  memberCount:number;
-  cache:Collection;
+  memberCount: number;
+  cache: Collection<string, ThreadMember>;
   constructor(client: Client, thread: ThreadChannel) {
     this.id = thread.id;
-    this.guild = thread.guild
+    this.guild = thread.guild;
     this.client = client;
     this.memberCount = 0;
     this.cache = new Collection();
   }
 
-  private async _fetchAllMembersInThread(obj:FetchWithLimitAfterAndBefore) {
+  private async _fetchAllMembersInThread(obj: FetchWithLimitAfterAndBefore) {
     var endpoint =
       Endpoints.ChannelThreadMembers(this.id) + `?with_member=true`;
 
@@ -64,7 +67,11 @@ class ThreadMemberManager {
       if (result?.error || !result) {
         return result;
       } else {
-        var x = new ThreadMember(result.data as Record<string, any>, this.guild, this.client);
+        var x = new ThreadMember(
+          result.data as Record<string, any>,
+          this.guild,
+          this.client
+        );
         this.cache.set(x.id, x);
 
         return x;
@@ -78,7 +85,7 @@ class ThreadMemberManager {
     }
   }
 
-  async remove(memberId:string) {
+  async remove(memberId: string) {
     const response = await this.client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.id, memberId),

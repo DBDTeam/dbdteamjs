@@ -1,5 +1,5 @@
 import { APIMessage } from "discord-api-types/v10";
-import { Client } from "../client/Client";
+import { type Client } from "../client/Client";
 import * as Endpoints from "../rest/Endpoints.js";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
@@ -14,17 +14,15 @@ import { TextChannel } from "./TextChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
 import { VoiceChannel } from "./VoiceChannel";
-
-export interface MentionsObject {
-  users: Collection;
-  roles: Collection;
-  channels: Collection;
-}
+import { MessageMentionsObject } from "../interfaces/message/Mentions";
+import { MessagePayloadData } from "../interfaces/message/MessagePayload";
+import { MessageEditPayload } from "../interfaces/message/EditMessage";
 
 /**
  * Represents a Discord message
  */
 class Message extends Base {
+  private client: Client;
   private justUser: User;
   type: any;
   channelId: any;
@@ -32,8 +30,8 @@ class Message extends Base {
   author: any;
   user: any;
   content: any;
-  mentions: MentionsObject;
-  channel: TextChannel|VoiceChannel|Channel|ThreadChannel;
+  mentions: MessageMentionsObject;
+  channel: TextChannel | VoiceChannel | Channel | ThreadChannel;
   guild: Guild;
   member: any;
   reactions: any;
@@ -42,19 +40,19 @@ class Message extends Base {
   sended: any;
   embeds: any;
   attachments: any;
-  stickers: Collection;
+  stickers: Collection<string, any>;
   pinned: any;
   webhookId: any;
   thread: any;
-  readonly nonce:number;
+  readonly nonce: number;
   private data: any;
 
-  constructor(data: MessagePayload, client: Client) {
+  constructor(data: any, client: Client) {
     super(client);
 
     this.data = data;
     this.justUser = data.author || data.user;
-
+    this.client = client;
     /**
      * @type {string}
      * Represents the ID of the Message
@@ -118,7 +116,7 @@ class Message extends Base {
      * Represents the member
      * @type {Member}
      */
-    this.member = this.guild.members.cache.get(this.user.id);
+    this.member = this.guild.members?.cache.get(this.user.id);
     /**
      * Represents the reactions of the message
      * @type {MessageReactions}
@@ -142,7 +140,7 @@ class Message extends Base {
      * The Date, unix and timestamp of when the message was sent
      * @type {object}
      */
-    this.sended = getAllStamps(this.getCreatedAt);
+    this.sended = getAllStamps(this);
     /**
      * The embeds of the message (if any)
      * @type {object}
@@ -163,7 +161,7 @@ class Message extends Base {
      * @type {number}
      * @readonly
      */
-    this.nonce = data.nonce
+    this.nonce = data.nonce;
     /**
      * If the message is pinned
      * @type {boolean}
@@ -171,11 +169,8 @@ class Message extends Base {
     this.pinned = data.pinned;
     this._patch(data);
   }
-  getCreatedAt(getCreatedAt: any): any {
-    throw new Error("Method not implemented.");
-  }
 
-  _patch(data: Record<any,any>) {
+  _patch(data: Record<any, any>) {
     if (!this.member) {
       this.member = new Member(
         { ...data.member, id: this.user.id },
@@ -226,8 +221,15 @@ class Message extends Base {
    * })
    * @returns {Promise<Message>}
    */
-  async reply(obj: MessagePayload) {
-    const message = new MessagePayload(obj, obj?.files);
+  async reply(obj: MessagePayloadData | string) {
+    var message;
+    if (typeof obj === "string" || obj instanceof String) {
+      const data = obj as string
+      message = new MessagePayload(data);
+    } else {
+      const data = obj as MessagePayloadData
+      message = new MessagePayload(data, data.files);
+    }
 
     var result = await this.client.rest.request(
       "POST",
@@ -238,13 +240,13 @@ class Message extends Base {
       message.files
     );
 
-    if(!result) return null;
+    if (!result) return null;
 
     if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data.author.id),
       };
 
       return new Message(result.data, this.client);
@@ -261,8 +263,15 @@ class Message extends Base {
    * })
    * @returns {Promise<Message>}
    */
-  async edit(obj: EditMessagePayload) {
-    const message = new EditMessagePayload(obj, obj.files);
+  async edit(obj: MessageEditPayload) {
+    var message;
+    if (typeof obj === "string" || obj instanceof String) {
+      const data = obj as string
+      message = new EditMessagePayload(data);
+    } else {
+      const data = obj as MessageEditPayload
+      message = new EditMessagePayload(data, data.files);
+    }
 
     var result = await this.client.rest.request(
       "PATCH",
@@ -273,13 +282,13 @@ class Message extends Base {
       message.files
     );
 
-    if(!result) return;
+    if (!result) return;
 
     if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data.author.id),
       };
 
       return new Message(result.data, this.client);
@@ -299,13 +308,13 @@ class Message extends Base {
       { data: { flags: 4 } }
     );
 
-    if(!result) return;
+    if (!result) return;
 
     if (!result.error && result.data) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members.cache.get(result.data.author.id),
+        member: this.guild.members?.cache.get(result.data.author.id),
       };
 
       return new Message(result.data, this.client);
@@ -345,7 +354,7 @@ class Message extends Base {
     );
 
     if (!result?.error || result) {
-      var channel:Record<any,any> = result as Record<any,any>
+      var channel: Record<any, any> = result as Record<any, any>;
       channel.guild = this.guild;
 
       channel = typeChannel(channel.data, this.client);

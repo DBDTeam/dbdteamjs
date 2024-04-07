@@ -57,9 +57,7 @@ class ThreadMember {
      * The Member of the Thread User.
      * @type {Member}
      */
-    this.member = data.member
-      ? new Member({ ...data.member, id: this.id }, guild, this.client)
-      : this.guild.members.cache.get(this.id);
+    this.member = this.guild.members?.cache.get(this.id) as Member;
     /**
      * The ID of the Thread
      * @type {string}
@@ -70,7 +68,7 @@ class ThreadMember {
        * The Thread Channel (if it can be finded in the cache)
        * @type {ThreadChannel}
        */
-      this.thread = this.client.channels.cache.get(data.id);
+      this.thread = this.client.channels.cache.get(data.id) as ThreadChannel;
     }
     /**
      * The time information when the user joined to the Thread

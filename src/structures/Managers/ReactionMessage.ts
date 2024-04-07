@@ -2,7 +2,7 @@ import * as Endpoints from "../../rest/Endpoints.js";
 import { getId } from "../../utils/utils.js";
 import { type Client } from "../../client/Client"
 import { type Message } from "../Message";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../rest/requestHandler.js";
+import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler.js";
 
 interface RemoveEmojiPayload {
   emojis: Array<string>;

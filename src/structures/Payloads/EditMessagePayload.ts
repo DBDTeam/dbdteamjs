@@ -31,12 +31,12 @@ class EditMessagePayload {
   readonly file: Record<any, any>[];
   private f;
   constructor(
-    data: MessageEditPayload,
-    files: MessagePayloadFileData | Array<any> = []
+    data: MessageEditPayload | string,
+    files: MessagePayloadFileData[] = []
   ) {
     this.d =
-      typeof data == "string"
-        ? data
+      typeof data === "string"
+        ? { content: data }
         : setObj(this.Data, data, { sticker_ids: "stickers" });
     this.file = [];
     this.f = files;
@@ -93,7 +93,7 @@ class EditMessagePayload {
     return this.d;
   }
 
-  get files(): Array<Record<string, any>> {
+  get files(): MessagePayloadFileData[] {
     return this.files;
   }
 }

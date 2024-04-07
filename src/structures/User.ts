@@ -1,5 +1,5 @@
 import { Client } from "../client/Client";
-import { CDNOptions } from "../rest/CDN";
+import { CDNOptions } from "../interfaces/rest/cdn";
 import { Base } from "./Base";
 
 /**
@@ -64,6 +64,8 @@ export class User extends Base {
    */
   displayDefaultAvatarUrl: () => any;
 
+  readonly client: Client;
+
   /**
    * @constructor
    * @param data - The data payload
@@ -72,6 +74,7 @@ export class User extends Base {
   constructor(data: any, client: Client) {
     super(client);
     this.id = data.id;
+    this.client = client;
     this.bot = false;
     this.system = false;
     this.flags = 0;
