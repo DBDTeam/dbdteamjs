@@ -12,15 +12,15 @@
 		"strictNullChecks": true,
 		"strictFunctionTypes": true,
 		"noImplicitThis": true,
-		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"noImplicitReturns": true,
+		"noImplicitReturns": false,
 		"noFallthroughCasesInSwitch": true,
       
       "typeRoots": ["./node_modules/@types", "./typings/index.d.ts"],
       "paths": {
         "@types": ["./typings/index.d.ts"]
       },
-      "outDir": "./lib"
+      "outDir": "./lib",
+      "rootDir": "./src"
    }
 }

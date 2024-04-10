@@ -1,11 +1,10 @@
-import { Channel } from "./BaseChannel"; 
-import * as Endpoints from "../rest/Endpoints";
-import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
-import { MessagePayload } from "./Payloads/MessagePayload";
-import { Message } from "./Message";
-import { type Client } from "../client/Client"
 import { VideoQualityMode } from "discord-api-types/v10";
+import { type Client } from "../client/Client";
 import { MessagePayloadData } from "../interfaces/message/MessagePayload";
+import * as Endpoints from "../rest/Endpoints";
+import { Channel } from "./BaseChannel";
+import { Message } from "./Message";
+import { MessagePayload } from "./Payloads/MessagePayload";
 
 /** @extends {Channel} */
 class VoiceChannel extends Channel {
@@ -101,13 +100,13 @@ class VoiceChannel extends Channel {
       message.files
     );
 
-    if(!result) return null;
+    if (!result) return null;
 
     if (!result.error) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members?.cache.get(result.data?.author.id),
+        member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
       return new Message(result.data, this.client);

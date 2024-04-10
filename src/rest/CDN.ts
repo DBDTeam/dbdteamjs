@@ -151,10 +151,10 @@ export class CDN {
     const data = this._getInfo(
       options,
       EXTENSIONS.NOTGIF,
-      guild?.discoverySplash
+      guild?.discovery_splash
     );
     return this.BASE_URL(
-      `/discovery-splashes/${guild?.id}/${guild?.discoverySplash}.${data.extension}?size=${data.size}`
+      `/discovery-splashes/${guild?.id}/${guild?.discovery_splash}.${data.extension}?size=${data.size}`
     );
   }
 
@@ -225,7 +225,7 @@ export class CDN {
    * @param d - Data to consider.
    * @returns Processed options.
    */
-  _getInfo(opts: CDNOptions, exten: string[], d?: string) {
+  _getInfo(opts: CDNOptions, exten: string[], d: any) {
     if (typeof opts !== "object" || !opts) {
       opts = {};
     }

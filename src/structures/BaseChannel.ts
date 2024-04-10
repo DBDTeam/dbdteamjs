@@ -1,160 +1,261 @@
-import { Base } from "./Base.js";
-import * as Endpoints from "../rest/Endpoints.js";
-import { typeChannel, setObj } from "../utils/utils.js";
-import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
+import {
+  APIChannel,
+  APIGuildCreatePartialChannel,
+  APIOverwrite,
+  ChannelType,
+  Snowflake,
+  VideoQualityMode,
+} from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { APIGuildCreatePartialChannel, ChannelType, VideoQualityMode } from "discord-api-types/v10";
-import { type Guild } from "./Guild";
-import { type ThreadChannel } from "./ThreadChannel.js";
-import { type VoiceChannel } from "./VoiceChannel.js";
-import { type TextChannel } from "./TextChannel.js";
-import { type CategoryChannel } from "./CategoryChannel.js";
-import { Channel } from "./BaseChannel.js";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler.js";
-import { Nullded } from "../interfaces/other.js";
+import { Nullable } from "../interfaces/other";
+import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import * as Endpoints from "../rest/Endpoints";
+import { setObj, typeChannel } from "../utils/utils";
+import { Base } from "./Base";
+import { Channel } from "./BaseChannel";
+import { type CategoryChannel } from "./CategoryChannel";
+import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
+import { type TextChannel } from "./TextChannel";
+import { type ThreadChannel } from "./ThreadChannel";
+import { type VoiceChannel } from "./VoiceChannel";
 
 /**
- * @typedef {import('./TextChannel.js').TextChannel} TextChannel
- * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
- * @typedef {import('./ThreadChannel.js').ThreadChannel} ThreadChannel
- * @typedef {import('./CategoryChannel.js').CategoryChannel} CategoryChannel
- * @typedef {import('./Guild.js').Guild} Guild
- */
-
-/**
- * Represents a BaseChannel (for a easier usage)
+ * Represents a BaseChannel (for easier usage)
+ * @param {object} data - The Channel payload
+ * @param {Client} client - The Client
+ *
  * @extends {Base}
  */
 class BaseChannel extends Base {
-  private data: any;
   /**
-   * Represents a BaseChannel (for a easier usage)
-   * @param {object} data - The Channel payload
-   * @param {import("./Interactions/BaseInteraction.js").Client} client - The Client
+   * The client associated with the channel.
+   * @type {Client}
    */
   readonly client: Client;
-  id: string;
+
+  /**
+   * The ID of the channel.
+   * @type {Snowflake}
+   */
+  id: Snowflake;
+
+  /**
+   * The type of the channel.
+   * @type {ChannelType}
+   */
   type: ChannelType;
-  name: string;
-  topic: string | Nullded;
-  bitrate: number | Nullded;
-  user_limit: number | Nullded;
-  rate_limit_per_user: number | Nullded;
-  position: number;
-  permission_overwrites: Record<any, any>[];
-  parent_id: number | Nullded;
-  nsfw: number;
-  rtc_region: string | Nullded;
-  video_quality_mode: VideoQualityMode | Nullded;
-  default_auto_archive_duration: number | Nullded;
-  guild: Guild;
-  guildId: string;
-  flags: number;
-  permissions: ChannelPermissionManager;
+
+  /**
+   * The name of the channel.
+   * @type {Nullable<string>}
+   */
+  name: Nullable<string>;
+
+  /**
+   * The topic of the channel.
+   * @type {Nullable<string>}
+   */
+  topic: Nullable<string>;
+
+  /**
+   * The bitrate of the channel.
+   * @type {Nullable<number>}
+   */
+  bitrate: Nullable<number>;
+
+  /**
+   * The user limit of the channel.
+   * @type {Nullable<number>}
+   */
+  user_limit: Nullable<number>;
+
+  /**
+   * The rate limit per user of the channel.
+   * @type {Nullable<number>}
+   */
+  rate_limit_per_user: Nullable<number>;
+
+  /**
+   * The position of the channel.
+   * @type {number}
+   */
+  position!: number;
+
+  /**
+   * The permission overwrites of the channel.
+   * @type {APIOverwrite[]}
+   */
+  permission_overwrites?: APIOverwrite[];
+
+  /**
+   * The parent ID of the channel.
+   * @type {Nullable<Snowflake>}
+   */
+  parent_id: Nullable<Snowflake>;
+
+  /**
+   * Indicates whether the channel is NSFW.
+   * @type {Nullable<boolean>}
+   */
+  nsfw?: Nullable<boolean>;
+
+  /**
+   * The RTC region of the channel.
+   * @type {Nullable<string>}
+   */
+  rtc_region: Nullable<string>;
+
+  /**
+   * The video quality mode of the channel.
+   * @type {Nullable<VideoQualityMode>}
+   */
+  video_quality_mode: Nullable<VideoQualityMode>;
+
+  /**
+   * The default auto archive duration of the channel.
+   * @type {Nullable<number>}
+   */
+  default_auto_archive_duration: Nullable<number>;
+
+  /**
+   * The ID of the guild where the channel is located.
+   * @type {Snowflake}
+   */
+  guildId?: Snowflake;
+
+  /**
+   * The flags of the channel.
+   * @type {number}
+   */
+  flags?: number;
+
+  /**
+   * The permissions manager of the channel.
+   * @type {ChannelPermissionManager}
+   */
+  permissions?: ChannelPermissionManager;
+
+  /**
+   * The default reaction emoji of the channel.
+   * @type {any}
+   */
   default_reaction_emoji: any;
+
+  /**
+   * The available tags of the channel.
+   * @type {any}
+   */
   available_tags: any;
+
+  /**
+   * The default sort order of the channel.
+   * @type {any}
+   */
   default_sort_order: any;
+
+  /**
+   * The default forum layout of the channel.
+   * @type {any}
+   */
   default_forum_layout: any;
+
+  /**
+   * The default thread rate limit per user of the channel.
+   * @type {any}
+   */
   default_thread_rate_limit_per_user: any;
-  constructor(data: Record<any, any>, client: Client) {
-    super(client);
+
+  /**
+   * Creates an instance of BaseChannel.
+   * @param {APIChannel} data - The channel payload.
+   * @param {Client} client - The client.
+   */
+  constructor(readonly data: APIChannel, client: Client) {
+    super(data.id);
+
     this.data = data;
     this.client = client;
 
-    /**
-     * The Channel ID
-     * @type {string}
-     */
     this.id = data.id;
-    /**
-     * The Channel type
-     * @type {string}
-     */
     this.type = data.type;
-    /**
-     * The Channel name
-     * @type {string}
-     */
     this.name = data.name;
-    /**
-     * The Channel topic
-     * @type {string}
-     */
-    this.topic = data.topic;
-    /**
-     * The Channel bitrate
-     * @type {unknown}
-     */
-    this.bitrate = data.bitrate;
-    /**
-     * The Channel user_limit
-     * @type {unknown}
-     */
-    this.user_limit = data.user_limit;
-    /**
-     * The Channel rate limit
-     * @type {unknown}
-     */
-    this.rate_limit_per_user = data.rate_limit_per_user;
-    /**
-     * The Channel position
-     * @type {unknown}
-     */
-    this.position = data.position;
-    /**
-     * The Channel permission overwrites
-     * @type {unknown}
-     */
-    this.permission_overwrites = data.permission_overwrites;
-    /**
-     * The Channel parent_id
-     * @type {unknown}
-     */
-    this.parent_id = data.parent_id;
-    /**
-     * The Channel NSFW
-     * @type {unknown}
-     */
-    this.nsfw = data.nsfw;
-    /**
-     * The Channel RTC region
-     * @type {unknown}
-     */
-    this.rtc_region = data.rtc_region;
-    /**
-     * The Channel video quality mode
-     * @type {unknown}
-     */
-    this.video_quality_mode = data.video_quality_mode;
-    /**
-     * The Channel default auto archive durations
-     * @type {unknown}
-     */
-    this.default_auto_archive_duration = data.default_auto_archive_duration;
-    /**
-     * The Guild where the Channel is it
-     * @type {Guild}
-     */
-    this.guild = data.guild;
-    /**
-     * The Guild id where the Channel is it
-     * @type {number}
-     */
-    this.guildId = data.guild_id || data.guild.id;
-    /**
-     * The Channel flags
-     * @type {number}
-     */
-    this.flags = data.flags;
-    /**
-     * The Channel permissions manager
-     * @type {ChannelPermissionManager}
-     */
-    this.permissions = new ChannelPermissionManager(
-      data.permission_overwrites || [],
-      this.id,
-      client
-    );
+
+    this.patch(data);
+  }
+
+  private patch(data: APIChannel) {
+    this.id = data.id;
+    this.type = data.type;
+    this.name = data.name;
+
+    if ("position" in data) {
+      this.position = data.position;
+    }
+
+    if ("permission_overwrites" in data) {
+      this.permission_overwrites = data.permission_overwrites;
+    }
+
+    if ("parent_id" in data) {
+      this.parent_id = data.parent_id;
+    }
+
+    if ("nsfw" in data) {
+      this.nsfw = data.nsfw;
+    }
+
+    if ("rtc_region" in data) {
+      this.rtc_region = data.rtc_region;
+    }
+
+    if ("video_quality_mode" in data) {
+      this.video_quality_mode = data.video_quality_mode;
+    }
+
+    if ("default_auto_archive_duration" in data) {
+      this.default_auto_archive_duration = data.default_auto_archive_duration;
+    }
+
+    if ("guild_id" in data) {
+      this.guildId = data.guild_id;
+    }
+
+    if ("flags" in data) {
+      this.flags = data.flags;
+    }
+
+    if ("permission_overwrites" in data) {
+      this.permissions = new ChannelPermissionManager(
+        data.permission_overwrites || [],
+        this.id,
+        this.client
+      );
+    }
+
+    if ("topic" in data) {
+      this.topic = data.topic;
+    }
+
+    if ("bitrate" in data) {
+      this.bitrate = data.bitrate;
+    }
+
+    if ("user_limit" in data) {
+      this.user_limit = data.user_limit;
+    }
+
+    if ("rate_limit_per_user" in data) {
+      this.rate_limit_per_user = data.rate_limit_per_user;
+    }
+  }
+
+  /**
+   * The guild where the channel is located.
+   * @type {Guild}
+   */
+  get guild() {
+    if (!this.guildId) return;
+    return this.client.guilds.cache.get(this.guildId);
   }
 
   /**
@@ -172,7 +273,18 @@ class BaseChannel extends Base {
    * })
    */
 
-  async clone(obj: APIGuildCreatePartialChannel): Promise<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | Nullded | ErrorResponseFromApi> {
+  async clone(
+    obj: APIGuildCreatePartialChannel
+  ): Promise<
+    Nullable<
+      | ThreadChannel
+      | VoiceChannel
+      | Channel
+      | TextChannel
+      | CategoryChannel
+      | ErrorResponseFromApi
+    >
+  > {
     const channelObj = {
       name: null,
       type: null,
@@ -203,6 +315,8 @@ class BaseChannel extends Base {
       default_reaction_emoji: "defaultReactionEmoji",
     });
 
+    if (!this.guildId) return null;
+
     var result = await this.client.rest.request(
       "POST",
       Endpoints.GuildChannels(this.guildId),
@@ -210,9 +324,11 @@ class BaseChannel extends Base {
       { data }
     );
 
-    if(!result || !result?.data) return null;
+    if (!result || !result?.data) return null;
 
-    return result?.error ? result as ErrorResponseFromApi : typeChannel(result.data, this.client);
+    return result?.error
+      ? (result as ErrorResponseFromApi)
+      : typeChannel(result.data, this.client);
   }
 
   /**
@@ -231,7 +347,19 @@ class BaseChannel extends Base {
    * @async
    */
 
-  async edit(obj: APIGuildCreatePartialChannel, reason?: string): Promise<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | Nullded | ErrorResponseFromApi> {
+  async edit(
+    obj: APIGuildCreatePartialChannel,
+    reason?: string
+  ): Promise<
+    Nullable<
+      | ThreadChannel
+      | VoiceChannel
+      | Channel
+      | TextChannel
+      | CategoryChannel
+      | ErrorResponseFromApi
+    >
+  > {
     const channelObj = {
       name: this.name,
       topic: this.topic,
@@ -270,9 +398,11 @@ class BaseChannel extends Base {
       reason
     );
 
-    if(!result || !result?.data) return null;
+    if (!result || !result?.data) return null;
 
-    return result?.error ? result as ErrorResponseFromApi : typeChannel(result.data, this.client);
+    return result?.error
+      ? (result as ErrorResponseFromApi)
+      : typeChannel(result.data, this.client);
   }
 
   /**
@@ -306,4 +436,4 @@ class BaseChannel extends Base {
   }
 }
 
-export { BaseChannel as Channel };
+export { BaseChannel, BaseChannel as Channel };

@@ -3,9 +3,9 @@
  * @extends {Map}
  * @param {number} limit
  */
-class Collection<K extends string, V> extends Map<K, V>  {
+class Collection<K, V> extends Map<K, V> {
   public limit: number | null;
-  constructor(limit:number = Infinity) {
+  constructor(limit: number = Infinity) {
     super();
     /**
      * Represents the limit of the Collection.
@@ -25,7 +25,7 @@ class Collection<K extends string, V> extends Map<K, V>  {
   toJSON() {
     const copy = new Map(this);
     let jsonObj = [];
-    for (let [id, key] of copy) {
+    for (let [key] of copy) {
       jsonObj.push(key);
     }
     return jsonObj;
@@ -37,7 +37,7 @@ class Collection<K extends string, V> extends Map<K, V>  {
    * @returns {boolean}
    */
 
-  hasAny(keys:Array<string>) {
+  hasAny(keys: Array<string>) {
     for (let key of keys) {
       if (this.has(key as K)) {
         return true;
@@ -52,10 +52,10 @@ class Collection<K extends string, V> extends Map<K, V>  {
    * @returns {Array}
    */
 
-  first(x:number = 1) {
+  first(x: number = 1) {
     let result = [];
     let count = 0;
-    for (let [id, key] of this) {
+    for (let [key] of this) {
       result.push(key);
       count++;
       if (count === x) {
@@ -64,7 +64,7 @@ class Collection<K extends string, V> extends Map<K, V>  {
     }
     return result?.[1] ? result : result[0];
   }
-  last(x:number = 1) {
+  last(x: number = 1) {
     let result = [];
     let count = 0;
     for (let [id, key] of [...this.entries()].reverse()) {
@@ -77,7 +77,7 @@ class Collection<K extends string, V> extends Map<K, V>  {
     return result?.[1] ? result : result[0];
   }
 
-  set(key:any, value:any) {
+  set(key: any, value: any) {
     if (this.size >= (this.limit || Infinity)) {
       const firstKey = this.keys().next().value;
       this.delete(firstKey);
@@ -88,22 +88,22 @@ class Collection<K extends string, V> extends Map<K, V>  {
 
   find(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
     for (let [key, value] of this.entries()) {
-        if (expression(value, key, this)) {
-            return value;
-        }
+      if (expression(value, key, this)) {
+        return value;
+      }
     }
     return undefined;
-}
+  }
 
-filter(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
+  filter(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
     const result = new Collection<K, V>();
     for (let [key, value] of this.entries()) {
-        if (expression(value, key, this)) {
-            result.set(key, value);
-        }
+      if (expression(value, key, this)) {
+        result.set(key, value);
+      }
     }
     return result;
-}
+  }
 }
 
 export { Collection };

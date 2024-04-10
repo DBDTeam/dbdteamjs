@@ -1,9 +1,9 @@
-import { PresenceStatus, ActivityPayload } from "../../types/Presences";
+import { ActivityPayload, PresenceStatus } from "../../types/Presences";
 
 export interface ClientOptions {
   token: string;
   intents: number;
-  gateway: GatewayConfig;
+  gateway: any;
 }
 
 export interface GatewayConfig {
@@ -21,6 +21,6 @@ export interface ClientPresencePayload {
 }
 
 export interface EditClientUserPayload {
-    username?: string;
-    avatar?: string;
-  }
+  username?: string;
+  avatar?: string;
+}

@@ -1,17 +1,17 @@
-import { setObj, typeChannel, getAllStamps } from "../utils/utils";
-import { Channel } from "./BaseChannel";
-import * as Endpoints from "../rest/Endpoints";
-import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
-import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
-import { MessagePayload } from "./Payloads/MessagePayload";
-import { Message } from "./Message";
-import { type Client } from "../client/Client"
-import { TextChannel } from "./TextChannel";
-import { Member } from "./Member";
+import { type Client } from "../client/Client";
 import { MessagePayloadData } from "../interfaces/message/MessagePayload";
-import { VoiceChannel } from "./VoiceChannel";
-import { CategoryChannel } from "./CategoryChannel";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import * as Endpoints from "../rest/Endpoints";
+import { getAllStamps, setObj, typeChannel } from "../utils/utils";
+import { Channel } from "./BaseChannel";
+import { CategoryChannel } from "./CategoryChannel";
+import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
+import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
+import { Member } from "./Member";
+import { Message } from "./Message";
+import { MessagePayload } from "./Payloads/MessagePayload";
+import { TextChannel } from "./TextChannel";
+import { VoiceChannel } from "./VoiceChannel";
 
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
@@ -26,16 +26,16 @@ class ThreadChannel extends Channel {
   readonly client: Client;
   message_count: number;
   locked: boolean;
-  created: Record<any, any>;
+  created: any;
   auto_archive_duration: number;
   archived: boolean;
-  archive_stamp: Record<any, any>;
+  archive_stamp: any;
   channel_id: string;
   channel?: TextChannel | Channel;
   owner_id: string;
   owner?: Member;
   members: ThreadMemberManager;
-  messages: ChannelMessageManager;
+  messages: ChannelMessageManager<ThreadChannel>;
   /**
    * Represents a ThreadChannel
    * @param {Object} data - The ThreadChannel payload
@@ -44,11 +44,6 @@ class ThreadChannel extends Channel {
   constructor(data: any, client: Client) {
     super(data, client);
     this.client = client;
-    /**
-     * The Guild
-     * @type {Guild}
-     */
-    this.guild = data.guild;
     /**
      * The message count of the thread (stops when reaches 50 messages)
      * @type {number}
@@ -94,7 +89,9 @@ class ThreadChannel extends Channel {
        * The Channel where the ThreadChannel was created.
        * @type {ForumChannel | TextChannel | VoiceChannel | undefined}
        */
-      this.channel = this.client.channels.cache.get(this.channel_id) as TextChannel;
+      this.channel = this.client.channels.cache.get(
+        this.channel_id
+      ) as TextChannel;
     } // pa cuando no em cambies de rubro xd
     /**
      * The owner id of the ThreadChannel (The owner id means the creator of the ThreadChannel)
@@ -127,7 +124,17 @@ class ThreadChannel extends Channel {
    * @async
    */
 
-  async edit(obj: any): Promise<Channel | VoiceChannel | TextChannel | CategoryChannel | ThreadChannel | null | ErrorResponseFromApi> {
+  async edit(
+    obj: any
+  ): Promise<
+    | Channel
+    | VoiceChannel
+    | TextChannel
+    | CategoryChannel
+    | ThreadChannel
+    | null
+    | ErrorResponseFromApi
+  > {
     const thread = {
       name: this.name,
       archived: false,
@@ -152,10 +159,10 @@ class ThreadChannel extends Channel {
       { data }
     );
 
-    if(!response) return null;
+    if (!response) return null;
 
     return response?.error
-      ? response as ErrorResponseFromApi
+      ? (response as ErrorResponseFromApi)
       : typeChannel(response.data, this.client);
   }
 
@@ -172,17 +179,17 @@ class ThreadChannel extends Channel {
   async archivedThreads(config: any) {
     config = setObj({ before: null, limit: 5, type: "public" }, config);
 
-    var endpoint = Endpoints.ChannelThreadsArchived(this.id, config.type);
+    // let endpoint = Endpoints.ChannelThreadsArchived(this.id, config.type);
 
-    if (config.before) {
-      // @ts-ignore
-      endpoint = +`?before=${config.before}`;
-    }
-    if (config.limit) {
-      endpoint = +config.before
-        ? `&limit=${config.limit}`
-        : `?limit=${config.limit}`;
-    }
+    // if (config.before) {
+    //   // @ts-ignore
+    //   endpoint = +`?before=${config.before}`;
+    // }
+    // if (config.limit) {
+    //   endpoint = +config.before
+    //     ? `&limit=${config.limit}`
+    //     : `?limit=${config.limit}`;
+    // }
   }
   /**
    * Creates a message in the Text Channel
@@ -212,13 +219,13 @@ class ThreadChannel extends Channel {
       message.files
     );
 
-    if(!result) return;
+    if (!result) return;
 
     if (!result.error) {
       result.data = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members?.cache.get(result.data?.author.id),
+        member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
       return new Message(result.data, this.client);

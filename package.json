@@ -2,8 +2,7 @@
   "name": "dbdteamjs",
   "version": "0.0.5",
   "description": "A Discord api wrapper to create your bot!",
-  "main": "./src/package.js",
-  "types": "./typings/index.d.ts",
+  "main": "./dist/package.js",
   "scripts": {
     "start": "cls && node main.js",
     "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",

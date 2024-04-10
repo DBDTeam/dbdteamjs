@@ -1,22 +1,28 @@
+import {
+  GuildDefaultMessageNotifications,
+  GuildExplicitContentFilter,
+  GuildMFALevel,
+  GuildNSFWLevel,
+  GuildVerificationLevel,
+} from "discord-api-types/v10";
+import { type Client } from "../client/Client";
+import { Nullable, Nullded } from "../interfaces/other";
+import { Collection } from "../utils/Collection";
+import { getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/ChannelManager";
-import { getAllStamps } from "../utils/utils";
-import { Collection } from "../utils/Collection";
-import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
+import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRole } from "./Role";
-import { type Client } from "../client/Client"
-import { Nullded } from "../interfaces/other";
 import { VoiceChannel } from "./VoiceChannel";
-import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel } from "discord-api-types/v10";
 
 class Guild extends Base {
   private exists: any;
   readonly client: Client;
   name: string;
-  icon: string | Nullded;
+  icon: Nullable<string>;
   permissions: number;
-  features: string[] | Nullded;
+  features: Nullable<string[]>;
   approximate_members: number | Nullded;
   approximate_presences: number | Nullded;
   roles?: GuildRolesManager;
@@ -25,7 +31,7 @@ class Guild extends Base {
   channels: GuildChannelManager;
   voice_states: Collection<string, VoiceChannel>;
   members?: GuildMemberManager;
-  created: Record<string, any>;
+  created: any;
   splash: string | Nullded;
   discovery_splash: string | Nullded;
   owner_id: string | Nullded;
@@ -209,8 +215,7 @@ class Guild extends Base {
        * The Guild default message notifactions level
        * @type {number}
        */
-      this.default_message_notifications =
-        data.default_message_notifications;
+      this.default_message_notifications = data.default_message_notifications;
     }
     if (data.explicit_content_filter) {
       /**

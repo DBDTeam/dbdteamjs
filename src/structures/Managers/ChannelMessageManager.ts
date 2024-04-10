@@ -1,25 +1,22 @@
+import { type Client } from "../../client/Client";
+import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { setObj } from "../../utils/utils";
-import * as Endpoints from "../../rest/Endpoints";
 import { Message } from "../Message";
-import { type Client } from "../../client/Client"
-import { Guild } from "../Guild";
-import { VoiceChannel } from "../VoiceChannel";
-import { TextChannel } from "../TextChannel";
-import { ThreadChannel } from "../ThreadChannel";
 
-export class ChannelMessageManager {
+export class ChannelMessageManager<T extends Record<any, any>> {
   private client: Client;
-  public guild: Guild;
-  public channel: ThreadChannel | VoiceChannel | TextChannel;
   public cache: Collection<string, Message>;
-  constructor(channel: TextChannel | VoiceChannel | ThreadChannel, client: Client) {
-    this.guild = channel.guild;
+  constructor(public channel: T, client: Client) {
     this.channel = channel;
     this.client = client;
     this.cache = new Collection();
   }
 
+  get guild() {
+    if ("guild" in this.channel) return this.channel.guild;
+    else null;
+  }
   async fetch(msgId: Record<any, any>) {
     if (typeof msgId === "object" && msgId instanceof Object) {
       const config = {
@@ -59,7 +56,7 @@ export class ChannelMessageManager {
 
       const messages = await this.client.rest.request("GET", endpoint, true);
 
-      if(!messages) return;
+      if (!messages) return;
 
       if (messages.error) {
         return null;
@@ -68,10 +65,10 @@ export class ChannelMessageManager {
         for (var i of messages.data as Array<any>) {
           const msg = new Message(i, this.client);
 
-          if(!this.channel.messages) return null;
+          if (!this.channel.messages) return null;
 
           if (this.channel?.messages.cache.get(i.id)) {
-            if (!msg.channel) {
+            if (!msg.channel && !this.channel) {
               msg.channel = this.channel;
             }
             this.channel.messages.cache.set(i.id, msg);
@@ -89,17 +86,17 @@ export class ChannelMessageManager {
         true
       );
 
-      if(!response) return null;
+      if (!response) return null;
 
       if (response.error) {
         return null;
       } else {
-        if(!response.data) return null;
+        if (!response.data) return null;
         const msg = new Message(
           { ...response.data, guild: this.guild },
           this.client
         );
-        if (!msg.channel) {
+        if (!msg.channel && !this.channel) {
           msg.channel = this.channel;
         }
         if (this.channel.messages.cache.get(response.data.id)) {

@@ -1,6 +1,7 @@
 import { TypedEmitter } from "tiny-typed-emitter";
+import { ClientOptions, GatewayConfig } from "../interfaces/client/Client";
+import { ClientEvents } from "../interfaces/client/Events";
 import { REST } from "../rest/REST";
-import { ActionManager } from "../structures/Actions/ActionManager";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
 import { UserManager } from "../structures/Managers/UserManager";
@@ -8,7 +9,7 @@ import { ShardManager } from "../structures/Sharding";
 import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
-import { ClientOptions, GatewayConfig } from "../interfaces/client/Client";
+import { EventManager } from "./events/EventManager";
 
 /**
  * @typedef ClientOptions
@@ -20,7 +21,7 @@ import { ClientOptions, GatewayConfig } from "../interfaces/client/Client";
 /**
  * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}
  */
-class Client extends TypedEmitter {
+class Client extends TypedEmitter<ClientEvents> {
   readonly token: string;
   readonly intents: number;
   readonly rest: REST;
@@ -35,7 +36,7 @@ class Client extends TypedEmitter {
   user?: ClientUser;
   presence: ClientPresence;
   application: ClientApplication | undefined;
-  private actions: ActionManager;
+  private events: EventManager;
   guild: any;
 
   /**
@@ -122,11 +123,11 @@ class Client extends TypedEmitter {
     /**
      * The action manager of the client
      */
-    this.actions = new ActionManager(this);
+    this.events = new EventManager(this);
 
     this.shardManager.on("debug", (...args) => this.emit("debug", ...args));
     this.shardManager.on("eventReceived", async (d, id) => {
-      this.actions._handle(d.t, d.d, id);
+      this.events._handle(d.t, d.d, id);
     });
   }
   /**
@@ -141,7 +142,7 @@ class Client extends TypedEmitter {
   }
 
   public reconnectAll() {
-    for (var [key, shardID] of this.shardManager.shards) {
+    for (var [shardID] of this.shardManager.shards) {
       this.shardManager.reconnect(shardID);
     }
   }

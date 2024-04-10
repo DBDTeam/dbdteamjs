@@ -1,9 +1,9 @@
-import { getAllStamps } from "../utils/utils";
-import { Member } from "./Member";
-import * as Endpoints from "../rest/Endpoints";
-import { APIThreadMember } from "discord-api-types/v10";
-import { type Guild } from "./Guild";
+import { Nullable } from "../interfaces/other";
 import { ThreadChannel, type Client } from "../package";
+import * as Endpoints from "../rest/Endpoints";
+import { getAllStamps } from "../utils/utils";
+import { type Guild } from "./Guild";
+import { Member } from "./Member";
 
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
@@ -14,7 +14,7 @@ import { ThreadChannel, type Client } from "../package";
  */
 
 interface StampInformation {
-  stamp: number;
+  stamp: any;
   unix: number;
   date: Date;
 }
@@ -22,20 +22,24 @@ interface StampInformation {
 class ThreadMember {
   private client: Client;
   id: string;
-  guild: Guild;
-  flags:number;
+  guild: Nullable<Guild>;
+  flags: number;
   member: Member;
   threadId: string;
   thread: ThreadChannel | undefined | null;
-  joined: StampInformation
-  readonly remove:Function;
+  joined: any;
+  readonly remove: Function;
   /**
    * Represents a Thread Member
    * @param {object} data - The Thread Member payload
    * @param {Guild} guild - The Guild where the user is
    * @param {Client} client - The Client
    */
-  constructor(data: Record<string, any>, guild: Guild, client: Client) {
+  constructor(
+    data: Record<string, any>,
+    guild: Nullable<Guild>,
+    client: Client
+  ) {
     this.thread = null;
     this.client = client;
     /**
@@ -57,7 +61,7 @@ class ThreadMember {
      * The Member of the Thread User.
      * @type {Member}
      */
-    this.member = this.guild.members?.cache.get(this.id) as Member;
+    this.member = this.guild?.members?.cache.get(this.id) as Member;
     /**
      * The ID of the Thread
      * @type {string}
@@ -79,7 +83,7 @@ class ThreadMember {
      * @async
      * @readonly
      */
-    this.remove = () => this.kick()
+    this.remove = () => this.kick();
   }
 
   /**

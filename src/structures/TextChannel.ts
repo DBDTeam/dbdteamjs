@@ -1,27 +1,29 @@
-import { getAllStamps } from "../utils/utils";
-import { Channel } from "./BaseChannel";
-import * as Endpoints from "../rest/Endpoints";
-import { Message } from "./Message";
-import { MessagePayload } from "./Payloads/MessagePayload";
-import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { type Client } from "../client/Client";
 import { MessagePayloadData } from "../interfaces/message/MessagePayload";
+import * as Endpoints from "../rest/Endpoints";
+import { getAllStamps } from "../utils/utils";
+import { Channel } from "./BaseChannel";
+import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
+import { Message } from "./Message";
+import { MessagePayload } from "./Payloads/MessagePayload";
 
 /** @extends {Channel} */
 class TextChannel extends Channel {
   #client;
-  /**
-   * Represents a Text Channel
-   * @param {object} data
-   * @param {?} client
-   */
+
   last_message_id: string;
-  readonly last_pin: Record<any, any>;
+  readonly last_pin: any;
   rate_limit_per_user: number;
-  messages: ChannelMessageManager;
+  messages: ChannelMessageManager<TextChannel>;
   readonly cooldown: number;
   readonly sendMessage: Function;
   readonly send: Function;
+
+  /**
+   * Represents a Text Channel
+   * @param {*} data
+   * @param {Client} client
+   */
   constructor(data: any, client: Client) {
     super(data, client);
     this.#client = this.client;
@@ -119,13 +121,13 @@ class TextChannel extends Channel {
     if (!result) return null;
 
     if (!result.error) {
-      result.data = {
+      const data: any = {
         ...result.data,
         guild: this.guild,
-        member: this.guild.members?.cache.get(result.data?.author.id),
+        member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
-      return new Message(result.data, this.#client);
+      return new Message(data, this.#client);
     } else {
       return result;
     }

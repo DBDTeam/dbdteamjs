@@ -1,15 +1,15 @@
+import { Client } from "../client/Client";
+import * as Endpoints from "../rest/Endpoints";
+import { PermissionsBitField } from "../types/PermissionsBitFields";
 import { getAllStamps, setObj } from "../utils/utils";
 import { Base } from "./Base";
-import { MemberRolesManager } from "./Managers/RolesManager";
-import * as Endpoints from "../rest/Endpoints";
-import { User } from "./User";
-import { PermissionsBitField } from "../types/PermissionsBitFields";
-import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { Guild } from "./Guild";
-import { Client } from "../client/Client";
+import { MemberRolesManager } from "./Managers/RolesManager";
+import { MemberEditPayload } from "./Payloads/MemberEditPayload";
+import { User } from "./User";
 
 class Member extends Base {
-  private DATE: any;
+  DATE: any;
   private PREMIUM: any;
   private TIMEOUTED: any;
   private client: any;

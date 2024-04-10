@@ -1,8 +1,8 @@
 import { EventEmitter } from "node:events";
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
-import { Collection } from "../utils/Collection";
 import { GatewayConfig } from "../interfaces/client/Client";
+import { Collection } from "../utils/Collection";
 
 class Shard extends EventEmitter {
   private client: Client;
@@ -218,14 +218,14 @@ class ShardManager extends EventEmitter {
    * @param {import('../client/Client').Client} client
    * @param {Shard} gateway
    */
-  constructor(client: any, gateway: GatewayConfig) {
+  constructor(client: Client, gateway: GatewayConfig) {
     super();
     this.client = client;
     this.token = client.token;
     this.intents = client.intents;
     this.totalShards = gateway.totalShards || 0;
     this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
-    this.shards = new Collection();
+    this.shards = new Collection<number, Shard>();
     this.gateway = gateway;
   }
 
@@ -234,7 +234,7 @@ class ShardManager extends EventEmitter {
   }
 
   public async connect() {
-    this.config = (await this.getGatewayConfig()).data;
+    this.config = (await this.getGatewayConfig())?.data;
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;
@@ -256,7 +256,7 @@ class ShardManager extends EventEmitter {
     }
   }
 
-  public async reconnect(shardID: string) {
+  public async reconnect(shardID: number) {
     this.client.emit("debug", "Trying to reconnect...", shardID);
     const shard = this.shards.get(shardID) as Shard;
     if (!shard) {
@@ -268,7 +268,7 @@ class ShardManager extends EventEmitter {
 
   public async disconnect() {
     this.client.emit("debug", "Shards being disconnected...");
-    for (var shard of this.shards.toJSON() as Shard[]) {
+    for (var shard of this.shards.toJSON() as unknown as Shard[]) {
       await shard.disconnect();
     }
   }

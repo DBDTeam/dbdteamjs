@@ -1,6 +1,6 @@
+import { type Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
-import { Channel } from "./BaseChannel.js";
-import { type Client } from "../client/Client"
+import { Channel } from "./BaseChannel";
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel
  * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
@@ -12,7 +12,7 @@ import { type Client } from "../client/Client"
  * @extends {Channel}
  */
 class CategoryChannel extends Channel {
-  constructor(data: Record<any, any>, client: Client) {
+  constructor(data: any, client: Client) {
     super(data, client);
   }
 
@@ -22,11 +22,12 @@ class CategoryChannel extends Channel {
    */
   get channels() {
     const categoryChannels = new Collection();
-    for (const channel of this.guild.channels.cache.values()) {
-      if (channel.parentId === this.id) {
-        categoryChannels.set(channel.id, channel);
+    if (this.guild?.channels)
+      for (const channel of this.guild?.channels.cache.values()) {
+        if (channel.parent_id === this.id) {
+          categoryChannels.set(channel.id, channel);
+        }
       }
-    }
     return categoryChannels;
   }
 }

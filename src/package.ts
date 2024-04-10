@@ -18,7 +18,7 @@ export * from "./structures/VoiceChannel";
 //Types
 export * from "./structures/Flags/Intents";
 export * from "./types/ChannelTypes";
-export * from "./types/Interactions.js";
+export * from "./types/Interactions";
 export * from "./types/Presences";
 
 // Utils
