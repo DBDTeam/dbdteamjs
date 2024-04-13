@@ -2,12 +2,9 @@
   "name": "dbdteamjs",
   "version": "0.0.5",
   "description": "A Discord api wrapper to create your bot!",
-  "main": "./src/package.js",
-  "types": "./typings/index.d.ts",
+  "main": "./dist/package.js",
   "scripts": {
-    "start": "cls && node main.js",
-    "makedocs": "jsdoc --configure .jsdoc.config.json --verbose",
-    "doc": "git add . && git commit -m \"Updating the documentation\" && git push origin 0.0.5"
+    "test": "ts-node ./tests/index.ts"
   },
   "keywords": [
     "discord",
@@ -21,6 +18,8 @@
   "dependencies": {
     "discord-api-types": "^0.37.77",
     "tiny-typed-emitter": "^2.1.0",
+    "typedoc-material-theme": "^1.0.2",
+    "typedoc-theme-category-nav": "^0.0.3",
     "ws": "^8.16.0"
   },
   "repository": {
@@ -28,6 +27,7 @@
     "url": "https://github.com/DBDTeam/dbdteamjs/"
   },
   "devDependencies": {
+    "@starbeam-dev/typedoc-theme": "^1.0.1",
     "@types/node": "^20.12.2",
     "@types/ws": "^8.5.10",
     "typescript": "^5.4.3"

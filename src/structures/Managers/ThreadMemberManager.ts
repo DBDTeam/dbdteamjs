@@ -1,14 +1,10 @@
-import { Collection } from "../../utils/Collection";
-import { ThreadMember } from "../ThreadMember";
-import * as Endpoints from "../../rest/Endpoints";
 import { type Client } from "../../client/Client";
-import { type ThreadChannel } from "../ThreadChannel";
+import * as Endpoints from "../../rest/Endpoints";
+import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
+import { type ThreadChannel } from "../ThreadChannel";
+import { ThreadMember } from "../ThreadMember";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../../interfaces/rest/requestHandler";
 export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
   before: string;
 }
@@ -16,7 +12,7 @@ export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
 class ThreadMemberManager {
   private client: Client;
   id: string;
-  guild: Guild;
+  guild?: Guild;
   memberCount: number;
   cache: Collection<string, ThreadMember>;
   constructor(client: Client, thread: ThreadChannel) {

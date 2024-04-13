@@ -1,8 +1,12 @@
 import https from "https";
 import { type Client } from "../client/Client";
+import {
+  ErrorResponseFromApi,
+  Methods,
+  ResponseFromApi,
+} from "../interfaces/rest/requestHandler";
 import { resolveImage } from "../utils/ImageResolver";
 import * as Endpoints from "./Endpoints";
-import { ErrorResponseFromApi, Methods, ResponseFromApi } from "../interfaces/rest/requestHandler";
 
 export class RequestHandler {
   private lastRequestTime: number;

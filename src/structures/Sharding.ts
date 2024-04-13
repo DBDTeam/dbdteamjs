@@ -1,8 +1,8 @@
 import { EventEmitter } from "node:events";
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
+import { GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
-import { GatewayConfig } from "../interfaces/client/Client";
 
 class Shard extends EventEmitter {
   private client: Client;
@@ -18,13 +18,13 @@ class Shard extends EventEmitter {
   public latency: number;
   public ws: any;
   public url: string;
-  public shardID: number;
+  public shardID: string;
   public totalShards: number;
   public restartTimes: number;
 
   constructor(
     client: Client,
-    shardID: number,
+    shardID: string,
     totalShards: number,
     gateway: GatewayConfig
   ) {
@@ -182,6 +182,7 @@ class Shard extends EventEmitter {
         this.identify();
         break;
       case 11:
+        // @ts-ignore
         this.client.emit("Heartbeat ACK received.", this.shardID);
         this.client.ping = Date.now() - this.latency;
         break;
@@ -191,6 +192,7 @@ class Shard extends EventEmitter {
   async heartbeat() {
     if (!this.authenticated) return;
     this.latency = Date.now();
+    // @ts-ignore
     this.client.emit("Hearbeat sended.", this.shardID);
     this.ws.send(JSON.stringify({ op: 1, d: this.sequence }));
   }
@@ -218,14 +220,14 @@ class ShardManager extends EventEmitter {
    * @param {import('../client/Client').Client} client
    * @param {Shard} gateway
    */
-  constructor(client: any, gateway: GatewayConfig) {
+  constructor(client: Client, gateway: GatewayConfig) {
     super();
     this.client = client;
     this.token = client.token;
     this.intents = client.intents;
     this.totalShards = gateway.totalShards || 0;
     this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
-    this.shards = new Collection();
+    this.shards = new Collection<number, Shard>();
     this.gateway = gateway;
   }
 
@@ -234,7 +236,7 @@ class ShardManager extends EventEmitter {
   }
 
   public async connect() {
-    this.config = (await this.getGatewayConfig()).data;
+    this.config = (await this.getGatewayConfig())?.data;
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;
@@ -244,6 +246,7 @@ class ShardManager extends EventEmitter {
     for (var shardID = 0; shardID < this.totalShards; shardID++) {
       const shard = new Shard(
         this.client,
+        // @ts-ignore shhh :3
         shardID,
         this.totalShards,
         this.gateway
@@ -256,7 +259,7 @@ class ShardManager extends EventEmitter {
     }
   }
 
-  public async reconnect(shardID: string) {
+  public async reconnect(shardID: number) {
     this.client.emit("debug", "Trying to reconnect...", shardID);
     const shard = this.shards.get(shardID) as Shard;
     if (!shard) {
@@ -268,7 +271,7 @@ class ShardManager extends EventEmitter {
 
   public async disconnect() {
     this.client.emit("debug", "Shards being disconnected...");
-    for (var shard of this.shards.toJSON() as Shard[]) {
+    for (var shard of this.shards.toJSON() as unknown as Shard[]) {
       await shard.disconnect();
     }
   }

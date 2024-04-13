@@ -1,39 +1,39 @@
-import { Intents } from "../../interfaces/client/Intents";
+import { Intents } from "../../common";
 
 export class IntentsBitFields {
-    public intents: number;
-    private iced: boolean;
-    
-    constructor(...intents: Intents[]) {
-        this.intents = 0;
+  public intents: number;
+  private iced: boolean;
 
-        for (const intent of intents) {
-            if (this.intents & intent) continue;
-            this.intents |= intent;
-        }
+  constructor(...intents: Intents[]) {
+    this.intents = 0;
 
-        this.iced = false;
+    for (const intent of intents) {
+      if (this.intents & intent) continue;
+      this.intents |= intent;
     }
 
-    add(intent: Intents) {
-        if (this.iced) return;
-        if ((this.intents & intent) === intent) return;
+    this.iced = false;
+  }
 
-        this.intents |= intent;
-    }
+  add(intent: Intents) {
+    if (this.iced) return;
+    if ((this.intents & intent) === intent) return;
 
-    remove(intent: Intents) {
-        if (this.iced) return;
-        if ((this.intents & intent) === 0) return;
+    this.intents |= intent;
+  }
 
-        this.intents &= ~intent;
-    }
+  remove(intent: Intents) {
+    if (this.iced) return;
+    if ((this.intents & intent) === 0) return;
 
-    has(intent: Intents) {
-        return (this.intents & intent) !== 0;
-    }
+    this.intents &= ~intent;
+  }
 
-    freeze() {
-        this.iced = true;
-    }
+  has(intent: Intents) {
+    return (this.intents & intent) !== 0;
+  }
+
+  freeze() {
+    this.iced = true;
+  }
 }

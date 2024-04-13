@@ -49,7 +49,7 @@ class InteractionModalPayload {
    * Represents a InteractionModalPayload
    * @param {ModalPayloadData} data - The ModalPayloadData.
    */
-  constructor(data) {
+  constructor(data: any) {
     this.#d = setObj(this.#DATA, data, { custom_id: "customId" });
 
     for (var i in this.#d?.components) {

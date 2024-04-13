@@ -1,19 +1,22 @@
-import * as Endpoints from "../../rest/Endpoints.js";
-import { getId } from "../../utils/utils.js";
-import { type Client } from "../../client/Client"
+import { type Client } from "../../client/Client";
+import {
+  ErrorResponseFromApi,
+  ResponseFromApi,
+} from "../../interfaces/rest/requestHandler";
+import * as Endpoints from "../../rest/Endpoints";
+import { getId } from "../../utils/utils";
 import { type Message } from "../Message";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler.js";
 
 interface RemoveEmojiPayload {
   emojis: Array<string>;
-  user?: string | null | undefined | "@me"
+  user?: string | null | undefined | "@me";
 }
 
 class MessageReactions {
   readonly client: Client;
   readonly messageId: string;
   readonly channelId: string;
-  readonly guildId: string;
+  readonly guildId?: string;
   public reactions: Array<any>;
   constructor(client: Client, msgObj: Message, reacts: Array<any>) {
     this.client = client;
@@ -30,7 +33,7 @@ class MessageReactions {
   async remove(removeData: RemoveEmojiPayload) {
     // TODO: I need help with this, i'm not understanding this error when i use:
     //async remove(removeData: RemoveEmojiPayload): Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>>
-    var emojis = removeData.emojis
+    var emojis = removeData.emojis;
     var user = removeData.user || "@me";
 
     var results = [];
@@ -57,7 +60,9 @@ class MessageReactions {
     }
   }
 
-  async add(...emojis: string[]): Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>> {
+  async add(
+    ...emojis: string[]
+  ): Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>> {
     var results = [];
     for (var i of emojis) {
       var emoji = encodeURIComponent(getId(i));

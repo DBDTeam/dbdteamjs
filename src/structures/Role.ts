@@ -8,7 +8,6 @@ import {
 } from "discord-api-types/v10";
 import * as Endpoints from "../rest/Endpoints";
 import { resolveImage } from "../utils/ImageResolver";
-import { readOnly } from "../utils/utils";
 import { Base } from "./Base";
 
 export interface EditRolePayload {
@@ -26,7 +25,6 @@ export interface EditRolePayload {
  * Represents a Discord Guild Role
  */
 export class GuildRole extends Base {
-  private data;
   guildId: any;
   name: any;
   hoist: boolean;
@@ -37,14 +35,16 @@ export class GuildRole extends Base {
   mentionable: boolean;
   tags: APIRoleTags;
   flags: any;
+  readonly guild?: Guild;
 
-  constructor(data: APIRole, guild: Guild, client: Client) {
+  constructor(public data: APIRole, guild: Guild, private client: Client) {
     super(client);
+
     this.data = data;
     this.id = data.id;
     this.guildId = guild?.id || guild;
-    if (client.guild && client.guild.cache)
-      readOnly(this, "guild", client.guilds.cache.get(guild));
+    if (client.guilds && client.guilds.cache)
+      this.guild = client.guilds.cache.get(guild.id);
     this.name = data.name;
     this.hoist = !!data.hoist;
     this.icon = null;

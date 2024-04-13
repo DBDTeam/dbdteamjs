@@ -1,16 +1,20 @@
+import {
+  GatewayActivityUpdateData,
+  GatewayPresenceUpdateData,
+  PresenceUpdateStatus,
+} from "discord-api-types/v10";
+import { Nullable } from "../common";
 import { type Client } from "./Client";
-import { PresenceStatus, ActivityPayload } from "../types/Presences"
-import { ClientPresencePayload } from "../interfaces/client/Client";
 
 /**
-  * Represents the client presence (WS presence)
-  */
+ * Represents the client presence (WS presence)
+ */
 class ClientPresence {
   public status;
-  public activities: Array<ActivityPayload>;
-  public since: number;
+  public activities: GatewayActivityUpdateData[];
+  public since: Nullable<number>;
   public mobilePlatform: boolean;
-  
+
   constructor(private client: Client) {
     this.client = client;
     /**
@@ -38,7 +42,10 @@ class ClientPresence {
    * @returns {Promise<boolean>}
    * @async
    */
-  async update(obj: ClientPresencePayload, shardId: number = 0) {
+  async update(
+    obj: Omit<GatewayPresenceUpdateData, "afk">,
+    shardId: number = 0
+  ) {
     const shard = this.client.shardManager.shards.get(shardId);
     if (!shard) {
       this.client.emit("error", {
@@ -54,7 +61,7 @@ class ClientPresence {
     const ws = shard.ws;
 
     !["online", "invisible", "dnd", "idle"].includes(obj.status)
-      ? (obj.status = PresenceStatus.Online)
+      ? (obj.status = PresenceUpdateStatus.Online)
       : null;
 
     Number.isInteger(obj.since) ? null : (obj.since = 0);

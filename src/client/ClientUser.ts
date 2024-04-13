@@ -1,7 +1,7 @@
+import { EditClientUserPayload } from "../common";
+import * as Endpoints from "../rest/Endpoints";
 import { User } from "../structures/User";
-import * as Endpoints from "../rest/Endpoints.js";
-import { resolveImage } from "../utils/ImageResolver.js";
-import { EditClientUserPayload } from "../interfaces/client/Client";
+import { resolveImage } from "../utils/ImageResolver";
 
 /**
  * @extends {User}
@@ -21,7 +21,7 @@ class ClientUser extends User {
    * @returns {Promise<ClientUser>}
    */
   async edit(object: EditClientUserPayload) {
-    if(object.avatar) {
+    if (object.avatar) {
       object.avatar = await resolveImage(object.avatar);
     }
 
@@ -37,7 +37,7 @@ class ClientUser extends User {
       }
     );
 
-    if(!result) return result;
+    if (!result) return result;
 
     if (result.error || !this.client.user) {
       return result;

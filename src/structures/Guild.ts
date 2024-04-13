@@ -1,55 +1,62 @@
+import {
+  GuildDefaultMessageNotifications,
+  GuildExplicitContentFilter,
+  GuildMFALevel,
+  GuildNSFWLevel,
+  GuildVerificationLevel,
+} from "discord-api-types/v10";
+import { type Client } from "../client/Client";
+import { Nullable } from "../common";
+import { Collection } from "../utils/Collection";
+import { getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/ChannelManager";
-import { getAllStamps } from "../utils/utils";
-import { Collection } from "../utils/Collection";
-import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
+import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRole } from "./Role";
-import { type Client } from "../client/Client"
-import { Nullded } from "../interfaces/other";
 import { VoiceChannel } from "./VoiceChannel";
-import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel } from "discord-api-types/v10";
 
 class Guild extends Base {
   private exists: any;
   readonly client: Client;
   name: string;
-  icon: string | Nullded;
+  icon: Nullable<string>;
   permissions: number;
-  features: string[] | Nullded;
-  approximate_members: number | Nullded;
-  approximate_presences: number | Nullded;
+  features: Nullable<string[]>;
+  approximate_members: Nullable<number>;
+  approximate_presences: Nullable<number>;
   roles?: GuildRolesManager;
   emojis: Collection<any, any>;
   stickers: Collection<any, any>;
   channels: GuildChannelManager;
   voice_states: Collection<string, VoiceChannel>;
   members?: GuildMemberManager;
-  created: Record<string, any>;
-  splash: string | Nullded;
-  discovery_splash: string | Nullded;
-  owner_id: string | Nullded;
-  afk_channel: string | Nullded;
-  afk_timeout: number | Nullded;
+  created: any;
+  splash: Nullable<string>;
+  discovery_splash: Nullable<string>;
+  owner_id: Nullable<string>;
+  afk_channel: Nullable<string>;
+  afk_timeout: Nullable<number>;
   widget: boolean;
-  widget_channel_id: string | Nullded;
+  widget_channel_id: Nullable<string>;
   verification_level: GuildVerificationLevel;
   default_message_notifications: GuildDefaultMessageNotifications;
   explicit_level: GuildExplicitContentFilter;
   mfa_level: GuildMFALevel;
-  system_channel: string | Nullded;
-  system_channel_flags: number | Nullded;
-  rules_channel: string | Nullded;
-  max_members: number | Nullded;
-  vanity_invite: string | Nullded;
-  description: string | Nullded;
-  banner: string | Nullded;
-  boost_tier: string | Nullded;
-  boost_count: string | Nullded;
-  preferred_locale: string | Nullded;
-  public_channel_id: string | Nullded;
+  system_channel: Nullable<string>;
+  system_channel_flags: Nullable<number>;
+  rules_channel: Nullable<string>;
+  max_members: Nullable<number>;
+  vanity_invite: Nullable<string>;
+  description: Nullable<string>;
+  banner: Nullable<string>;
+  boost_tier: Nullable<string>;
+  boost_count: Nullable<string>;
+  preferred_locale: Nullable<string>;
+  public_channel_id: Nullable<string>;
   welcome_screen: Record<any, any>;
   nsfw_level: GuildNSFWLevel;
+  guild: any;
   /**
    * Represents a Guild
    * @param {object} data - Guild payload
@@ -209,8 +216,7 @@ class Guild extends Base {
        * The Guild default message notifactions level
        * @type {number}
        */
-      this.default_message_notifications =
-        data.default_message_notifications;
+      this.default_message_notifications = data.default_message_notifications;
     }
     if (data.explicit_content_filter) {
       /**

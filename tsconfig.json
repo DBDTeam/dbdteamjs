@@ -6,21 +6,34 @@
       "declaration": true,
       "skipLibCheck": true,
       "strict": true,
-      
       /* tyoes */
       "noImplicitAny": true,
-		"strictNullChecks": true,
-		"strictFunctionTypes": true,
-		"noImplicitThis": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-      
-      "typeRoots": ["./node_modules/@types", "./typings/index.d.ts"],
+      "strictNullChecks": true,
+      "strictFunctionTypes": true,
+      "noImplicitThis": true,
+      "noUnusedParameters": true,
+      "noImplicitReturns": false,
+      "noFallthroughCasesInSwitch": true,
       "paths": {
-        "@types": ["./typings/index.d.ts"]
+         "@types": [
+            "./typings/index.d.ts"
+         ]
       },
-      "outDir": "./lib"
+      "outDir": "./lib",
+      "rootDir": "./src"
+   },
+   "include": [
+      "./src"
+   ],
+   "exclude": [
+      "./lib"
+   ],
+   "typedocOptions": {
+      "entryPoints": [
+         "./src/"
+      ],
+      "out": "docs",
+      // "plugin": ["typedoc-material-theme"],
+      // "themeColor": "#cb9820",
    }
 }

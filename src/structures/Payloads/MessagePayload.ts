@@ -1,6 +1,10 @@
-import { AllowedMentionsTypes } from "discord-api-types/v10";
+import { AllowedMentionsTypes, APIAttachment } from "discord-api-types/v10";
+import { MessageBodyRequest } from "../../common";
+import {
+  MessagePayloadData,
+  MessagePayloadFileData,
+} from "../../interfaces/message/MessagePayload";
 import { setObj } from "../../utils/utils";
-import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
@@ -64,8 +68,8 @@ class MessagePayload {
    * @param {Files} files
    */
   constructor(
-    data: MessagePayloadData | string,
-    files: MessagePayloadFileData[] = ([] = [])
+    data: MessageBodyRequest | string,
+    files: APIAttachment[] = ([] = [])
   ) {
     this.d =
       typeof data === "string"
@@ -136,7 +140,7 @@ class MessagePayload {
   }
 
   get files(): MessagePayloadFileData[] {
-    return this.files;
+    return this.d.files;
   }
 }
 

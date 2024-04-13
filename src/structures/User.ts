@@ -25,7 +25,7 @@ export class User extends Base {
   /**
    * The User name
    */
-  username!: string | any;
+  username!: string;
   /**
    * The User global name
    */
@@ -72,7 +72,8 @@ export class User extends Base {
    * @param client - The client
    */
   constructor(data: any, client: Client) {
-    super(client);
+    super(data.id);
+
     this.id = data.id;
     this.client = client;
     this.bot = false;
@@ -134,7 +135,7 @@ export class User extends Base {
    *  format: "jpg"
    * })// https://cdn.discordapp.com//avatars/738824089128665118/f67c14413c916648f2fb50be239adf5f.jpg?size=64
    */
-  avatarUrl(opts: CDNOptions): undefined | string {
+  avatarUrl(opts?: CDNOptions): undefined | string {
     if (!this.id) return;
     return this.client.rest.cdn.avatar(this, opts);
   }

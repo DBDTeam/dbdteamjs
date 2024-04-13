@@ -4,7 +4,7 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { Base } from "../structures/Base"
+import { Base } from "../structures/Base";
 
 import { Channel } from "../structures/BaseChannel";
 import { CategoryChannel } from "../structures/CategoryChannel";
@@ -126,14 +126,10 @@ export function getKeyByValue(object: object, value: any) {
   return f;
 }
 
-export function getAllStamps(c: Base | any) {
-  let stamp: Date;
+export function getAllStamps(c: Base) {
+  if (!c) return null;
 
-  if (c instanceof Base) {
-    stamp = new Date(Number(c.getEpoch) + Number(c.getBinary));
-  } else {
-    stamp = c;
-  }
+  const stamp = new Date(Number(c.getEpoch) + Number(c.getBinary));
 
   return {
     stamp: stamp.getTime(),
