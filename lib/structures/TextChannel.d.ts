@@ -1,5 +1,4 @@
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import { Channel } from "./BaseChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { Message } from "./Message";
@@ -34,6 +33,6 @@ declare class TextChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(obj: MessagePayloadData): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    createMessage(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
 }
 export { TextChannel };

@@ -1,5 +1,6 @@
 node_modules/
 main.js
 package-lock.json
-.jsdoc.config.json
 .env
+lib/
+.vscode

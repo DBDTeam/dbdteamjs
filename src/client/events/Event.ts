@@ -1,4 +1,4 @@
-import { ProbablyPromise } from "../../interfaces/other";
+import { ProbablyPromise } from "../../common";
 import { Member } from "../../structures/Member";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";

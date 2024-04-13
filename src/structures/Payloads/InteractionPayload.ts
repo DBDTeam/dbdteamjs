@@ -114,6 +114,6 @@ export class InteractionPayload {
    * @returns {any[]} The files associated with the payload.
    */
   get files(): any[] {
-    return this.files;
+    return this.d.files;
   }
 }

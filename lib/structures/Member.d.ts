@@ -2,12 +2,12 @@ import { Client } from "../client/Client";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 declare class Member extends Base {
+    readonly guild: Guild;
     DATE: any;
     private PREMIUM;
     private TIMEOUTED;
     private client;
     private d;
-    readonly guild: any;
     joined: any;
     user: any;
     muted: any;
@@ -25,7 +25,7 @@ declare class Member extends Base {
     timeoutUntil: any;
     communicationDisabled: any;
     timeouted: any;
-    constructor(data: Record<any, any>, guild: Guild | string, client: Client);
+    constructor(data: Record<any, any>, guild: Guild, client: Client);
     get author(): any;
     _patch(data: any): void;
     leave(): void;

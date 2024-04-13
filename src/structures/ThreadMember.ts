@@ -1,9 +1,10 @@
-import { Nullable } from "../interfaces/other";
-import { ThreadChannel, type Client } from "../package";
+import { Client } from "../client/Client";
+import { Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { getAllStamps } from "../utils/utils";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
+import { ThreadChannel } from "./ThreadChannel";
 
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel

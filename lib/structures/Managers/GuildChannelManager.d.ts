@@ -1,10 +1,10 @@
-import { Collection } from "../../utils/Collection";
 import { type Client } from "../../client/Client";
+import { Collection } from "../../utils/Collection";
 import { type Channel } from "../BaseChannel";
-import { type TextChannel } from "../TextChannel";
-import { type VoiceChannel } from "../VoiceChannel";
-import { type ThreadChannel } from "../ThreadChannel";
 import { type CategoryChannel } from "../CategoryChannel";
+import { type TextChannel } from "../TextChannel";
+import { type ThreadChannel } from "../ThreadChannel";
+import { type VoiceChannel } from "../VoiceChannel";
 declare class GuildChannelManager {
     readonly client: Client;
     readonly guildId: string;

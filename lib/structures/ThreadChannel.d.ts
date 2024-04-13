@@ -1,5 +1,4 @@
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import { Channel } from "./BaseChannel";
 import { CategoryChannel } from "./CategoryChannel";
@@ -61,6 +60,6 @@ declare class ThreadChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(obj: MessagePayloadData): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | undefined>;
+    createMessage(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | undefined>;
 }
 export { ThreadChannel };

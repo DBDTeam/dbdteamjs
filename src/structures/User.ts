@@ -25,7 +25,7 @@ export class User extends Base {
   /**
    * The User name
    */
-  username!: string | any;
+  username!: string;
   /**
    * The User global name
    */
@@ -72,7 +72,8 @@ export class User extends Base {
    * @param client - The client
    */
   constructor(data: any, client: Client) {
-    super(client);
+    super(data.id);
+
     this.id = data.id;
     this.client = client;
     this.bot = false;

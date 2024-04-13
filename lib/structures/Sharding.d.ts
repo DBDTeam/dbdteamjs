@@ -17,10 +17,10 @@ declare class Shard extends EventEmitter {
     latency: number;
     ws: any;
     url: string;
-    shardID: number;
+    shardID: string;
     totalShards: number;
     restartTimes: number;
-    constructor(client: Client, shardID: number, totalShards: number, gateway: GatewayConfig);
+    constructor(client: Client, shardID: string, totalShards: number, gateway: GatewayConfig);
     connect(): Promise<void>;
     openEvent(): Promise<void>;
     closeEvent(code: number, reason: string): Promise<void>;

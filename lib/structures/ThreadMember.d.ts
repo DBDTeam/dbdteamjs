@@ -1,7 +1,8 @@
+import { Client } from "../client/Client";
 import { Nullable } from "../interfaces/other";
-import { ThreadChannel, type Client } from "../package";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
+import { ThreadChannel } from "./ThreadChannel";
 declare class ThreadMember {
     private client;
     id: string;

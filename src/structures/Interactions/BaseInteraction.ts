@@ -1,9 +1,10 @@
-import { Channel } from "diagnostics_channel";
-import { Client } from "your-client-module"; // Agrega el módulo del cliente si es posible.
-import { readOnly } from "../../utils/utils";
+import { Client } from "../../client/Client";
+import * as Endpoints from "../../rest/Endpoints";
+import { Channel } from "../BaseChannel";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
+import { InteractionPayload } from "../Payloads/InteractionPayload";
 import { TextChannel } from "../TextChannel";
 import { ThreadChannel } from "../ThreadChannel";
 import { User } from "../User";
@@ -14,14 +15,6 @@ import { InteractionResponse } from "./InteractionResponse";
  * Represents the base class for interactions.
  */
 class InteractionBase {
-  /**
-   * The Client.
-   * @name InteractionBase#client
-   * @type {Client}
-   * @readonly
-   */
-  public readonly client: Client;
-
   /**
    * The Interaction ID.
    * @type {string}
@@ -55,21 +48,10 @@ class InteractionBase {
   public guild: Guild | undefined;
 
   /**
-   * The Interaction Member.
-   * @type {Member}
-   */
-  public member: Member | undefined;
-
-  /**
    * The Channel where the Interaction was triggered.
    * @type {Channel | VoiceChannel | TextChannel | ThreadChannel}
    */
-  public channel:
-    | Channel
-    | VoiceChannel
-    | TextChannel
-    | ThreadChannel
-    | undefined;
+  public channel: unknown;
 
   /**
    * The Interaction User.
@@ -93,28 +75,35 @@ class InteractionBase {
    * The raw data.
    * @type {object}
    */
-  public rawData: object;
+  public rawData: Record<any, unknown>;
 
   #d: any;
+
+  showModal: (obj: any) => Promise<any>;
+  reply: (obj: any) => Promise<InteractionResponse | object>;
+  id: any;
+  /**
+   * The Interaction Member.
+   * @type {Nullable<Member>}
+   */
+  member: Member | null;
 
   /**
    * Creates an instance of InteractionBase.
    * @param {object} data - The Interaction payload.
    * @param {Client} client - The Client.
    */
-  constructor(data: any, client: Client) {
+  constructor(data: any, readonly client: Client) {
     this.client = client;
     this.token = data.token;
     this.interactionId = data.id;
     this.type = data.type;
     this.guildId = data.guild_id;
     this.guild = this.client.guilds.cache.get(this.guildId);
-    this.member = new Member(
-      { ...data.member, id: data.member.user.id },
-      this.guild,
-      this.client
-    );
-    this.channel = this.guild.channels.cache.get(data.channel_id);
+
+    this.member = this._member;
+
+    this.channel = this.guild?.channels.cache.get(data.channel_id);
     this.user = this.author;
     this.permissions = data.app_permissions;
     this.guildLocale = data.guild_locale;
@@ -122,12 +111,22 @@ class InteractionBase {
     this.#d = data;
     this.id = data.data.id;
 
-    readOnly(this, "token", this.token);
-    readOnly(this, "interactionId", this.interactionId);
-    readOnly(this, "reply", this.makeReply);
-    readOnly(this, "showModal", this.modal);
+    this.token = this.token;
+    this.interactionId = this.interactionId;
+    this.reply = this.makeReply;
+    this.showModal = this.modal;
   }
 
+  get _member() {
+    if (this.guild)
+      if (this.#d && this.#d.member)
+        return new Member(
+          { ...this.#d.member, id: this.#d.member.user.id },
+          this.guild,
+          this.client
+        );
+    return null;
+  }
   /**
    * Returns whether the Interaction is a ComponentInteraction.
    * @type {boolean}
@@ -174,8 +173,42 @@ class InteractionBase {
    * @param {?} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async makeReply(obj: any): Promise<InteractionResponse | object> {
-    // Implementation remains same as in JavaScript
+  public async makeReply(obj: any): Promise<any | object> {
+    const payload = new InteractionPayload(obj, obj.files);
+    let _d = payload.payload,
+      files = payload.files;
+
+    const data = { type: 4, data: _d };
+
+    let response;
+    let res = await this.client.rest.request(
+      "POST",
+      Endpoints.Interaction(this.interactionId, this.token),
+      true,
+      { data },
+      null,
+      files
+    );
+
+    if (obj.fetchResponse || obj.fetchReply) {
+      res = await this.client.rest.request(
+        "GET",
+        Endpoints.InteractionOriginal(this.client.user.id, this.token),
+        true
+      );
+
+      response = new InteractionResponse(
+        {
+          ...res?.data,
+          guild_id: this.guildId,
+          token: this.token,
+          interactionId: this.interactionId,
+        },
+        this.client
+      );
+    }
+
+    return response ?? res;
   }
 
   /**
@@ -184,7 +217,7 @@ class InteractionBase {
    * @returns {Promise<Object>}
    * @async
    */
-  public async deferReply(ephemeral: boolean): Promise<object> {
+  public async deferReply(_ephemeral: boolean): Promise<any> {
     // Implementation remains same as in JavaScript
   }
 
@@ -194,9 +227,7 @@ class InteractionBase {
    * @param {EditMessagePayload} obj - The EditMessagePayloadData
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async editReply(
-    obj: EditMessagePayload
-  ): Promise<InteractionResponse | object> {
+  public async editReply(_obj: any): Promise<any | object> {
     // Implementation remains same as in JavaScript
   }
 
@@ -206,9 +237,7 @@ class InteractionBase {
    * @returns {Promise<InteractionResponse>}
    * @async
    */
-  public async followUp(
-    obj: InteractionPayloadData
-  ): Promise<InteractionResponse> {
+  public async followUp(_obj: any): Promise<any> {
     // Implementation remains same as in JavaScript
   }
 
@@ -218,7 +247,7 @@ class InteractionBase {
    * @returns {Promise<any>}
    * @async
    */
-  public async modal(obj: InteractionPayloadData): Promise<any> {
+  public async modal(_obj: any): Promise<any> {
     // Implementation remains same as in JavaScript
   }
 }

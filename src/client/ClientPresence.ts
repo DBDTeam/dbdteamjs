@@ -3,7 +3,7 @@ import {
   GatewayPresenceUpdateData,
   PresenceUpdateStatus,
 } from "discord-api-types/v10";
-import { Nullable } from "../interfaces/other";
+import { Nullable } from "../common";
 import { type Client } from "./Client";
 
 /**

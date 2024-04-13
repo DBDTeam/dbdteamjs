@@ -1,6 +1,5 @@
 import { VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import * as Endpoints from "../rest/Endpoints";
 import { Channel } from "./BaseChannel";
 import { Message } from "./Message";
@@ -88,7 +87,7 @@ class VoiceChannel extends Channel {
    * })
    * @returns {Promise<Message | Object>}
    */
-  async createMessage(obj: MessagePayloadData) {
+  async createMessage(obj: any) {
     const message = new MessagePayload(obj, obj.files);
 
     var result = await this.client.rest.request(

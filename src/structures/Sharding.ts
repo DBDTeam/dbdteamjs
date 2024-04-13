@@ -1,7 +1,7 @@
 import { EventEmitter } from "node:events";
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
-import { GatewayConfig } from "../interfaces/client/Client";
+import { GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
 
 class Shard extends EventEmitter {
@@ -18,13 +18,13 @@ class Shard extends EventEmitter {
   public latency: number;
   public ws: any;
   public url: string;
-  public shardID: number;
+  public shardID: string;
   public totalShards: number;
   public restartTimes: number;
 
   constructor(
     client: Client,
-    shardID: number,
+    shardID: string,
     totalShards: number,
     gateway: GatewayConfig
   ) {
@@ -182,6 +182,7 @@ class Shard extends EventEmitter {
         this.identify();
         break;
       case 11:
+        // @ts-ignore
         this.client.emit("Heartbeat ACK received.", this.shardID);
         this.client.ping = Date.now() - this.latency;
         break;
@@ -191,6 +192,7 @@ class Shard extends EventEmitter {
   async heartbeat() {
     if (!this.authenticated) return;
     this.latency = Date.now();
+    // @ts-ignore
     this.client.emit("Hearbeat sended.", this.shardID);
     this.ws.send(JSON.stringify({ op: 1, d: this.sequence }));
   }
@@ -244,6 +246,7 @@ class ShardManager extends EventEmitter {
     for (var shardID = 0; shardID < this.totalShards; shardID++) {
       const shard = new Shard(
         this.client,
+        // @ts-ignore shhh :3
         shardID,
         this.totalShards,
         this.gateway

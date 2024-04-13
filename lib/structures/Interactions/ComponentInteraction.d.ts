@@ -1,8 +1,6 @@
 import { APIInteractionResponseCallbackData, APIMessageComponentInteraction, ComponentType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
-import { ComponentInteractionMessageUpdate } from "../../interfaces/other";
-import { Guild } from "../Guild";
-import { Member } from "../Member";
+import { ComponentInteractionMessageUpdate, Nullable } from "../../interfaces/other";
 import { Message } from "../Message";
 import { User } from "../User";
 import { InteractionBase } from "./BaseInteraction";
@@ -16,11 +14,8 @@ declare class ComponentInteraction extends InteractionBase {
     client: Client;
     customId: string;
     componentType: ComponentType;
-    readonly update: (obj: APIInteractionResponseCallbackData) => Promise<InteractionResponse>;
-    guildId: any;
+    readonly update: (obj: APIInteractionResponseCallbackData) => Promise<Nullable<InteractionResponse>>;
     message: Message;
-    member: Member;
-    guild: string | Guild;
     user: User;
     /**
      * Creates an instance of ComponentInteraction.
@@ -47,7 +42,7 @@ declare class ComponentInteraction extends InteractionBase {
      * @param {InteractionPayloadData} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse>}
      */
-    updateReply(obj: ComponentInteractionMessageUpdate): Promise<InteractionResponse>;
+    updateReply(obj: ComponentInteractionMessageUpdate): Promise<Nullable<InteractionResponse>>;
     /**
      * Patch method for initializing data properties.
      * @private

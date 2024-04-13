@@ -1,6 +1,5 @@
 import { VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import { Channel } from "./BaseChannel";
 import { Message } from "./Message";
 /** @extends {Channel} */
@@ -35,6 +34,6 @@ declare class VoiceChannel extends Channel {
      * })
      * @returns {Promise<Message | Object>}
      */
-    createMessage(obj: MessagePayloadData): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    createMessage(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
 }
 export { VoiceChannel };

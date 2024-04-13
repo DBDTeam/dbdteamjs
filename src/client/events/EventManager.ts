@@ -59,7 +59,7 @@ export class EventManager {
     // this._r("MESSAGE_DELETE");
 
     // //NON INTENTS RELATED
-    // this._r("INTERACTION_CREATE");
+    this._r("INTERACTION_CREATE");
     this._r("READY");
   }
 

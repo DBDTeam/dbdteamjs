@@ -1,5 +1,6 @@
 import { APIApplicationCommand } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
+import { CommandsBody } from "../../interfaces/interactions";
 import { Collection } from "../../utils/Collection";
 export interface ApplicationCommand extends APIApplicationCommand {
     defaultMemberPermissions: null | string;
@@ -17,7 +18,7 @@ declare class ApplicationCommandManager {
     constructor(client: Client, guildId?: string | null | undefined);
     add(obj: ApplicationCommand): Promise<Record<any, any> | import("../../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
     fetch(id: string): Promise<Record<any, any> | import("../../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
-    set(commands: Array<ApplicationCommand> | ApplicationCommand): Promise<Collection<string, Record<any, any>> | null | undefined>;
+    set(commands: CommandsBody[] | CommandsBody): Promise<Collection<string, Record<any, any>> | null | undefined>;
     remove(id: string): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
 }
 export { ApplicationCommandManager };

@@ -1,20 +1,23 @@
-import { typeChannel } from "../../utils/utils";
-import { Collection } from "../../utils/Collection";
+import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
-import { type Client } from "../../client/Client"
+import { Collection } from "../../utils/Collection";
+import { typeChannel } from "../../utils/utils";
 import { type Channel } from "../BaseChannel";
-import { type TextChannel } from "../TextChannel";
-import { type VoiceChannel } from "../VoiceChannel";
-import { type ThreadChannel } from "../ThreadChannel";
 import { type CategoryChannel } from "../CategoryChannel";
+import { type TextChannel } from "../TextChannel";
+import { type ThreadChannel } from "../ThreadChannel";
+import { type VoiceChannel } from "../VoiceChannel";
 
 class GuildChannelManager {
   readonly client: Client;
   readonly guildId: string;
-  public cache: Collection<string, Channel | TextChannel | VoiceChannel | ThreadChannel | CategoryChannel>;
+  public cache: Collection<
+    string,
+    Channel | TextChannel | VoiceChannel | ThreadChannel | CategoryChannel
+  >;
   constructor(guildId: string, client: Client) {
-    this.client = client
-    this.guildId = guildId
+    this.client = client;
+    this.guildId = guildId;
     this.cache = new Collection();
     this._fetchAllChannels();
   }
@@ -34,7 +37,7 @@ class GuildChannelManager {
 
       for (var i of allChannels as Array<any>) {
         var guild =
-          this.client.channels.cache.get(i.id).guild ||
+          this.client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
         i.guild = guild;
         this.client.channels.cache.set(i.id, typeChannel(i, this.client));

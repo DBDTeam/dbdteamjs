@@ -1,5 +1,4 @@
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import * as Endpoints from "../rest/Endpoints";
 import { getAllStamps, setObj, typeChannel } from "../utils/utils";
@@ -207,7 +206,7 @@ class ThreadChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(obj: MessagePayloadData) {
+  async createMessage(obj: any) {
     const message = new MessagePayload(obj, obj.files);
 
     var result = await this.client.rest.request(

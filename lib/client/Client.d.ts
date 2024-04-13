@@ -31,7 +31,11 @@ declare class Client extends TypedEmitter<ClientEvents> {
     channels: ChannelManager;
     ready: number;
     ping: number;
-    user?: ClientUser;
+    /**
+     * The client user
+     * @type {ClientUser}
+     */
+    user: ClientUser;
     presence: ClientPresence;
     application: ClientApplication | undefined;
     private events;

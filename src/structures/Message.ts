@@ -1,7 +1,7 @@
 import { APIChannelMention, APIMessage } from "discord-api-types/v10";
 import { Client } from "../client/Client";
+import { MessageBodyRequest, Nullable } from "../common";
 import { MessagePayloadData } from "../interfaces/message/MessagePayload";
-import { MessageBodyRequest, Nullable } from "../interfaces/other";
 import * as Endpoints from "../rest/Endpoints";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
@@ -26,7 +26,7 @@ class Message extends Base {
    * The client associated with the message.
    * @type {Client}
    */
-  private client: Client;
+  readonly client: Client;
 
   /**
    * The ID of the message.
@@ -385,7 +385,7 @@ class Message extends Base {
     if (this.webhookId && "user" in this.data) {
       return this.data.user as User;
     } else {
-      const x = new User(this.author, this.client);
+      const x = new User(this.data.author, this.client);
       this.client.users.cache.set(x.id, x);
       return x;
     }

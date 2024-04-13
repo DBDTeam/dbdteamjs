@@ -4,9 +4,8 @@ import {
   ComponentType,
 } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
-import { ComponentInteractionMessageUpdate } from "../../interfaces/other";
+import { ComponentInteractionMessageUpdate, Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
-import { Guild } from "../Guild";
 import { Member } from "../Member";
 import { Message } from "../Message";
 import { InteractionPayload } from "../Payloads/InteractionPayload";
@@ -23,11 +22,8 @@ class ComponentInteraction extends InteractionBase {
   componentType: ComponentType;
   readonly update: (
     obj: APIInteractionResponseCallbackData
-  ) => Promise<InteractionResponse>;
-  guildId: any;
+  ) => Promise<Nullable<InteractionResponse>>;
   declare message: Message;
-  declare member: Member;
-  declare guild: string | Guild;
   declare user: User;
 
   /**
@@ -42,9 +38,9 @@ class ComponentInteraction extends InteractionBase {
     super(data, client);
     this.customId = data.data?.custom_id;
     this.componentType = data.data?.component_type;
-    this.update = this.updateReply;
+    this.update = (...args: any) => this.updateReply(args);
 
-    this.patch();
+    this._patch();
   }
 
   /**
@@ -85,7 +81,7 @@ class ComponentInteraction extends InteractionBase {
    */
   async updateReply(
     obj: ComponentInteractionMessageUpdate
-  ): Promise<InteractionResponse> {
+  ): Promise<Nullable<InteractionResponse>> {
     const payload = new InteractionPayload(obj, obj.files);
     let { payload: _d, files } = payload;
 
@@ -100,13 +96,16 @@ class ComponentInteraction extends InteractionBase {
       files
     );
 
-    if (obj.fetchResponse || obj.fetchReply) {
+    if (obj.fetchReply) {
       response = await this.client.rest.request(
-        "GET",
+        "GET", // @ts-ignore
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
         true
       );
 
+      if (!response) return null;
+
+      // @ts-ignore
       response = new InteractionResponse(
         {
           ...response.data,
@@ -118,6 +117,7 @@ class ComponentInteraction extends InteractionBase {
       );
     }
 
+    // @ts-ignore
     return response;
   }
 
@@ -125,14 +125,15 @@ class ComponentInteraction extends InteractionBase {
    * Patch method for initializing data properties.
    * @private
    */
-  private patch(): void {
+  private async _patch(): Promise<void> {
     this.message = new Message(this.data.message, this.client);
     const userData = this.data.member?.user;
-    this.member = new Member(
-      { ...this.data.member, id: userData?.id },
-      this.guild,
-      this.client
-    );
+    if (this.guild)
+      this.member = new Member(
+        { ...this.data.member, id: userData?.id },
+        this.guild,
+        this.client
+      );
     this.user = new User(userData, this.client);
   }
 }

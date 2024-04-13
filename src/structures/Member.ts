@@ -14,7 +14,6 @@ class Member extends Base {
   private TIMEOUTED: any;
   private client: any;
   private d: any;
-  readonly guild: any;
   joined: any;
   user: any;
   muted: any;
@@ -33,16 +32,14 @@ class Member extends Base {
   communicationDisabled: any;
   timeouted: any;
 
-  constructor(data: Record<any, any>, guild: Guild | string, client: Client) {
+  constructor(data: Record<any, any>, readonly guild: Guild, client: Client) {
     super(client);
     this.d = data;
     this.client = client;
+
     this.DATE = new Date(data.joined_at);
     this.PREMIUM = new Date(data.premium_since);
     this.TIMEOUTED = new Date(data.communication_disabled_until);
-
-    this.id = data.id;
-    this.guild = guild || client.guilds.cache.get(guild);
 
     this.joined = getAllStamps(this);
     this.user = this.author;
@@ -52,6 +49,7 @@ class Member extends Base {
     this.flags = data.flags;
     this.permissions = data.permissions;
     this.role_ids = data.roles;
+
     this.roles = new MemberRolesManager(this.guild, this, this.client);
     this.presence = null;
 
@@ -127,12 +125,12 @@ class Member extends Base {
       this.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    const c = this.guild.members.me;
+    const c = this.guild.members?.me;
     var _h1 =
-      c.roles.cache
+      c?.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c.roles.cache.toJSON()) {
+    for (var perms of c?.roles.cache.toJSON()) {
       _p |= perms.permissions;
     }
 
@@ -141,7 +139,7 @@ class Member extends Base {
         _p & PermissionsBitField.Roles.KickMembers ||
         _p & PermissionsBitField.Roles.Administrator,
       client: this.id !== this.client.user.id,
-      owner: this.id.toString() !== this.guild.ownerId,
+      owner: this.id.toString() !== this.guild.owner_id,
       highest: _h <= _h1,
     };
 
@@ -160,12 +158,12 @@ class Member extends Base {
       this.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    const c = this.guild.members.me;
+    const c = this.guild.members?.me;
     var _h1 =
-      c.roles.cache
+      c?.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c.roles.cache.toJSON()) {
+    for (var perms of c?.roles.cache.toJSON()) {
       _p |= perms.permissions;
     }
 
@@ -174,7 +172,7 @@ class Member extends Base {
         _p & PermissionsBitField.Roles.BanMembers ||
         _p & PermissionsBitField.Roles.Administrator,
       client: this.id !== this.client.user.id,
-      owner: this.id.toString() !== this.guild.ownerId,
+      owner: this.id.toString() !== this.guild.owner_id,
       highest: _h <= _h1,
     };
 

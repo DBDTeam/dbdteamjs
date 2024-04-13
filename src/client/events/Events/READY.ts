@@ -1,5 +1,7 @@
 import { GatewayReadyDispatchData } from "discord-api-types/v10";
-import { Guild, Shard } from "../../../package";
+
+import { Guild } from "../../../structures/Guild";
+import { Shard } from "../../../structures/Sharding";
 import { getAllStamps } from "../../../utils/utils";
 import { ClientApplication } from "../../ClientApplication";
 import { ClientUser } from "../../ClientUser";

@@ -7,12 +7,11 @@ import {
   VideoQualityMode,
 } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { Nullable } from "../interfaces/other";
+import { Nullable } from "../common";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import * as Endpoints from "../rest/Endpoints";
 import { setObj, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
-import { Channel } from "./BaseChannel";
 import { type CategoryChannel } from "./CategoryChannel";
 import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
 import { type TextChannel } from "./TextChannel";
@@ -26,7 +25,7 @@ import { type VoiceChannel } from "./VoiceChannel";
  *
  * @extends {Base}
  */
-class BaseChannel extends Base {
+class Channel extends Base {
   /**
    * The client associated with the channel.
    * @type {Client}
@@ -436,4 +435,4 @@ class BaseChannel extends Base {
   }
 }
 
-export { BaseChannel, BaseChannel as Channel };
+export { Channel };

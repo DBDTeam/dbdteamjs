@@ -43,7 +43,7 @@ export class GuildRole extends Base {
     this.data = data;
     this.id = data.id;
     this.guildId = guild?.id || guild;
-    if (client.guild && client.guild.cache)
+    if (client.guilds && client.guilds.cache)
       this.guild = client.guilds.cache.get(guild.id);
     this.name = data.name;
     this.hoist = !!data.hoist;

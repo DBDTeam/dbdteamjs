@@ -1,9 +1,9 @@
 import { AllowedMentionsTypes, APIAttachment } from "discord-api-types/v10";
+import { MessageBodyRequest } from "../../common";
 import {
   MessagePayloadData,
   MessagePayloadFileData,
 } from "../../interfaces/message/MessagePayload";
-import { MessageBodyRequest } from "../../interfaces/other";
 import { setObj } from "../../utils/utils";
 
 /**
@@ -140,7 +140,7 @@ class MessagePayload {
   }
 
   get files(): MessagePayloadFileData[] {
-    return this.files;
+    return this.d.files;
   }
 }
 

@@ -1,5 +1,4 @@
 import { type Client } from "../client/Client";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import * as Endpoints from "../rest/Endpoints";
 import { getAllStamps } from "../utils/utils";
 import { Channel } from "./BaseChannel";
@@ -106,7 +105,7 @@ class TextChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(obj: MessagePayloadData) {
+  async createMessage(obj: any) {
     const message = new MessagePayload(obj, obj.files);
 
     var result = await this.#client.rest.request(

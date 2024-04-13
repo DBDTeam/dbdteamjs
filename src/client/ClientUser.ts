@@ -1,4 +1,4 @@
-import { EditClientUserPayload } from "../interfaces/client/Client";
+import { EditClientUserPayload } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { User } from "../structures/User";
 import { resolveImage } from "../utils/ImageResolver";

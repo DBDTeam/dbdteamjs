@@ -1,5 +1,6 @@
 import { APIApplicationCommand } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
+import { CommandsBody } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { setObj } from "../../utils/utils";
@@ -171,7 +172,7 @@ class ApplicationCommandManager {
       return this.cache.get(response.data?.id);
     }
   }
-  async set(commands: Array<ApplicationCommand> | ApplicationCommand) {
+  async set(commands: CommandsBody[] | CommandsBody) {
     // Reference: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
     if (commands instanceof Array) {
       var data = [];

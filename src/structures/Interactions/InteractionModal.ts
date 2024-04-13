@@ -18,6 +18,7 @@ class InteractionModal extends ComponentInteraction {
      * The inputs of the InteractionModal.
      * @type {Collection}
      */
+    // @ts-ignore
     this.inputs = new Collection();
     this.___patch(data);
   }
@@ -31,6 +32,7 @@ class InteractionModal extends ComponentInteraction {
     for (let i of data.data.components) {
       for (let x of i.components) {
         if (x.type === 4) {
+          // @ts-ignore
           this.inputs.set(x.custom_id, x.value);
         }
       }

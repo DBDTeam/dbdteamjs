@@ -22,7 +22,7 @@ declare class Message extends Base {
      * The client associated with the message.
      * @type {Client}
      */
-    private client;
+    readonly client: Client;
     /**
      * The ID of the message.
      * @type {string}

@@ -24,7 +24,7 @@ export declare class User extends Base {
     /**
      * The User name
      */
-    username: string | any;
+    username: string;
     /**
      * The User global name
      */

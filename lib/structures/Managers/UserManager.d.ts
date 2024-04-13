@@ -1,13 +1,14 @@
-import { Collection } from "../../utils/Collection";
-import { User } from "../User";
-import { Member } from "../Member";
+import { Nullable } from "../../../lib/interfaces/other";
 import { type Client } from "../../client/Client";
+import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
+import { Member } from "../Member";
+import { User } from "../User";
 declare class UserManager {
     private client;
     cache: Collection<string, User>;
     constructor(client: Client);
-    fetch(userId: string): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | User | null>;
+    fetch(userId: string): Promise<User | import("../../interfaces/rest/requestHandler").ResponseFromApi | null>;
 }
 declare class GuildMemberManager {
     private client;
@@ -17,6 +18,6 @@ declare class GuildMemberManager {
     constructor(client: Client, guild: Guild);
     private _fetchAllMembers;
     fetch(memberId: string | undefined | null): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | Member | Collection<string, Member> | null | undefined>;
-    get me(): unknown;
+    get me(): Nullable<Member>;
 }
-export { UserManager, GuildMemberManager };
+export { GuildMemberManager, UserManager };

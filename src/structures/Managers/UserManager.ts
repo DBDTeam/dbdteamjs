@@ -1,9 +1,10 @@
-import { Collection } from "../../utils/Collection";
-import * as Endpoints from "../../rest/Endpoints";
-import { User } from "../User";
-import { Member } from "../Member";
+import { Nullable } from "../../../lib/interfaces/other";
 import { type Client } from "../../client/Client";
+import * as Endpoints from "../../rest/Endpoints";
+import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
+import { Member } from "../Member";
+import { User } from "../User";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
 
 class UserManager {
@@ -111,16 +112,12 @@ class GuildMemberManager {
     }
   }
 
-  get me() {
-    try {
-      if (!this.client.user) return null;
-      var member = this.cache.get(this.client.user.id);
+  get me(): Nullable<Member> {
+    if (!this.client.user) return null;
+    var member = this.cache.get(this.client.user.id);
 
-      return member;
-    } catch (err) {
-      return err;
-    }
+    return member;
   }
 }
 
-export { UserManager, GuildMemberManager };
+export { GuildMemberManager, UserManager };
