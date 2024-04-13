@@ -20,16 +20,10 @@
   "license": "Apache-2.0",
   "dependencies": {
     "discord-api-types": "^0.37.77",
-    "tiny-typed-emitter": "^2.1.0",
     "ws": "^8.16.0"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/DBDTeam/dbdteamjs/"
   },
-  "devDependencies": {
-    "@types/node": "^20.12.2",
-    "@types/ws": "^8.5.10",
-    "typescript": "^5.4.3"
-  }
 }
