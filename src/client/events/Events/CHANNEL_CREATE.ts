@@ -2,6 +2,7 @@ import { GatewayChannelCreateDispatchData } from "discord-api-types/v10";
 import { type Shard } from "../../../structures/Sharding";
 import { typeChannel } from "../../../utils/utils";
 import { Event } from "../Event";
+import { EventNames } from "../../../common";
 
 export default class ChannnelCreate extends Event<GatewayChannelCreateDispatchData> {
   handle(data: GatewayChannelCreateDispatchData, shard: Shard) {
@@ -13,6 +14,6 @@ export default class ChannnelCreate extends Event<GatewayChannelCreateDispatchDa
     );
     guild.channels.set(data.id, typeChannel(data, this.client));
     // @ts-ignore
-    this.client.emit("channelCreate", channel, data.id, shard);
+    this.client.emit(EventNames.ChannelCreate, channel, data.id, shard);
   }
 }

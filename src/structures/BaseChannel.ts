@@ -17,6 +17,7 @@ import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
 import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
+import { ChannelTypes } from "../types/ChannelTypes";
 
 /**
  * Represents a BaseChannel (for easier usage)
@@ -432,6 +433,10 @@ class Channel extends Base {
 
   toString(): string {
     return `<#${this.id}>`;
+  }
+
+  isTextBased() {
+    return [ChannelTypes.Text, ChannelTypes.Voice, ChannelTypes.PublicThread, ChannelTypes.PrivateThread].includes(this.type)
   }
 }
 

@@ -1,5 +1,6 @@
 import { Nullable } from "../../../lib/interfaces/other";
 import { ClientUser } from "../../client/ClientUser";
+import { Channel } from "../../structures";
 import { Guild } from "../../structures/Guild";
 import { InteractionBase } from "../../structures/Interactions/BaseInteraction";
 import { Message } from "../../structures/Message";
@@ -35,6 +36,11 @@ export interface EditClientUserPayload {
 export enum EventNames {
   "MessageCreate" = "messageCreate",
   "InteractionCreate" = "interactionCreate",
+  "ChannelCreate" = "channelCreate",
+  "ChannelDelete" = "channelDelete",
+  "GuildBanAdd" = "guildBanAdd",
+  "GuildBanRemove" = "guildBanRemove",
+  "Ready" = "ready",
 }
 
 export interface ClientEvents {
@@ -52,6 +58,9 @@ export interface ClientEvents {
 
   guildBanRemove: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
   guildBanAdd: () => unknown;
+
+  channelCreate: (channel: Channel, id: string, shard: Shard) => unknown;
+  channelDelete: (oldChannel: Channel, id: string, shard: Shard) => unknown;
 
   channelUpdate: (_old: unknown, _new: unknown, shard: Shard) => unknown;
 }
