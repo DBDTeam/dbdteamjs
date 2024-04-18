@@ -6,7 +6,7 @@ import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
 import { MessagePayload } from "./Payloads/MessagePayload";
 
-class TextBasedChannel extends Channel {
+export class TextBasedChannel extends Channel {
   #client: Client;
   messages: ChannelMessageManager<any>;
   last_message_id: string;
