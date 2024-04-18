@@ -12,9 +12,9 @@
 ``` 
 npm i dbdteamjs 
 ``` 
-or 
+or (this is better)
 ```
-npm i github:DBDTeam/dbdteamjs#0.0.5
+npm i github:DBDTeam/dbdteamjs#0.0.6
 ```
 **YARN**
 ```

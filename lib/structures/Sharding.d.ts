@@ -1,7 +1,7 @@
 /// <reference types="node" />
 import { EventEmitter } from "node:events";
 import { type Client } from "../client/Client";
-import { GatewayConfig } from "../interfaces/client/Client";
+import { GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
 declare class Shard extends EventEmitter {
     private client;

@@ -1,4 +1,4 @@
-import { EditClientUserPayload } from "../interfaces/client/Client";
+import { EditClientUserPayload } from "../common";
 import { User } from "../structures/User";
 /**
  * @extends {User}

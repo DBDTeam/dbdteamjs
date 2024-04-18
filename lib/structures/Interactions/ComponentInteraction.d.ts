@@ -1,6 +1,6 @@
 import { APIInteractionResponseCallbackData, APIMessageComponentInteraction, ComponentType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
-import { ComponentInteractionMessageUpdate, Nullable } from "../../interfaces/other";
+import { ComponentInteractionMessageUpdate, Nullable } from "../../common";
 import { Message } from "../Message";
 import { User } from "../User";
 import { InteractionBase } from "./BaseInteraction";
@@ -47,6 +47,6 @@ declare class ComponentInteraction extends InteractionBase {
      * Patch method for initializing data properties.
      * @private
      */
-    private patch;
+    private _patch;
 }
 export { ComponentInteraction };

@@ -1,9 +1,8 @@
 import { APIChannel, APIGuildCreatePartialChannel, APIOverwrite, ChannelType, Snowflake, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { Nullable } from "../interfaces/other";
+import { Nullable } from "../common";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import { Base } from "./Base";
-import { Channel } from "./BaseChannel";
 import { type CategoryChannel } from "./CategoryChannel";
 import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
 import { type TextChannel } from "./TextChannel";
@@ -16,7 +15,7 @@ import { type VoiceChannel } from "./VoiceChannel";
  *
  * @extends {Base}
  */
-declare class BaseChannel extends Base {
+declare class Channel extends Base {
     readonly data: APIChannel;
     /**
      * The client associated with the channel.
@@ -191,4 +190,4 @@ declare class BaseChannel extends Base {
      */
     toString(): string;
 }
-export { BaseChannel, BaseChannel as Channel };
+export { Channel };

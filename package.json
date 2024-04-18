@@ -1,8 +1,8 @@
 {
   "name": "dbdteamjs",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "A Discord api wrapper to create your bot!",
-  "main": "./dist/package.js",
+  "main": "./lib/package.js",
   "scripts": {
     "test": "ts-node ./tests/index.ts"
   },

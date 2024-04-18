@@ -1,6 +1,6 @@
 import { APIAttachment } from "discord-api-types/v10";
+import { MessageBodyRequest } from "../../common";
 import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
-import { MessageBodyRequest } from "../../interfaces/other";
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
  */

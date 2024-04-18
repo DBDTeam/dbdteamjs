@@ -1,6 +1,6 @@
 import { APIChannelMention } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { MessageBodyRequest, Nullable } from "../interfaces/other";
+import { MessageBodyRequest, Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";

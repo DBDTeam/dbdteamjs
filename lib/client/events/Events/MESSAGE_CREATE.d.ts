@@ -3,6 +3,6 @@ import { Shard } from "../../../structures/Sharding";
 import { Event } from "../Event";
 export default class MessageCreate extends Event<GatewayMessageCreateDispatchData> {
     handle(data: GatewayMessageCreateDispatchData, shard: Shard): {
-        message: import("../../..").Message;
+        message: import("../../../structures").Message;
     };
 }

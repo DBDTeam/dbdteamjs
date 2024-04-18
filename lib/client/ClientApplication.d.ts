@@ -1,3 +1,4 @@
+/** @module Client */
 import { type Client } from "./Client";
 import { ApplicationCommandManager } from "../structures/Managers/ApplicationCommandsManager";
 /**

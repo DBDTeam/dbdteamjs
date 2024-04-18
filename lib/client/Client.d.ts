@@ -1,6 +1,5 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ClientOptions, GatewayConfig } from "../interfaces/client/Client";
-import { ClientEvents } from "../interfaces/client/Events";
+import { ClientEvents, ClientOptions, GatewayConfig } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -9,42 +8,74 @@ import { ShardManager } from "../structures/Sharding";
 import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
-/**
- * @typedef ClientOptions
- * @property {string} token - The Client token
- * @property {number} intents - The intents of the client
- * @property {GatewayConfig} gateway - The client gateway configuration
- */
-/**
- * @extends {TypedEmitter<import("../../typings/index").ClientEvents>}
- */
 declare class Client extends TypedEmitter<ClientEvents> {
     opts: ClientOptions;
+    /**
+     * The token of the client
+     */
     readonly token: string;
+    /**
+     * The intents of the client
+     */
     readonly intents: number;
+    /**
+     * The REST of the client
+     */
     readonly rest: REST;
+    /**
+     * The Gateway Configuration of the client
+     */
     readonly configGateway: GatewayConfig;
+    /**
+     * The shard manager of the client
+     */
     shardManager: ShardManager;
+    /**
+     * The gateway of the ShardManager
+     */
     gateway: GatewayConfig;
+    /**
+     * The guild manager of the client
+     */
     guilds: GuildManager;
+    /**
+     * The user manager of the client
+     */
     users: UserManager;
+    /**
+     * The channel manager of the client
+     */
     channels: ChannelManager;
+    /**
+     * The timestamp when the client execute's the event "READY"
+     */
     ready: number;
+    /**
+     * The client ping
+     */
     ping: number;
     /**
+     * The client presence manager
+     */
+    presence: ClientPresence;
+    /**
+     * The event manager of the client
+     */
+    private events;
+    /**
+     * The application manager of the client
+     */
+    application: ClientApplication;
+    /**
      * The client user
-     * @type {ClientUser}
      */
     user: ClientUser;
-    presence: ClientPresence;
-    application: ClientApplication | undefined;
-    private events;
-    guild: any;
     /**
      * Represents the Client
-     * @param opts - The client options
+     * @param opts The client options
      *
      * @example
+     * ```ts
      * const client = new Client({
      *  token: `Client token goes here`,
      *  intents: YourIntents,
@@ -52,13 +83,20 @@ declare class Client extends TypedEmitter<ClientEvents> {
      *      mobilePlatform: true
      *  }
      * })
+     * ```
      */
     constructor(opts: ClientOptions);
     /**
      * Establish the connection with the proyect to the WS
      */
-    connect(): void;
-    disconnect(): void;
-    reconnectAll(): void;
+    connect(): Promise<void>;
+    /**
+     * Disconnect the connection with the proyect to the WS
+     */
+    disconnect(): Promise<void>;
+    /**
+     * Reconnect the connection with the proyect to the WS
+     */
+    reconnectAll(): Promise<void>;
 }
 export { Client };

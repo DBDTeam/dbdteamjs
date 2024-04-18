@@ -1,4 +1,4 @@
-import { Intents } from "../../interfaces/client/Intents";
+import { Intents } from "../../common";
 export declare class IntentsBitFields {
     intents: number;
     private iced;

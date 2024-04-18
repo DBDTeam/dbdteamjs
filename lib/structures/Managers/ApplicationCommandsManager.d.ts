@@ -1,6 +1,6 @@
 import { APIApplicationCommand } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import { CommandsBody } from "../../interfaces/interactions";
+import { CommandsBody } from "../../common";
 import { Collection } from "../../utils/Collection";
 export interface ApplicationCommand extends APIApplicationCommand {
     defaultMemberPermissions: null | string;

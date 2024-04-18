@@ -1,6 +1,6 @@
 import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { Nullable } from "../interfaces/other";
+import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/ChannelManager";

@@ -1,5 +1,5 @@
 import { Client } from "../client/Client";
-import { Nullable } from "../interfaces/other";
+import { Nullable } from "../common";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
 import { ThreadChannel } from "./ThreadChannel";
