@@ -95,7 +95,7 @@ export class RequestHandler {
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const a = Date.now();
     return new Promise(async (resolve: any, reject: any) => {
-      const req = https.request(finalURL, options, (res) => {
+      const req = https.request(finalURL, options, (res: any) => {
         let data = "";
         res.on("data", (chunk: string) => {
           data += chunk;
@@ -127,7 +127,7 @@ export class RequestHandler {
         });
       });
 
-      req.on("error", (error) => {
+      req.on("error", (error: any) => {
         this.client.emit("error", error);
         return reject(null);
       });

@@ -1,4 +1,5 @@
-import { EventEmitter } from "node:events";
+import { EventEmitter } from "events";
+// @ts-ignore shh
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
 import { GatewayConfig } from "../common";
@@ -253,7 +254,7 @@ class ShardManager extends EventEmitter {
       );
       this.shards.set(shardID, shard);
       await shard.connect();
-      shard.on("eventReceived", (d) => {
+      shard.on("eventReceived", (d: any) => {
         this.emit("eventReceived", d, shardID);
       });
     }

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { EventEmitter } from "node:events";
+import { EventEmitter } from "events";
 import { type Client } from "../client/Client";
 import { GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
