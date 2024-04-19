@@ -5,16 +5,16 @@ import { Event } from "../Event";
 
 export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchData> {
   handle(data: GatewayChannelUpdateDispatchData, shard: Shard) {
-    const _old = this.client.channels.cache.get(data.id);
-    let _new;
-    let guild;
+    const oldChannel = this.client.channels.cache.get(data.id);
+    let newChannel;
+    var guild;
 
     if ("guild_id" in data && data.guild_id) {
       guild =
         this.client.channels.cache.get(data.id)?.guild ||
         this.client.guilds.cache.get(data.guild_id);
 
-      _new = this.client.channels.cache.set(
+      newChannel = this.client.channels.cache.set(
         data.id,
         typeChannel(data, this.client)
       );
@@ -25,6 +25,6 @@ export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchDat
         }
       });
     }
-    this.client.emit("channelUpdate", _old, _new, shard);
+    this.client.emit("channelUpdate", oldChannel, newChannel, shard);
   }
 }

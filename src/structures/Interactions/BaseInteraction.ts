@@ -1,3 +1,4 @@
+import { InteractionResponseType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Channel } from "../BaseChannel";
@@ -5,6 +6,7 @@ import { Guild } from "../Guild";
 import { Member } from "../Member";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
 import { InteractionPayload } from "../Payloads/InteractionPayload";
+import { TextBasedChannel } from "../TextBasedChannel";
 import { TextChannel } from "../TextChannel";
 import { ThreadChannel } from "../ThreadChannel";
 import { User } from "../User";
@@ -49,9 +51,9 @@ class InteractionBase {
 
   /**
    * The Channel where the Interaction was triggered.
-   * @type {Channel | VoiceChannel | TextChannel | ThreadChannel}
+   * @type {Channel | VoiceChannel | TextChannel | ThreadChannel | TextBasedChannel}
    */
-  public channel: unknown;
+  public channel: TextBasedChannel;
 
   /**
    * The Interaction User.
@@ -103,7 +105,7 @@ class InteractionBase {
 
     this.member = this._member;
 
-    this.channel = this.guild?.channels.cache.get(data.channel_id);
+    this.channel = this.guild?.channels.cache.get(data.channel_id) as TextBasedChannel;
     this.user = this.author;
     this.permissions = data.app_permissions;
     this.guildLocale = data.guild_locale;
@@ -170,15 +172,15 @@ class InteractionBase {
   /**
    * Makes a reply using the gateway.
    * @async
-   * @param {?} obj - The InteractionPayloadData
+   * @param {InteractionPayload} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async makeReply(obj: any): Promise<any | object> {
+  public async makeReply(obj: InteractionPayload & { fetchResponse: boolean, type: InteractionResponseType }): Promise<any | object> {
     const payload = new InteractionPayload(obj, obj.files);
     let _d = payload.payload,
       files = payload.files;
 
-    const data = { type: 4, data: _d };
+    const data = { type: obj.type || InteractionResponseType.ChannelMessageWithSource, data: _d };
 
     let response;
     let res = await this.client.rest.request(
@@ -190,7 +192,7 @@ class InteractionBase {
       files
     );
 
-    if (obj.fetchResponse || obj.fetchReply) {
+    if (obj.fetchResponse) {
       res = await this.client.rest.request(
         "GET",
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
@@ -218,7 +220,8 @@ class InteractionBase {
    * @async
    */
   public async deferReply(_ephemeral: boolean): Promise<any> {
-    // Implementation remains same as in JavaScript
+    //@ts-ignore
+    this.makeReply({ type: InteractionResponseType.DeferredChannelMessageWithSource, ephemeral: true })
   }
 
   /**

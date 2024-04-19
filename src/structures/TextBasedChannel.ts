@@ -5,10 +5,13 @@ import { getAllStamps } from "../utils/utils";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
 import { MessagePayload } from "./Payloads/MessagePayload";
+import { TextChannel } from "./TextChannel";
+import { VoiceChannel } from "./VoiceChannel";
+import { ThreadChannel } from "./ThreadChannel";
 
 export class TextBasedChannel extends Channel {
   #client: Client;
-  messages: ChannelMessageManager<any>;
+  messages: ChannelMessageManager<TextChannel | VoiceChannel | ThreadChannel | TextBasedChannel>;
   last_message_id: string;
   rate_limit_per_user: number;
   readonly cooldown: number;

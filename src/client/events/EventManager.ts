@@ -23,8 +23,8 @@ export class EventManager {
     // this._r("GUILD_ROLE_CREATE");
     // this._r("GUILD_ROLE_DELETE");
     // this._r("CHANNEL_UPDATE");
-    // this._r("CHANNEL_CREATE");
-    // this._r("CHANNEL_DELETE");
+    this._r("CHANNEL_CREATE");
+    this._r("CHANNEL_DELETE");
     // this._r("THREAD_UPDATE");
     // this._r("THREAD_CREATE");
 
@@ -37,8 +37,8 @@ export class EventManager {
 
     // // GUILD MODERATION 1 << 2
 
-    // this._r("GUILD_BAN_ADD");
-    // this._r("GUILD_BAN_REMOVE");
+    this._r("GUILD_BAN_ADD");
+    this._r("GUILD_BAN_REMOVE");
 
     // // GUILD EMOJIS AND STICKERS 1 << 3
 

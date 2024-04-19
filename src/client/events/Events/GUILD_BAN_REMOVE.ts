@@ -13,19 +13,3 @@ export default class GuildBanRemove extends Event<GatewayGuildBanRemoveDispatchD
     this.client.emit("guildBanRemove", user, guild, shard);
   }
 }
-
-/*
- * verga, tienes razón, disculpanos x,d
- * Ok, se complicó
- * La del Geremías es mejor
- * Pensé que la de Jeremías, pero bue
- * XD
- * Listo, archivado
- */
-// No me la compliques wawi soy nuevo :(
-// sigue esta estructura
-// export default class GuildBanRemove extends Event<GatewayGuildBanRemoveDispatch> {
-//   handle(data: GatewayGuildBanRemoveDispatch) {
-//     data;
-//   }
-// }

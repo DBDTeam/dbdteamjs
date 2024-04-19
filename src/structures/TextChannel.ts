@@ -2,7 +2,7 @@ import { type Client } from "../client/Client";
 import { Channel } from "./BaseChannel";
 import { TextBasedChannel } from "./TextBasedChannel";
 
-/** @extends {Channel} */
+/** @extends {TextBasedChannel} */
 class TextChannel extends TextBasedChannel {
   #client;
   /**

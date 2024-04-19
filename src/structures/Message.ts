@@ -17,6 +17,7 @@ import { TextChannel } from "./TextChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
 import { VoiceChannel } from "./VoiceChannel";
+import { TextBasedChannel } from "./TextBasedChannel";
 
 /**
  * Represents a Discord message.
@@ -100,12 +101,7 @@ class Message extends Base {
    * The channel where the message was sent.
    * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
    */
-  channel?:
-    | Channel
-    | VoiceChannel
-    | TextChannel
-    | ThreadChannel
-    | CategoryChannel;
+  channel?: TextBasedChannel
 
   /**
    * The guild where the message was sent.
@@ -194,7 +190,7 @@ class Message extends Base {
       roles: new Collection(),
       channels: new Collection(),
     };
-    this.channel = this.client.channels.cache.get(this.channelId);
+    this.channel = this.client.channels.cache.get(this.channelId) as TextBasedChannel;
     this.guild =
       this.client.guilds.cache.get(this.guildId!) ||
       this.client.channels.cache.get(this.channelId)?.guild;

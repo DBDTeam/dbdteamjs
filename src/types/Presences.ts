@@ -2,7 +2,8 @@ export enum PresenceStatus {
     Online = "online",
     Idle = "idle",
     DND = "dnd",
-    Invisible = "invisible"
+    Invisible = "invisible",
+    Offline = "offline"
 };
 
 export enum PresenceTypes {
@@ -20,7 +21,7 @@ export enum PresencePlatforms {
     Mobile = "mobile"
 };
 
-export interface ActivityPayload {
+export interface GatewayActivityPayload {
     name: string,
     type: PresenceTypes,
     url: string | null

@@ -6,7 +6,7 @@ import { InteractionBase } from "../../structures/Interactions/BaseInteraction";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
 import { User } from "../../structures/User";
-import { ActivityPayload, PresenceStatus } from "../../types/Presences";
+import { GatewayActivityPayload, PresenceStatus } from "../../types/Presences";
 
 export interface ClientOptions {
   token: string;
@@ -22,7 +22,7 @@ export interface GatewayConfig {
 }
 
 export interface ClientPresencePayload {
-  activities: Array<ActivityPayload>;
+  activities: Array<GatewayActivityPayload>;
   status: PresenceStatus;
   afk: boolean;
   since: number;
@@ -57,7 +57,7 @@ export interface ClientEvents {
   interactionCreate: (interaction: InteractionBase, shard: Shard) => unknown;
 
   guildBanRemove: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
-  guildBanAdd: () => unknown;
+  guildBanAdd: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
 
   channelCreate: (channel: Channel, id: string, shard: Shard) => unknown;
   channelDelete: (oldChannel: Channel, id: string, shard: Shard) => unknown;
