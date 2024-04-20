@@ -12,7 +12,6 @@ class Member extends Base {
   DATE: any;
   private PREMIUM: any;
   private TIMEOUTED: any;
-  private client: any;
   private d: any;
   joined: any;
   user: any;
@@ -32,10 +31,15 @@ class Member extends Base {
   communicationDisabled: any;
   timeouted: any;
 
-  constructor(data: Record<any, any>, readonly guild: Guild, client: Client) {
+  constructor(data: Record<any, any>, readonly guild: Guild, private client: Client) {
     super(client);
     this.d = data;
-    this.client = client;
+
+    if(typeof guild === "string") {
+      this.guild = client.guilds.cache.get(guild) as Guild
+    }
+
+    this.guild = guild as Guild
 
     this.DATE = new Date(data.joined_at);
     this.PREMIUM = new Date(data.premium_since);
@@ -200,7 +204,7 @@ class Member extends Base {
       reason
     );
 
-    if (response.error) {
+    if (response?.error) {
       return false;
     } else {
       return true;

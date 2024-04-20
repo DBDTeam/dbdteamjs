@@ -1,4 +1,5 @@
 import { ProbablyPromise } from "../../common";
+import { Guild, GuildRole } from "../../structures";
 import { Member } from "../../structures/Member";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
@@ -11,7 +12,7 @@ export abstract class Event<T> {
     this.client = client;
   }
 
-  abstract handle(data: T, shard: Shard): ProbablyPromise<unknown>;
+  abstract handle(data: T, shard: Shard): ProbablyPromise<any>;
 
   getMessage(data: any) {
     const message = new Message(data, this.client);
@@ -54,5 +55,41 @@ export abstract class Event<T> {
     this.client?.users?.cache?.set(user.id, user);
 
     return user;
+  }
+
+  getMember(data: any, guildId: any) {
+    const member = new Member(
+      { ...data, id: data.user.id },
+      guildId,
+      this.client
+    );
+
+    if ("user" in member) {
+      this.client.users.cache.set(member.id, member.user);
+    }
+
+    member.guild.members?.cache.set(member.id, member);
+
+    return member;
+  }
+
+  getGuild(data: any) {
+    const guild = new Guild(data, this.client);
+
+    this.client.guilds.cache.set(guild.id, guild);
+
+    return guild;
+  }
+
+  getRole(data: any, guildId: string) {
+    const guild = this.client.guilds.cache.get(guildId)
+
+    if(!guild) return;
+
+    const role = new GuildRole(data, guild, this.client)
+
+    guild.roles?.cache.set(role.id, role)
+
+    return role;
   }
 }
