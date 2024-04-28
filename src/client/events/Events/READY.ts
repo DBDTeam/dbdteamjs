@@ -23,7 +23,6 @@ export default class MessageCreate extends Event<GatewayReadyDispatchData> {
     }
     // @ts-ignore
     this.client.ready = getAllStamps(new Date());
-
     this.client.emit("debug", `Client logged successfully`, shard);
     this.client.emit("ready", this.client.user, shard);
   }

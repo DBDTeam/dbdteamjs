@@ -8,6 +8,7 @@ import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
+import { MessageBodyRequest } from "../common";
 
 export class TextBasedChannel extends Channel {
   #client: Client;
@@ -56,17 +57,17 @@ export class TextBasedChannel extends Channel {
      * Creates a message in the Text Channel
      * @readonly
      */
-    this.sendMessage = (...args: any) => this.createMessage(args);
+    this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
     /**
      * Creates a message in the Text Channel
      * @readonly
      */
-    this.send = (...args: any) => this.createMessage(args);
+    this.send = (body: MessageBodyRequest) => this.createMessage(body);
   }
 
   /**
    * Creates a message in the Text Channel
-   * @param {MessagePayload} obj - The message send payload
+   * @param {MessagePayload} body - The message send payload
    * @example
    * const channel = client.channels.cache.get("766497696604487691")
    *
@@ -80,8 +81,8 @@ export class TextBasedChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(obj: any) {
-    const message = new MessagePayload(obj, obj.files);
+  async createMessage(body: MessageBodyRequest) {
+    const message = new MessagePayload(body, body.files);
 
     var result = await this.#client.rest.request(
       "POST",

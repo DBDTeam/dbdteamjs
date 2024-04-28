@@ -70,7 +70,7 @@ export class EventManager {
   }
 
   _r(e: string) {
-    const _event = require(`./Events/${e}`);
-    this.events.set(e, new _event.default(this.client));
+    const eventClass = (require(`./Events/${e}`)).default;
+    this.events.set(e, new eventClass(this.client));
   }
 }
