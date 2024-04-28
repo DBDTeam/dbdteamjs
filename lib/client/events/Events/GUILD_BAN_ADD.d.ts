@@ -1,3 +1,6 @@
-import { type Client } from "../../../client/Client";
-declare const _default: (client: Client, d: any, id: any) => Promise<void>;
-export default _default;
+import { GatewayGuildBanAddDispatch } from "discord-api-types/v10";
+import { Event } from "../Event";
+import { Shard } from "../../../structures";
+export default class GuildBanAdd extends Event<GatewayGuildBanAddDispatch> {
+    handle(data: any, shard: Shard): void;
+}

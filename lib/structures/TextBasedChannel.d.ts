@@ -5,6 +5,7 @@ import { Message } from "./Message";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
+import { MessageBodyRequest } from "../common";
 export declare class TextBasedChannel extends Channel {
     #private;
     messages: ChannelMessageManager<TextChannel | VoiceChannel | ThreadChannel | TextBasedChannel>;
@@ -17,7 +18,7 @@ export declare class TextBasedChannel extends Channel {
     constructor(data: any, client: Client);
     /**
      * Creates a message in the Text Channel
-     * @param {MessagePayload} obj - The message send payload
+     * @param {MessagePayload} body - The message send payload
      * @example
      * const channel = client.channels.cache.get("766497696604487691")
      *
@@ -30,5 +31,5 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    createMessage(body: MessageBodyRequest): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
 }
