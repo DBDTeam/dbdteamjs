@@ -1,3 +1,4 @@
+import { PresenceUpdateStatus } from "discord-api-types/v10";
 import { Nullable } from "../../../lib/interfaces/other";
 import { ClientUser } from "../../client/ClientUser";
 import { Channel, GuildRole, Member, ThreadChannel } from "../../structures";
@@ -24,9 +25,9 @@ export interface GatewayConfig {
 
 export interface ClientPresencePayload {
   activities: Array<GatewayActivityPayload>;
-  status: PresenceStatus;
-  afk: boolean;
-  since: number;
+  status: PresenceStatus | PresenceUpdateStatus;
+  afk?: boolean;
+  since?: number;
 }
 
 export interface EditClientUserPayload {

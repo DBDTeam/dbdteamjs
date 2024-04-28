@@ -3,10 +3,10 @@ import { Base } from "./Base";
 import { Guild } from "./Guild";
 declare class Member extends Base {
     readonly guild: Guild;
+    private client;
     DATE: any;
     private PREMIUM;
     private TIMEOUTED;
-    private client;
     private d;
     joined: any;
     user: any;
@@ -32,9 +32,9 @@ declare class Member extends Base {
     get kickable(): boolean;
     get banneable(): boolean;
     edit(obj: any): Promise<boolean>;
-    changeNickname(nickname: string, reason: string): Promise<any>;
-    kick(reason: string): Promise<any>;
-    ban(obj: any): Promise<any>;
+    changeNickname(nickname: string, reason: string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("../interfaces/rest/requestHandler").ErrorResponseFromApi | null>;
+    kick(reason: string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("../interfaces/rest/requestHandler").ErrorResponseFromApi | null>;
+    ban(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("../interfaces/rest/requestHandler").ErrorResponseFromApi | null>;
     toString(): string;
 }
 export { Member };

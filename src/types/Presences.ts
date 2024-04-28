@@ -1,3 +1,5 @@
+import { ActivityType, GatewayActivityUpdateData, PresenceUpdateStatus } from "discord-api-types/v10";
+
 export enum PresenceStatus {
     Online = "online",
     Idle = "idle",
@@ -23,6 +25,6 @@ export enum PresencePlatforms {
 
 export interface GatewayActivityPayload {
     name: string,
-    type: PresenceTypes,
-    url: string | null
+    type: PresenceTypes | ActivityType,
+    url?: string | null
 }

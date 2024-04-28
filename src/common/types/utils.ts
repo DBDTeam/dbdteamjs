@@ -4,6 +4,7 @@ import {
   APIEmbed,
   APIInteractionResponseCallbackData,
   APIMessageActionRowComponent,
+  InteractionResponseType,
   PermissionFlagsBits,
   RESTPostAPIChannelMessageJSONBody,
 } from "discord-api-types/v10";
@@ -22,7 +23,9 @@ export interface ResolverProps {
 }
 
 export type ComponentInteractionMessageUpdate =
-  APIInteractionResponseCallbackData & ResolverProps & { fetchReply: boolean };
+  Omit<APIInteractionResponseCallbackData, "thread_name" | "applied_tags"> & ResolverProps & { fetchResponse?: boolean };
 
 export type MessageBodyRequest = RESTPostAPIChannelMessageJSONBody &
   ResolverProps;
+
+export type InteractionBodyRequest = ComponentInteractionMessageUpdate & { type?: InteractionResponseType }

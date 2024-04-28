@@ -1,5 +1,5 @@
-import { GatewayActivityUpdateData, GatewayPresenceUpdateData } from "discord-api-types/v10";
-import { Nullable } from "../common";
+import { ClientPresencePayload, Nullable } from "../common";
+import { GatewayActivityPayload } from "../types/Presences";
 import { type Client } from "./Client";
 /**
  * Represents the client presence (WS presence)
@@ -7,7 +7,7 @@ import { type Client } from "./Client";
 declare class ClientPresence {
     private client;
     status: string;
-    activities: GatewayActivityUpdateData[];
+    activities: GatewayActivityPayload[];
     since: Nullable<number>;
     mobilePlatform: boolean;
     constructor(client: Client);
@@ -18,6 +18,6 @@ declare class ClientPresence {
      * @returns {Promise<boolean>}
      * @async
      */
-    update(obj: Omit<GatewayPresenceUpdateData, "afk">, shardId?: number): Promise<boolean | null>;
+    update(obj: ClientPresencePayload, shardId?: number): Promise<boolean | null>;
 }
 export { ClientPresence };

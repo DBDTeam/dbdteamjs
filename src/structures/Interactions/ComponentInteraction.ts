@@ -96,7 +96,7 @@ class ComponentInteraction extends InteractionBase {
       files
     );
 
-    if (obj.fetchReply) {
+    if (obj.fetchResponse) {
       response = await this.client.rest.request(
         "GET", // @ts-ignore
         Endpoints.InteractionOriginal(this.client.user.id, this.token),

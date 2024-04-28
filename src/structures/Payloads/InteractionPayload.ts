@@ -1,3 +1,4 @@
+import { InteractionBodyRequest } from "../../common";
 import { setObj } from "../../utils/utils";
 
 /**
@@ -54,7 +55,7 @@ export class InteractionPayload {
    * @param {any} [data={}] - Interaction payload data.
    * @param {any[]} [files=[]] - Files associated with the payload.
    */
-  constructor(data: any = {}, files: any[] = []) {
+  constructor(data: InteractionBodyRequest, files: any[] = []) {
     this.d =
       typeof data === "string" ? { content: data } : setObj(this.Data, data);
 

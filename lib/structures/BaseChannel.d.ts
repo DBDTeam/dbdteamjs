@@ -189,5 +189,6 @@ declare class Channel extends Base {
      * channel.send(`Im sending this message in ${channel.toString()}`)
      */
     toString(): string;
+    isTextBased(): boolean;
 }
 export { Channel };

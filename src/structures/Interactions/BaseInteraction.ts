@@ -12,6 +12,7 @@ import { ThreadChannel } from "../ThreadChannel";
 import { User } from "../User";
 import { VoiceChannel } from "../VoiceChannel";
 import { InteractionResponse } from "./InteractionResponse";
+import { InteractionBodyRequest } from "../../common";
 
 /**
  * Represents the base class for interactions.
@@ -175,7 +176,7 @@ class InteractionBase {
    * @param {InteractionPayload} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async makeReply(obj: InteractionPayload & { fetchResponse: boolean, type: InteractionResponseType }): Promise<any | object> {
+  public async makeReply(obj: InteractionBodyRequest): Promise<any | object> {
     const payload = new InteractionPayload(obj, obj.files);
     let _d = payload.payload,
       files = payload.files;

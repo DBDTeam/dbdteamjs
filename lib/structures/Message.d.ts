@@ -4,15 +4,12 @@ import { MessageBodyRequest, Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
-import { CategoryChannel } from "./CategoryChannel";
 import { Guild } from "./Guild";
 import { MessageReactions } from "./Managers/ReactionMessage";
 import { Member } from "./Member";
 import { EditMessagePayload } from "./Payloads/EditMessagePayload";
-import { TextChannel } from "./TextChannel";
-import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
-import { VoiceChannel } from "./VoiceChannel";
+import { TextBasedChannel } from "./TextBasedChannel";
 /**
  * Represents a Discord message.
  */
@@ -85,7 +82,7 @@ declare class Message extends Base {
      * The channel where the message was sent.
      * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
      */
-    channel?: Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel;
+    channel?: TextBasedChannel;
     /**
      * The guild where the message was sent.
      * @type {(Guild | undefined)}

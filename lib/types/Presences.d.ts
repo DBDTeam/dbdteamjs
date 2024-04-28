@@ -1,8 +1,10 @@
+import { ActivityType } from "discord-api-types/v10";
 export declare enum PresenceStatus {
     Online = "online",
     Idle = "idle",
     DND = "dnd",
-    Invisible = "invisible"
+    Invisible = "invisible",
+    Offline = "offline"
 }
 export declare enum PresenceTypes {
     Game = 0,
@@ -17,8 +19,8 @@ export declare enum PresencePlatforms {
     Web = "web",
     Mobile = "mobile"
 }
-export interface ActivityPayload {
+export interface GatewayActivityPayload {
     name: string;
-    type: PresenceTypes;
-    url: string | null;
+    type: PresenceTypes | ActivityType;
+    url?: string | null;
 }

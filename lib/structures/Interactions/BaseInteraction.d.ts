@@ -1,8 +1,10 @@
 import { Client } from "../../client/Client";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
+import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
+import { InteractionBodyRequest } from "../../common";
 /**
  * Represents the base class for interactions.
  */
@@ -38,9 +40,9 @@ declare class InteractionBase {
     guild: Guild | undefined;
     /**
      * The Channel where the Interaction was triggered.
-     * @type {Channel | VoiceChannel | TextChannel | ThreadChannel}
+     * @type {Channel | VoiceChannel | TextChannel | ThreadChannel | TextBasedChannel}
      */
-    channel: unknown;
+    channel: TextBasedChannel;
     /**
      * The Interaction User.
      * @type {User}
@@ -104,10 +106,10 @@ declare class InteractionBase {
     /**
      * Makes a reply using the gateway.
      * @async
-     * @param {?} obj - The InteractionPayloadData
+     * @param {InteractionPayload} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse | object>}
      */
-    makeReply(obj: any): Promise<any | object>;
+    makeReply(obj: InteractionBodyRequest): Promise<any | object>;
     /**
      * Defers the reply.
      * @param {boolean} ephemeral - If the defer will be sent ephemerally.
