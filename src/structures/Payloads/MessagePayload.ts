@@ -69,7 +69,7 @@ class MessagePayload {
    */
   constructor(
     data: MessageBodyRequest | string,
-    files: APIAttachment[] = ([] = [])
+    files: MessagePayloadFileData[] = ([] = [])
   ) {
     this.d =
       typeof data === "string"

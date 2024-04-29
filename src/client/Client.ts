@@ -88,7 +88,7 @@ class Client extends TypedEmitter<ClientEvents> {
    * })
    * ```
    */
-  constructor(public opts: ClientOptions) {
+  constructor(opts: ClientOptions) {
     super();
     this.token = opts.token;
     this.intents = opts.intents;

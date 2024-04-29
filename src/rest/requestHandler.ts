@@ -61,7 +61,7 @@ export class RequestHandler {
       if (reason && typeof reason === "string") {
         headers["X-Audit-Log-Reason"] = reason;
       }
-      if (files) {
+      if (files && files?.[0]) {
         headers["Content-Type"] = "multipart/form-data; boundary=boundary";
       }
       const options = {
@@ -134,6 +134,7 @@ export class RequestHandler {
 
       if (["PATCH", "POST", "PUT"].includes(options.method)) {
         if (body?.data && !files?.[0]) {
+          console.log("A")
           req.write(JSON.stringify(body?.data));
         } else if (files?.[0]) {
           if (body?.data) {

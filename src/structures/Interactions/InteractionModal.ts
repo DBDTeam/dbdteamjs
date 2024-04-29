@@ -6,7 +6,8 @@ import { ComponentInteraction } from "./ComponentInteraction";
  * Represents an InteractionModal.
  * @extends ComponentInteraction
  */
-class InteractionModal extends ComponentInteraction {
+export class InteractionModal extends ComponentInteraction {
+  inputs: Collection<string, any>
   /**
    * Creates an instance of InteractionModal.
    * @param {object} data - The InteractionModalPayload.
@@ -18,8 +19,7 @@ class InteractionModal extends ComponentInteraction {
      * The inputs of the InteractionModal.
      * @type {Collection}
      */
-    // @ts-ignore
-    this.inputs = new Collection();
+    this.inputs = new Collection<string, any>();
     this.___patch(data);
   }
 
@@ -32,12 +32,9 @@ class InteractionModal extends ComponentInteraction {
     for (let i of data.data.components) {
       for (let x of i.components) {
         if (x.type === 4) {
-          // @ts-ignore
           this.inputs.set(x.custom_id, x.value);
         }
       }
     }
   }
 }
-
-export { InteractionModal };

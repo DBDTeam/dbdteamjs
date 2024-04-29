@@ -11,6 +11,9 @@ import {
   IntentsBitFields,
   InteractionContexts,
 } from "../src";
+import { SlashInteraction } from "../src/structures/Interactions/SlashInteraction";
+import { ComponentInteraction } from "../src/structures/Interactions/ComponentInteraction";
+import { InteractionModal } from "../src/structures/Interactions/InteractionModal";
 
 const $Intents = new IntentsBitFields(
   Intents.Guilds,
@@ -20,7 +23,8 @@ const $Intents = new IntentsBitFields(
 );
 
 const client = new Client({
-  token: "",
+  token:
+    "",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: false,
@@ -53,16 +57,58 @@ client.on("ready", ({ username }) => {
 
 client.on("interactionCreate", async (interaction) => {
   if (interaction.isSlash) {
-    // @ts-ignore
+    interaction = interaction as SlashInteraction;
     if (interaction.name === "ping") {
-      interaction.makeReply({ content: "a" });
+      interaction.reply({
+        content: "A",
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                type: 2,
+                label: "A",
+                custom_id: "a",
+                style: 1,
+              },
+            ],
+          },
+        ],
+      });
+    }
+  } else if (interaction.isComponent) {
+    interaction = interaction as ComponentInteraction;
+
+    if (interaction.isButton) {
+      interaction.modal({
+        title: "a",
+        custom_id: "BCCC",
+        components: [
+          {
+            type: 1,
+            components: [
+              {
+                custom_id: "A",
+                label: "A",
+              },
+            ],
+          },
+        ],
+      });
+    } else {
+      const int = interaction as InteractionModal
     }
   }
 });
 
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
-  if(msg.content.startsWith("!hello!")) return msg.channel?.createMessage({ content: "A" })
+  if (msg.content.startsWith("!hello!"))
+    return msg.channel?.createMessage({ content: "A" });
+});
+
+client.on("error", (err: any) => {
+  console.error(err.d.error._misc, err.d.data.headers);
 });
 
 client.connect();

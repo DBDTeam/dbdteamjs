@@ -3,12 +3,14 @@ import { Nullable } from "../../../lib/interfaces/other";
 import { ClientUser } from "../../client/ClientUser";
 import { Channel, GuildRole, Member, ThreadChannel } from "../../structures";
 import { Guild } from "../../structures/Guild";
-import { InteractionBase } from "../../structures/Interactions/BaseInteraction";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
 import { User } from "../../structures/User";
 import { GatewayActivityPayload, PresenceStatus } from "../../types/Presences";
-import { Collection } from "../../utils/Collection";
+import { SlashInteraction } from "../../structures/Interactions/SlashInteraction";
+import { MessageInteraction } from "../../structures/Interactions/MessageInteraction";
+import { ComponentInteraction } from "../../structures/Interactions/ComponentInteraction";
+import { UserInteraction } from "../../structures/Interactions/UserInteraction";
 
 export interface ClientOptions {
   token: string;
@@ -76,7 +78,7 @@ export interface ClientEvents {
   ready: (user: ClientUser, shard: Shard) => unknown;
 
   messageCreate: (message: Message, shard: Shard) => unknown;
-  interactionCreate: (interaction: InteractionBase, shard: Shard) => unknown;
+  interactionCreate: (interaction: SlashInteraction | ComponentInteraction | UserInteraction | MessageInteraction, shard: Shard) => unknown;
 
   guildCreate: (guild: Guild, shard: Shard) => unknown;
   guildBanRemove: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;

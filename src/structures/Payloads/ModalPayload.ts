@@ -1,33 +1,84 @@
 import { setObj } from "../../utils/utils";
 
 /**
- * @template T
- * @typedef {Array<T>} ActionRow -The Components of a response.
- * @property {number} type - The type (For action rows is 1)
- * @property {Array<Object>} components - The Components that will be added in the action row.
+ * The Components of an Action Row.
  */
+export interface ActionRow<T> {
+  /**
+   * The type (For action rows is 1)
+   */
+  type: 1;
+  /**
+   * The components that will be added in the action row.
+   */
+  components: T
+}
 
 /**
- * @typedef {Array<any>} ModalComponents - The Components of a Modal.
- * @property {number} [type=4] - The type (for TextInputs is 4)
- * @property {number} customId - The customId of the option.
- * @property {string} label - The label of the option.
- * @property {number} [style=1] - The style of the option. (1 for Short & 2 for Paragraph)
- * @property {number} [min_length] - Minimum input length for a text input; min 0, max 4000
- * @property {number} [max_length] - Maximum input length for a text input; min 1, max 4000
- * @property {boolean} [required = true] - Whether this component is required to be filled (defaults to true)
- * @property {string} [value] - Pre-filled value for this component; max 4000 characters
- * @property {string} [placeholder] - Custom placeholder text if the input is empty; max 100 characters
+ * The components of a modal.
  */
+export interface ModalComponents {
+  /**
+   * The type (for TextInputs is 4)
+   * @type {number}
+   */
+  type?: 4;
+  /**
+   * The customId of the option. (you also can use customId)
+   * @type {string}
+   */
+  custom_id: string;
+  /**
+   * The label of the option.
+   * @type {string}
+   */
+  label: string;
+  /**
+   * The style of the option. (1 for Short & 2 for Paragraph)
+   * @type {1 | 2}
+   */
+  style?: 1 | 2;
+  /**
+   * Minimum input length for a text input; min 0, max 4000 (You can also use min)
+   * @type {number}
+   */
+  min_length?: number;
+  /**
+   * Maximum input length for a text input; min 1, max 4000 (You can also use max)
+   * @type {number}
+   */
+  max_length?: number;
+  /**
+   * Pre-filled value for this component; max 4000 characters
+   * @type {string}
+   */
+  value?: string;
+  /**
+   * Custom placeholder text if the input is empty; max 100 characters
+   * @type {string}
+   */
+  placeholder?: string;
+}
 
 /**
- * @typedef ModalPayloadData - The ModalPayload data to submit modals.
- * @property {string} customId - The custom id of the Modal.
- * @property {string} title - The title of the modals.
- * @property {ActionRow<ModalComponents>} components - The ModalComponents.
+ * The ModalPayload data to submit modals.
  */
+export interface ModalPayloadData {
+  /**
+   * The custom id of the Modal. (You can also use customId)
+   */
+  custom_id: string;
+  /**
+   * The title of the modals.
+   */
+  title: string;
+  /**
+   * The components of the modal.
+   */
+  components: ActionRow<ModalComponents[]>[]
+}
 
-class InteractionModalPayload {
+export class InteractionModalPayload {
   #d;
   #DATA = {
     custom_id: "",
@@ -76,9 +127,6 @@ class InteractionModalPayload {
    * @type {ModalPayloadData}
    */
   get payload() {
-    //console.log(this.#d.components[0].components[0])
     return this.#d;
   }
 }
-
-module.exports = { InteractionModalPayload };

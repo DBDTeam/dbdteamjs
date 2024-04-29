@@ -1,18 +1,18 @@
 import { InteractionResponseType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
-import { Channel } from "../BaseChannel";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
-import { EditMessagePayload } from "../Payloads/EditMessagePayload";
 import { InteractionPayload } from "../Payloads/InteractionPayload";
 import { TextBasedChannel } from "../TextBasedChannel";
-import { TextChannel } from "../TextChannel";
-import { ThreadChannel } from "../ThreadChannel";
 import { User } from "../User";
-import { VoiceChannel } from "../VoiceChannel";
 import { InteractionResponse } from "./InteractionResponse";
-import { InteractionBodyRequest } from "../../common";
+import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
+import { MessagePayload } from "../Payloads/MessagePayload";
+import { Message } from "../Message";
+import { EditMessagePayload } from "../Payloads/EditMessagePayload";
+import { InteractionModalPayload, ModalPayloadData } from "../Payloads/ModalPayload";
+import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 
 /**
  * Represents the base class for interactions.
@@ -106,7 +106,9 @@ class InteractionBase {
 
     this.member = this._member;
 
-    this.channel = this.guild?.channels.cache.get(data.channel_id) as TextBasedChannel;
+    this.channel = this.guild?.channels.cache.get(
+      data.channel_id
+    ) as TextBasedChannel;
     this.user = this.author;
     this.permissions = data.app_permissions;
     this.guildLocale = data.guild_locale;
@@ -170,18 +172,8 @@ class InteractionBase {
     return this.member?.user;
   }
 
-  /**
-   * Makes a reply using the gateway.
-   * @async
-   * @param {InteractionPayload} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | object>}
-   */
-  public async makeReply(obj: InteractionBodyRequest): Promise<any | object> {
-    const payload = new InteractionPayload(obj, obj.files);
-    let _d = payload.payload,
-      files = payload.files;
-
-    const data = { type: obj.type || InteractionResponseType.ChannelMessageWithSource, data: _d };
+  private async __makeReply(obj: any): Promise<InteractionResponse | ErrorResponseFromApi> {
+    const data = { type: obj.type, data: obj.data };
 
     let response;
     let res = await this.client.rest.request(
@@ -190,7 +182,7 @@ class InteractionBase {
       true,
       { data },
       null,
-      files
+      data?.data?.files
     );
 
     if (obj.fetchResponse) {
@@ -211,48 +203,120 @@ class InteractionBase {
       );
     }
 
-    return response ?? res;
+    return response ?? res as ErrorResponseFromApi;
+  }
+
+  /**
+   * Makes a reply using the gateway.
+   * @async
+   * @param {InteractionPayload} obj - The InteractionPayloadData
+   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   */
+  public async makeReply(obj: InteractionBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
+    const payload = new InteractionPayload(obj, obj.files);
+    let _d = payload.payload as Record<any, any>,
+      files = payload.files;
+
+    const data = {
+      type: InteractionResponseType.ChannelMessageWithSource,
+      data: { ..._d, files },
+    };
+
+    const response = this.__makeReply(data);
+
+    return response;
   }
 
   /**
    * Defers the reply.
    * @param {boolean} ephemeral - If the defer will be sent ephemerally.
-   * @returns {Promise<Object>}
+   * @returns {Promise<InteractionResponse | object>}
    * @async
    */
-  public async deferReply(_ephemeral: boolean): Promise<any> {
-    //@ts-ignore
-    this.makeReply({ type: InteractionResponseType.DeferredChannelMessageWithSource, ephemeral: true })
+  public async deferReply(ephemeral: boolean): Promise<any> {
+    ephemeral = !!ephemeral;
+    this.__makeReply({
+      type: InteractionResponseType.DeferredChannelMessageWithSource,
+      ephemeral,
+    });
   }
 
   /**
    * Edits the original response. (if any)
    * @async
-   * @param {EditMessagePayload} obj - The EditMessagePayloadData
-   * @returns {Promise<InteractionResponse | object>}
+   * @param {MessageUpdateBodyRequest} obj - The Body of the new Message.
+   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  public async editReply(_obj: any): Promise<any | object> {
-    // Implementation remains same as in JavaScript
+  public async editReply(body: MessageUpdateBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
+    if (!body) return body;
+    const MessagePayloadData = new EditMessagePayload(body, body.files)
+
+    const [data, files] = [
+      MessagePayloadData.payload,
+      MessagePayloadData.files,
+    ];
+
+    const request = await this.client.rest.request(
+      "PATCH",
+      Endpoints.InteractionOriginal(this.client.user.id, this.token),
+      true,
+      { data },
+      null,
+      files
+    );
+
+    if (!request || request?.error || !request?.data) return request as ErrorResponseFromApi;
+
+    const message = new InteractionResponse(request.data, this.client);
+
+    return message;
   }
 
   /**
    * Follows up the Interaction response.
-   * @param {InteractionPayloadData} obj - The MessagePayloadData
+   * @param {InteractionBodyRequest} obj - The Body of the new Message.
    * @returns {Promise<InteractionResponse>}
    * @async
    */
-  public async followUp(_obj: any): Promise<any> {
-    // Implementation remains same as in JavaScript
+  public async followUp(body: MessageBodyRequest): Promise<any> {
+    if (!body) return;
+    const MessagePayloadData = new MessagePayload(body, body.files);
+
+    const [data, files] = [
+      MessagePayloadData.payload,
+      MessagePayloadData.files,
+    ];
+
+    const request = await this.client.rest.request(
+      "POST",
+      Endpoints.InteractionCreateFollowUp(this.client.user.id, this.token),
+      true,
+      { data },
+      null,
+      files
+    );
+
+    if (!request || request?.error || !request?.data) return request;
+
+    const message = new InteractionResponse(request.data, this.client);
+
+    return message;
   }
 
   /**
    * Sends a modal as the interaction response.
    * @param {InteractionPayloadData} obj - The ModalPayloadData
-   * @returns {Promise<any>}
+   * @returns {Promise<InteractionResponse | object>}
    * @async
    */
-  public async modal(_obj: any): Promise<any> {
-    // Implementation remains same as in JavaScript
+  public async modal(body: ModalPayloadData): Promise<InteractionResponse | object> {
+    const ModalData = new InteractionModalPayload(body)
+
+    const payload = ModalData.payload
+
+    const response = await this.__makeReply({ type: InteractionResponseType.Modal, data: payload })
+
+    return response
   }
 }
 
