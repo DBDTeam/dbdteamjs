@@ -226,7 +226,7 @@ class ShardManager extends EventEmitter {
     this.client = client;
     this.token = client.token;
     this.intents = client.intents;
-    this.totalShards = gateway.totalShards || 0;
+    this.totalShards = gateway?.totalShards || 0;
     this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
     this.shards = new Collection<number, Shard>();
     this.gateway = gateway;
@@ -246,9 +246,8 @@ class ShardManager extends EventEmitter {
 
     for (var shardID = 0; shardID < this.totalShards; shardID++) {
       const shard = new Shard(
-        this.client,
-        // @ts-ignore shhh :3
-        shardID,
+        this.client, // lmao
+        shardID.toString(),
         this.totalShards,
         this.gateway
       );

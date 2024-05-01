@@ -1,6 +1,6 @@
 {
   "name": "dbdteamjs",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "A Discord api wrapper to create your bot!",
   "main": "./lib/index.js",
   "scripts": {
@@ -16,7 +16,9 @@
   "author": "DBDTeam",
   "license": "Apache-2.0",
   "dependencies": {
-    "ws": "^8.16.0"
+    "discord-api-types": "^0.37.83",
+    "tiny-typed-emitter": "^2.1.0",
+    "ws": "^8.17.0"
   },
   "repository": {
     "type": "git",
