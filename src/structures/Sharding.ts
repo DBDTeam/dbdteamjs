@@ -246,8 +246,8 @@ class ShardManager extends EventEmitter {
 
     for (var shardID = 0; shardID < this.totalShards; shardID++) {
       const shard = new Shard(
-        this.client, // lmao
-        shardID.toString(),
+        this.client, // @ts-ignore lmaooo
+        shardID,
         this.totalShards,
         this.gateway
       );
