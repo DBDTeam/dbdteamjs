@@ -9,7 +9,6 @@ import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
 declare class Client extends TypedEmitter<ClientEvents> {
-    opts: ClientOptions;
     /**
      * The token of the client
      */

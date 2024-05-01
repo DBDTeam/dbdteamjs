@@ -1,10 +1,12 @@
 import { Client } from "../../client/Client";
+import { Collection } from "../../utils/Collection";
 import { ComponentInteraction } from "./ComponentInteraction";
 /**
  * Represents an InteractionModal.
  * @extends ComponentInteraction
  */
-declare class InteractionModal extends ComponentInteraction {
+export declare class InteractionModal extends ComponentInteraction {
+    inputs: Collection<string, any>;
     /**
      * Creates an instance of InteractionModal.
      * @param {object} data - The InteractionModalPayload.
@@ -18,4 +20,3 @@ declare class InteractionModal extends ComponentInteraction {
      */
     private ___patch;
 }
-export { InteractionModal };

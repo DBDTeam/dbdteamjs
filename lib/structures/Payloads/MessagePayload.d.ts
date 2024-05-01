@@ -1,4 +1,3 @@
-import { APIAttachment } from "discord-api-types/v10";
 import { MessageBodyRequest } from "../../common";
 import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 /**
@@ -41,7 +40,7 @@ declare class MessagePayload {
      * @param {MessagePayloadData} data
      * @param {Files} files
      */
-    constructor(data: MessageBodyRequest | string, files?: APIAttachment[]);
+    constructor(data: MessageBodyRequest | string, files?: MessagePayloadFileData[]);
     get payload(): MessagePayloadData;
     get files(): MessagePayloadFileData[];
 }

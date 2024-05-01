@@ -4,7 +4,9 @@ import { Member } from "../Member";
 import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
-import { InteractionBodyRequest } from "../../common";
+import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
+import { ModalPayloadData } from "../Payloads/ModalPayload";
+import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 /**
  * Represents the base class for interactions.
  */
@@ -103,40 +105,41 @@ declare class InteractionBase {
      * @type {User}
      */
     get author(): User | undefined;
+    private __makeReply;
     /**
      * Makes a reply using the gateway.
      * @async
      * @param {InteractionPayload} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | object>}
+     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    makeReply(obj: InteractionBodyRequest): Promise<any | object>;
+    makeReply(obj: InteractionBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi>;
     /**
      * Defers the reply.
      * @param {boolean} ephemeral - If the defer will be sent ephemerally.
-     * @returns {Promise<Object>}
+     * @returns {Promise<InteractionResponse | object>}
      * @async
      */
-    deferReply(_ephemeral: boolean): Promise<any>;
+    deferReply(ephemeral: boolean): Promise<any>;
     /**
      * Edits the original response. (if any)
      * @async
-     * @param {EditMessagePayload} obj - The EditMessagePayloadData
-     * @returns {Promise<InteractionResponse | object>}
+     * @param {MessageUpdateBodyRequest} obj - The Body of the new Message.
+     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    editReply(_obj: any): Promise<any | object>;
+    editReply(body: MessageUpdateBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi>;
     /**
      * Follows up the Interaction response.
-     * @param {InteractionPayloadData} obj - The MessagePayloadData
+     * @param {InteractionBodyRequest} obj - The Body of the new Message.
      * @returns {Promise<InteractionResponse>}
      * @async
      */
-    followUp(_obj: any): Promise<any>;
+    followUp(body: MessageBodyRequest): Promise<any>;
     /**
      * Sends a modal as the interaction response.
      * @param {InteractionPayloadData} obj - The ModalPayloadData
-     * @returns {Promise<any>}
+     * @returns {Promise<InteractionResponse | object>}
      * @async
      */
-    modal(_obj: any): Promise<any>;
+    modal(body: ModalPayloadData): Promise<InteractionResponse | object>;
 }
 export { InteractionBase };
