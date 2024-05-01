@@ -238,6 +238,7 @@ class ShardManager extends EventEmitter {
 
   public async connect() {
     this.config = (await this.getGatewayConfig())?.data;
+    if(!this.config) throw new Error(`Please, provide a valid client token.`)
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;
