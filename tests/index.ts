@@ -24,7 +24,7 @@ const $Intents = new IntentsBitFields(
 
 const client = new Client({
   token:
-    "OTMwOTUwMTkzMzY3NjI1NzQ5.GEMWq8.Ln-4INxkTblHz8dqtM3l3SNmcTWGkPGIddLojY",
+    "",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: false,
