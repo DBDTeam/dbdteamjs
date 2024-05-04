@@ -3,3 +3,5 @@ tests/
 package-lock.json
 .jsdoc.config.json
 src/
+tsconfig.json
+.vscode

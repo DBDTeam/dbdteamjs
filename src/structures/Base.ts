@@ -15,7 +15,7 @@ abstract class Base {
   }
 
   get getBinary() {
-    return BigInt(this.id) >> 22n;
+    return BigInt(this.id || 0 ) >> 22n;
   }
 
   get getEpoch() {

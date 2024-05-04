@@ -24,7 +24,7 @@ const $Intents = new IntentsBitFields(
 
 const client = new Client({
   token:
-    "",
+    "OTMwOTUwMTkzMzY3NjI1NzQ5.GEMWq8.Ln-4INxkTblHz8dqtM3l3SNmcTWGkPGIddLojY",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: false,
@@ -96,7 +96,7 @@ client.on("interactionCreate", async (interaction) => {
         ],
       });
     } else {
-      const int = interaction as InteractionModal
+      const int = interaction as InteractionModal;
     }
   }
 });
@@ -105,10 +105,36 @@ client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
   if (msg.content.startsWith("!hello!"))
     return msg.channel?.createMessage({ content: "A" });
+  if (msg.content.startsWith("!pollTEST")) {
+    /*client.rest.request("POST", `/channels/${msg.channel?.id}/messages`, true, {
+      data: {
+        content: "ABC",
+        poll: {
+          question: { text: "¿ABC es BCA?" },
+          answers: [{ poll_media: { text: "ABC" } }],
+          duration: 140,
+          allow_multiselect: false,
+          layout_type: 1,
+        },
+      },
+    });*/
+
+    msg.channel?.createMessage({
+      content: `A`,
+      message_reference: { message_id: msg.id },
+      poll: {
+        question: { text: "¿ABC es BCA?" },
+        answers: [{ poll_media: { text: "ABC" } }],
+        duration: 140,
+        allow_multiselect: true,
+        layout_type: 1
+      },
+    });
+  }
 });
 
-client.on("error", (err: any) => {
-  console.error(err.d.error._misc, err.d.data.headers);
-});
+client.on("error", console.error);
+
+client.on("debug", console.log);
 
 client.connect();

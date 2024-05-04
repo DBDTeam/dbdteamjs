@@ -38,6 +38,7 @@ import { setObj } from "../../utils/utils";
  * @property {number | undefined} [nonce] - The nonce of the message. (if any)
  * @property {Array<Object> | undefined} [attachments] - The attachments of the message. (if any)
  */
+export type MessageData = MessagePayloadData
 class MessagePayload {
   private MENTIONS = [
     AllowedMentionsTypes.User,
@@ -56,6 +57,7 @@ class MessagePayload {
     files: null,
     nonce: Date.now(),
     attachments: null,
+    poll: null
   };
 
   readonly d: Record<any, any>;
@@ -64,11 +66,11 @@ class MessagePayload {
 
   /**
    * Creates a message payload to send messages.
-   * @param {MessagePayloadData} data
+   * @param {MessageBodyRequest} data
    * @param {Files} files
    */
   constructor(
-    data: MessageBodyRequest | string,
+    data: MessageBodyRequest,
     files: MessagePayloadFileData[] = ([] = [])
   ) {
     this.d =
@@ -109,6 +111,14 @@ class MessagePayload {
       this.d.allowed_mentions.roles = this.d.mentions.roles?.[0]
         ? this.d.mentions.roles
         : null;
+    }
+
+    if(this.d.poll) {
+      if('multiselect' in this.d.poll) {
+        this.d.poll.allow_multiselect = this.d.poll.multiselect
+        delete this.d.poll.multiselect
+      }
+      this.d.poll.layout_type = 1
     }
 
     if (typeof this.f === "object") {

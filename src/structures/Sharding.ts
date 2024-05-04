@@ -32,10 +32,9 @@ class Shard extends EventEmitter {
     super();
     this.time = Date.now();
     this.client = client;
-    this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
-    this.mobilePlatform = gateway?.mobilePlatform
-      ? "Discord Android"
-      : "dbdteamjs";
+    this.url = "wss://gateway.discord.gg/?v=10&encoding=json";
+    this.mobilePlatform =
+      gateway?.mobilePlatform === true ? "Discord Android" : "dbdteamjs";
     this.token = client.token;
     this.intents = client.intents;
     this.shardID = shardID;
@@ -224,12 +223,23 @@ class ShardManager extends EventEmitter {
   constructor(client: Client, gateway: GatewayConfig) {
     super();
     this.client = client;
-    this.token = client.token;
-    this.intents = client.intents;
+    this.token = client?.token;
+    this.intents = client?.intents;
     this.totalShards = gateway?.totalShards || 0;
-    this.url = gateway?.url || "wss://gateway.discord.gg/?v=10&encoding=json";
+    this.url = "wss://gateway.discord.gg/?v=10&encoding=json";
     this.shards = new Collection<number, Shard>();
     this.gateway = gateway;
+    this.checkInfo();
+  }
+
+  private checkInfo() {
+    if (!this.token || !this.intents)
+      throw new Error(
+        `Please, input a valid token and intents to run the client.`
+      );
+
+    if (this.totalShards && this.totalShards <= 0)
+      throw new Error(`Please, input a valid total of shards.`);
   }
 
   private async getGatewayConfig() {
@@ -238,7 +248,7 @@ class ShardManager extends EventEmitter {
 
   public async connect() {
     this.config = (await this.getGatewayConfig())?.data;
-    if(!this.config) throw new Error(`Please, provide a valid client token.`)
+    if (!this.config) throw new Error(`Please, provide a valid client token.`);
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;

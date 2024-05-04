@@ -22,7 +22,7 @@ export class RequestHandler {
   constructor(client: Client) {
     this.client = client;
     this.options = {
-      agent: client?.gateway?.agent || null,
+      agent:null,
       baseURL: Endpoints.BASE_URL,
     };
     this.ping = 0;

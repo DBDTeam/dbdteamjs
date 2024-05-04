@@ -15,6 +15,9 @@ import { GuildRolesManager } from "./Managers/RolesManager";
 import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRole } from "./Role";
 import { VoiceChannel } from "./VoiceChannel";
+import * as Endpoints from "../rest/Endpoints";
+import { GuildEditData } from "../interfaces/guild/Guild";
+import { GuildBanManager } from "./Managers/BanManager";
 
 class Guild extends Base {
   private exists: any;
@@ -57,6 +60,7 @@ class Guild extends Base {
   welcome_screen: Record<any, any>;
   nsfw_level: GuildNSFWLevel;
   guild: any;
+  bans: GuildBanManager;
   /**
    * Represents a Guild
    * @param {object} data - Guild payload
@@ -118,6 +122,13 @@ class Guild extends Base {
      * @type {GuildChannelManager}
      */
     this.channels = new GuildChannelManager(this.id, this.client);
+
+    /**
+     * The Guild Bans Manager.
+     * @type {GuildBanManager}
+     */
+    this.bans = new GuildBanManager(this, this.client)
+
     /**
      * The Guild voice channels in the cache.
      * @type {Collection}
@@ -339,6 +350,37 @@ class Guild extends Base {
        */
       this.nsfw_level = data.nsfw_level;
     }
+  }
+
+  /**
+   * Leaves from the server.
+   * @async
+   */
+  public async leave(): Promise<boolean | null> {
+    const response = await this.client.rest.request(
+      "DELETE",
+      Endpoints.UserGuild(this.id),
+      true
+    );
+
+    if (!response) return response;
+
+    return !response?.error ? true : false;
+  }
+
+  public async edit(body: GuildEditData) {
+    if (!body || typeof body !== "object") return null;
+
+    const response = await this.client.rest.request(
+      "PATCH",
+      Endpoints.Guild(this.id),
+      true,
+      { data: body }
+    );
+
+    if(!response || response?.error || !response?.data) return response;
+
+    return new Guild(response.data, this.client)
   }
 }
 

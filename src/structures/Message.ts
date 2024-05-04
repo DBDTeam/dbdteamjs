@@ -268,7 +268,7 @@ class Message extends Base {
   async reply(obj: MessageBodyRequest | string): Promise<Message | null> {
     let message: MessagePayload;
     if (typeof obj === "string") {
-      message = new MessagePayload(obj);
+      message = new MessagePayload({ content: obj });
     } else {
       message = new MessagePayload(obj);
     }

@@ -4,7 +4,7 @@ import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { getAllStamps } from "../utils/utils";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
-import { MessagePayload } from "./Payloads/MessagePayload";
+import { MessageData, MessagePayload } from "./Payloads/MessagePayload";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
@@ -82,7 +82,7 @@ export class TextBasedChannel extends Channel {
    */
 
   async createMessage(body: MessageBodyRequest) {
-    const message = new MessagePayload(body, body.files);
+    const message = new MessagePayload(body, body?.files);
 
     var result = await this.#client.rest.request(
       "POST",

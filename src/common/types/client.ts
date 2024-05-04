@@ -15,14 +15,12 @@ import { UserInteraction } from "../../structures/Interactions/UserInteraction";
 export interface ClientOptions {
   token: string;
   intents: number;
-  gateway: any;
+  gateway: GatewayConfig;
 }
 
 export interface GatewayConfig {
-  url: string;
   mobilePlatform: boolean;
-  totalShards: number | undefined;
-  agent: string;
+  totalShards?: number;
 }
 
 export interface ClientPresencePayload {
@@ -54,7 +52,7 @@ export enum EventNames {
   "GuildMemberAdd" = "guildMemberAdd",
   "GuildMemberChunk" = "guildMemberChunk",
   "GuildMemberLeave" = "guildMemberLeave",
-  "GuildMemberUpdate" = "guildMemberUpdate", // Acá vas completando, únicamente los que tienen extensión .js de los events
+  "GuildMemberUpdate" = "guildMemberUpdate",
   "GuildRoleCreate" = "guildRoleCreate",
   "GuildRoleDelete" ="guildRoleDelete",
   "GuildRoleUpdate" = "guildRoleUpdate",
@@ -63,9 +61,9 @@ export enum EventNames {
   "MessageDelete" = "messageDelete",
   "MessageUpdate" = "messageUpdate",
   "PresenceUpdate" = "presenceUpdate",
-  "VoiceServerUpdate" = "voiceServerUpdate", // "voiceServerUpdate" es el 2do string de la igualdad
+  "VoiceServerUpdate" = "voiceServerUpdate",
   "VoiceStateUpdate" = "voiceStateUpdate" 
-} // Ahora algo más díficil, vas a seguir el ejemplo de abajo, vas a tener que entender el código.
+}
 
 export interface ClientEvents {
   shardConnect: (id: string) => unknown;
@@ -90,13 +88,8 @@ export interface ClientEvents {
   guildMemberChunk: (guild: Guild, members: Member[], chunkData: Record<string, number>, shard: Shard) => unknown;
   guildMemberLeave: (member: Member, shard: Shard) => unknown;
   guildMemberUpdate: (oldMember: Member, newMember: Member, shard: Shard) => unknown;
-  // ACA EL EJEMPLO: (Vas poniendo de nombre el 2 string de la igualdad)
   guildRoleCreate: (role: GuildRole, shard: Shard) => unknown;
-  //Acostúmbrate a explicar con el nombre, role sería como
-  //Si fuera un role nuevo, pero oldRole da a significar que es un role antiguo.
   guildRoleDelete: (oldRole: GuildRole, shard: Shard) => unknown;
-  //Al usuario le sirve saber qué diferencias hay entre el nuevo y el antiguo, por eso va newRole primero
-  //Y luego el oldRole.
   guildRoleUpdate: (newRole: GuildRole, oldRole: GuildRole, shard: Shard) => unknown;
   guildStickersUpdate: (guild: Guild, shard: Shard) => unknown;
   

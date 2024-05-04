@@ -1,4 +1,4 @@
-import { AllowedMentionsTypes, MessageFlags } from "discord-api-types/v10";
+import { AllowedMentionsTypes, MessageFlags, RESTAPIPollCreate } from "discord-api-types/v10";
 import { MessageEmbedPayload } from "./Embeds";
 
 export interface MessagePayloadMentionData {
@@ -25,6 +25,10 @@ export interface MessagePayloadReplyData {
     id: string;
 }
 
+export interface PollData extends RESTAPIPollCreate {
+  multiselect: boolean
+}
+
 export interface MessagePayloadData {
     content?: string;
     nonce?: string | number;
@@ -35,4 +39,5 @@ export interface MessagePayloadData {
     flags?: MessageFlags;
     components?: MessagePayloadComponentData[];
     files?: MessagePayloadFileData[];
+    poll?: PollData
 };
