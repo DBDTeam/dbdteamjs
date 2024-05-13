@@ -1,6 +1,5 @@
+import { Nullable } from "../common";
 import { CDNOptions } from "../interfaces/rest/cdn";
-import { Guild } from "../structures/Guild";
-import { User } from "../structures/User";
 import { setObj } from "../utils/utils";
 
 /**
@@ -48,53 +47,56 @@ export class CDN {
    * @param options - Optional options for the avatar.
    * @returns The avatar URL.
    */
-  avatar(user: User, options: CDNOptions = {}) {
-    const data = this._getInfo(options, EXTENSIONS.GLOBAL, user?.avatar);
+  avatar(id: string, avatar: string, options: CDNOptions = {}) {
+    const data = this._getInfo(options, EXTENSIONS.GLOBAL, avatar);
     return this.BASE_URL(
-      `/avatars/${user?.id}/${user?.avatar}.${data.extension}?size=${data.size}`
+      `/avatars/${id}/${avatar}.${data.extension}?size=${data.size}`
     );
   }
 
   /**
    * Generates a default avatar URL for a user.
-   * @param user - The user for which to generate the default avatar URL.
+   * @param discriminator - The user discriminator for which to generate the default avatar URL.
+   * @param id - The user id for which to generate the default avatar URL.
    * @returns The default avatar URL.
    */
-  defaultAvatar(user: User) {
+  defaultAvatar(discriminator: Nullable<string>, id: string) {
     const index =
-      user?.discriminator === "0"
-        ? Number(BigInt(user?.id) >> 22n) % 6
-        : Number(user?.discriminator) % 5;
+      discriminator == "0"
+        ? Number(BigInt(id) >> 22n) % 6
+        : Number(discriminator) % 5;
     return this.BASE_URL(`/embed/avatars/${index}.png`);
   }
 
   /**
    * Generates a banner URL for a user.
-   * @param user - The user for which to generate the banner URL.
+   * @param id - The user id for which to generate the banner URL.
+   * @param banner - The user banner hash for which to generate the banner URL.
    * @param options - Optional options for the banner.
    * @returns The banner URL.
    */
-  banner(user: User, options: CDNOptions) {
-    const data = this._getInfo(options, EXTENSIONS.GLOBAL, user?.banner);
+  banner(id: string, banner: string, options: CDNOptions) {
+    const data = this._getInfo(options, EXTENSIONS.GLOBAL, banner);
     return this.BASE_URL(
-      `/banners/${user?.id}/${user?.banner}.${data.extension}?size=${data.size}`
+      `/banners/${id}/${banner}.${data.extension}?size=${data.size}`
     );
   }
 
   /**
    * Generates a user avatar decoration URL.
-   * @param user - The user for which to generate the avatar decoration URL.
+   * @param id - The user id for which to generate the avatar decoration URL.
+   * @param decoration - The user avatar decoration hash for which to generate the avatar decoration URL.
    * @param options - Optional options for the avatar decoration.
    * @returns The avatar decoration URL.
    */
-  avatarDecoration(user: User, options: CDNOptions) {
+  avatarDecoration(id: string, decoration: string, options: CDNOptions) {
     const data = this._getInfo(
       options,
       EXTENSIONS.NOTGIF,
-      user?.avatarDecoration
+      decoration
     );
     return this.BASE_URL(
-      `/avatars-decoration/${user?.id}/${user?.avatarDecoration}.${data.extension}?size=${data.size}`
+      `/avatars-decoration/${id}/${decoration}.${data.extension}?size=${data.size}`
     );
   }
 
@@ -117,57 +119,61 @@ export class CDN {
 
   /**
    * Generates a guild icon URL.
-   * @param guild - The guild for which to generate the icon URL.
+   * @param id - The guild id for which to generate the icon URL.
+   * @param icon - The guild icon for which to generate the icon URL.
    * @param options - Optional options for the icon.
    * @returns The guild icon URL.
    */
-  guildIcon(guild: Guild, options: CDNOptions) {
-    const data = this._getInfo(options, EXTENSIONS.GLOBAL, guild?.icon);
+  guildIcon(id: string, icon: string, options: CDNOptions) {
+    const data = this._getInfo(options, EXTENSIONS.GLOBAL, icon);
     return this.BASE_URL(
-      `/icons/${guild?.id}/${guild?.icon}.${data.extension}`
+      `/icons/${id}/${icon}.${data.extension}`
     );
   }
 
   /**
    * Generates a guild splash URL.
-   * @param guild - The guild for which to generate the splash URL.
+   * @param id - The guild id for which to generate the splash URL.
+   * @param splash - The guild splash hash for which to generate the splash URL.
    * @param options - Optional options for the splash.
    * @returns The guild splash URL.
    */
-  guildSplash(guild: Guild, options: CDNOptions) {
-    const data = this._getInfo(options, EXTENSIONS.NOTGIF, guild?.splash);
+  guildSplash(id: string, splash: string, options: CDNOptions) {
+    const data = this._getInfo(options, EXTENSIONS.NOTGIF, splash);
     return this.BASE_URL(
-      `/splashs/${guild?.id}/${guild?.splash}.${data.extension}?size=${data.size}`
+      `/splashs/${id}/${splash}.${data.extension}?size=${data.size}`
     );
   }
 
   /**
    * Generates a discovery splash URL for a guild.
-   * @param guild - The guild for which to generate the discovery splash URL.
+   * @param id - The guild id for which to generate the discovery splash URL.
+   * @param discovery_splash - The guild discovery splash for which to generate the discovery splash URL.
    * @param options - Optional options for the discovery splash.
    * @returns The discovery splash URL.
    */
-  discoverySplash(guild: Guild, options: CDNOptions) {
+  discoverySplash(id: string, discovery_splash: string, options: CDNOptions) {
     const data = this._getInfo(
       options,
       EXTENSIONS.NOTGIF,
-      guild?.discovery_splash
+      discovery_splash
     );
     return this.BASE_URL(
-      `/discovery-splashes/${guild?.id}/${guild?.discovery_splash}.${data.extension}?size=${data.size}`
+      `/discovery-splashes/${id}/${discovery_splash}.${data.extension}?size=${data.size}`
     );
   }
 
   /**
    * Generates a guild banner URL.
-   * @param guild - The guild for which to generate the banner URL.
+   * @param id - The guild id for which to generate the banner URL.
+   * @param banner - The guild banner for which to generate the banner URL.
    * @param options - Optional options for the banner.
    * @returns The guild banner URL.
    */
-  guildBanner(guild: Guild, options: CDNOptions) {
-    const data = this._getInfo(options, EXTENSIONS.GLOBAL, guild?.banner);
+  guildBanner(id: string, banner: string, options: CDNOptions) {
+    const data = this._getInfo(options, EXTENSIONS.GLOBAL, banner);
     return this.BASE_URL(
-      `/banners/${guild?.id}/${guild?.banner}.${data.extension}?size=${data.size}`
+      `/banners/${id}/${banner}.${data.extension}?size=${data.size}`
     );
   }
 

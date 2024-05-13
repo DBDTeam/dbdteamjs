@@ -137,7 +137,7 @@ export class User extends Base {
    */
   avatarUrl(opts?: CDNOptions): undefined | string {
     if (!this.id) return;
-    return this.client.rest.cdn.avatar(this, opts);
+    return this.client.rest.cdn.avatar(this.id, this.avatar as string, opts);
   }
 
   /**
@@ -149,7 +149,7 @@ export class User extends Base {
    */
   defaultAvatarUrl(): undefined | string {
     if (!this.id) return;
-    return this.client.rest.cdn.defaultAvatar(this);
+    return this.client.rest.cdn.defaultAvatar(this.discriminator, this.id);
   }
 
   /**
@@ -162,7 +162,7 @@ export class User extends Base {
    */
   bannerUrl(opts: CDNOptions) {
     if (!this.id) return;
-    return this.client.rest.cdn.banner(this, opts);
+    return this.client.rest.cdn.banner(this.id, this.banner as string, opts);
   }
 
   /**

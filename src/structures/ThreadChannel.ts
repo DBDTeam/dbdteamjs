@@ -9,6 +9,7 @@ import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
 import { Member } from "./Member";
 import { Message } from "./Message";
 import { MessagePayload } from "./Payloads/MessagePayload";
+import { TextBasedChannel } from "./TextBasedChannel";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 
@@ -21,7 +22,7 @@ import { VoiceChannel } from "./VoiceChannel";
  */
 
 /** @extends {Channel} */
-class ThreadChannel extends Channel {
+class ThreadChannel extends TextBasedChannel {
   readonly client: Client;
   message_count: number;
   locked: boolean;
@@ -189,48 +190,6 @@ class ThreadChannel extends Channel {
     //     ? `&limit=${config.limit}`
     //     : `?limit=${config.limit}`;
     // }
-  }
-  /**
-   * Creates a message in the Text Channel
-   * @param {MessagePayload} obj - The message send payload
-   * @example
-   * const channel = client.channels.cache.get("766497696604487691")
-   *
-   * channel.createMessage(`Hello world!`).then((response) => {
-   *  if(response.error){
-   *      return console.log(response)
-   *  } else {
-   *      console.log(`Message sended successfully!`)
-   *  }
-   * })
-   * @returns {Promise<Message | object>}
-   */
-
-  async createMessage(obj: any) {
-    const message = new MessagePayload(obj, obj.files);
-
-    var result = await this.client.rest.request(
-      "POST",
-      Endpoints.ChannelMessages(this.id),
-      true,
-      { data: message.payload },
-      null,
-      message.files
-    );
-
-    if (!result) return;
-
-    if (!result.error) {
-      result.data = {
-        ...result.data,
-        guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data?.author.id),
-      };
-
-      return new Message(result.data, this.client);
-    } else {
-      return result;
-    }
   }
 }
 

@@ -14,8 +14,9 @@ export abstract class Event<T> {
 
   abstract handle(data: T, shard: Shard): ProbablyPromise<any>;
 
-  getMessage(data: any) {
+  async getMessage(data: any) {
     const message = new Message(data, this.client);
+    await message.___patch()
 
     if (message.channel && "messages" in message.channel) {
       message?.channel?.messages?.cache?.set(data.id, message);

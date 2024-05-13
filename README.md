@@ -1,5 +1,5 @@
 # @dbdteam.js
-✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](https://www.dbdteam.xyz/discord) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://jsdocs.dbdteam.xyz/).
+✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](https://www.dbdteam.xyz/discord) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://jsdocs.dbdteam.xyz/) (actually depracated).
 
 ### NPM:
 ![](https://img.shields.io/npm/v/dbdteamjs) ![](https://img.shields.io/npm/dt/dbdteamjs)
@@ -35,44 +35,61 @@ Once you have that done, it's time to start creating the robot using the package
 
 # Example using MessageContent Intent
 ```javascript
-const { Client, Presence, IntentsBitFields } = require("dbdteamjs")
-
-const Intents = new IntentsBitFields()
-
-Intents.add("Guilds")
-Intents.add("GuildMembers")
-Intents.add("GuildMessages")
-Intents.add("MessageContent")
+const {
+  Client,
+  Intents,
+  IntentsBitFields,
+  PresenceStatus,
+  PresenceTypes,
+} require("dbdteamjs");
+const $Intents = new IntentsBitFields(
+  Intents.Guilds,
+  Intents.GuildMembers,
+  Intents.GuildMessages,
+  Intents.MessageContent
+);
 
 const client = new Client({
-   token: `HERE GOES THE ROBOT TOKEN`,
-   intents: Intents.intents,
-   gateway: {
-     mobilePlatform: false // Only this if you want the robot to have the online icon on a mobile device.
-   }
-})
+  token:
+    "Here your token",
+  intents: $Intents.intents,
+  gateway: {
+    mobilePlatform: false,
+  },
+});
 
-client.on("ready", () => {
-   console.log(`I have successfully logged on to ${client.user.username}`)
-   client.presence.update({
-     activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
-     since: 0,
-     status: Presence.Status.DND
-   })
-})
+client.on("ready", ({ username }) => {
+  console.log(`I have successfully logged on to ${username}`);
 
-client.on("messageCreate", async(message) => {
-   if(message.user.bot) return; // The user is a robot
-   if(message.content.startsWith("!greet")){
-     message.channel.createMessage(`Hello, ${message.user.username}!`)
-   }
+  client.presence.update({
+    activities: [{ name: `Hello world!`, type: PresenceTypes.Competing }],
+    since: 0,
+    status: PresenceStatus.DND,
+  });
+});
+
+client.on("messageCreate", async(msg) => {
+  if(msg.content?.toLowerCase() === "!hi") {
+    msg.reply({
+      content: `Hi!`
+    })
+  }
 })
+});
 
 client.connect() // Will establish the connection between the robot and the WS.
 ```
 # Example using Interactions
 ```javascript
-const { Client, Presence, IntentsBitFields, InteractionTypes } = require("dbdteamjs")
+import {
+  Client,
+  IntegrationTypes,
+  Intents,
+  IntentsBitFields,
+  InteractionContexts,
+  PresenceStatus,
+  PresenceTypes,
+} from "dbdteamjs";
 
 const Intents = new IntentsBitFields()
 
@@ -90,9 +107,9 @@ const client = new Client({
 client.on("ready", () => {
    console.log(`I have successfully logged on to ${client.user.username}`)
    client.presence.update({
-     activities: [{ name: `Hello world!`, type: Presence.Types.Game }],
+     activities: [{ name: `Hello world!`, type: PresenceTypes }],
      since: 0,
-     status: Presence.Status.DND
+     status: PresenceStatus
    })
 
    client.application.commands.set(

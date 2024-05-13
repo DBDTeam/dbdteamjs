@@ -1,22 +1,17 @@
 import { APIChannelMention, APIMessage } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { MessageBodyRequest, Nullable } from "../common";
-import { MessagePayloadData } from "../interfaces/message/MessagePayload";
 import * as Endpoints from "../rest/Endpoints";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
-import { CategoryChannel } from "./CategoryChannel";
 import { Guild } from "./Guild";
 import { MessageReactions } from "./Managers/ReactionMessage";
 import { Member } from "./Member";
 import { EditMessagePayload } from "./Payloads/EditMessagePayload";
 import { MessagePayload } from "./Payloads/MessagePayload";
-import { TextChannel } from "./TextChannel";
-import { ThreadChannel } from "./ThreadChannel";
 import { User } from "./User";
-import { VoiceChannel } from "./VoiceChannel";
 import { TextBasedChannel } from "./TextBasedChannel";
 
 /**
@@ -168,7 +163,6 @@ class Message extends Base {
    * @type {any}
    */
   thread: any;
-
   /**
    * Creates an instance of Message.
    * @param {APIMessage} data - The data of the message.
@@ -190,7 +184,7 @@ class Message extends Base {
       roles: new Collection(),
       channels: new Collection(),
     };
-    this.channel = this.client.channels.cache.get(this.channelId) as TextBasedChannel;
+    this.channel = this.client.channels.cache.get(data.channel_id) as TextBasedChannel;
     this.guild =
       this.client.guilds.cache.get(this.guildId!) ||
       this.client.channels.cache.get(this.channelId)?.guild;
@@ -208,14 +202,17 @@ class Message extends Base {
     this.stickers = new Collection();
     this.nonce = data.nonce || 0;
     this.pinned = data.pinned;
-    this.patch(data);
   }
 
   /**
    * Patches the message data.
    * @param {APIMessage} data - The data of the message.
    */
-  private patch(data: APIMessage): void {
+  async ___patch(): Promise<void> {
+    const data = this.data
+    if(!this.channel) {
+      this.channel = (await this.client.channels.fetch(this.channelId)) as TextBasedChannel
+    }
     if ("member" in data && data.member) {
       this.member = new Member(
         { ...data.member, id: this.user.id },
@@ -265,33 +262,31 @@ class Message extends Base {
    * @param {MessagePayloadData | string} obj - The message payload or content.
    * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
    */
-  async reply(obj: MessageBodyRequest | string): Promise<Message | null> {
-    let message: MessagePayload;
-    if (typeof obj === "string") {
-      message = new MessagePayload({ content: obj });
-    } else {
-      message = new MessagePayload(obj);
-    }
+  async reply(body: MessageBodyRequest): Promise<Message | null> {
+    if(!body.message_reference) { body.message_reference = { message_id:  this.id } }
+    const message = new MessagePayload(body, body?.files);
 
-    const result = await this.client.rest.request(
+    var data = message.payload
+
+    var result = await this.client.rest.request(
       "POST",
-      Endpoints.ChannelMessages(this.channelId),
+      Endpoints.ChannelMessages(this.id),
       true,
-      { data: message.payload },
+      { data },
       null,
       message.files
     );
 
     if (!result) return null;
 
-    if (!result.error && result.data) {
-      const data: APIMessage | { guild?: Guild; member?: Member } = {
+    if (!result.error) {
+      const data: any = {
         ...result.data,
         guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data.author.id),
+        member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
-      return new Message(data as APIMessage, this.client);
+      return new Message(data, this.client);
     } else {
       return null;
     }

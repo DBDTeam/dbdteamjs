@@ -182,8 +182,8 @@ class Shard extends EventEmitter {
         this.identify();
         break;
       case 11:
-        // @ts-ignore
-        this.client.emit("Heartbeat ACK received.", this.shardID);
+
+        this.client.emit("debug", "Heartbeat ACK received.", this.shardID);
         this.client.ping = Date.now() - this.latency;
         break;
     }
@@ -192,8 +192,8 @@ class Shard extends EventEmitter {
   async heartbeat() {
     if (!this.authenticated) return;
     this.latency = Date.now();
-    // @ts-ignore
-    this.client.emit("Hearbeat sended.", this.shardID);
+
+    this.client.emit("debug", "Hearbeat sended.", this.shardID);
     this.ws.send(JSON.stringify({ op: 1, d: this.sequence }));
   }
 

@@ -5,6 +5,7 @@ import {
   GuildNSFWLevel,
   GuildVerificationLevel,
 } from "discord-api-types/v10";
+import { CDNOptions } from "../interfaces/rest/cdn";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
@@ -350,6 +351,46 @@ class Guild extends Base {
        */
       this.nsfw_level = data.nsfw_level;
     }
+  }
+
+  /**
+   * Returns the icon url of the guild (if has)
+   * @param {CDNOptions} config - The config of the request.
+   * @returns {Nullable<string>}
+   */
+  public iconUrl(config: CDNOptions): Nullable<string> {
+    if(!this.icon) return null;
+    return this.client.rest.cdn.guildIcon(this.id, this.icon, config)
+  }
+
+  /**
+   * Returns the icon banner of the guild (if has)
+   * @param {CDNOptions} config - The config of the request.
+   * @returns {Nullable<string>}
+   */
+  public bannerUrl(config: CDNOptions): Nullable<string> {
+    if(!this.banner) return null;
+    return this.client.rest.cdn.guildBanner(this.id, this.banner, config)
+  }
+
+  /**
+   * Returns the icon banner of the guild (if has)
+   * @param {CDNOptions} config - The config of the request.
+   * @returns {Nullable<string>}
+   */
+  public splashUrl(config: CDNOptions): Nullable<string> {
+    if(!this.splash) return null;
+    return this.client.rest.cdn.guildSplash(this.id, this.splash, config)
+  }
+
+  /**
+   * Returns the icon banner of the guild (if has)
+   * @param {CDNOptions} config - The config of the request.
+   * @returns {Nullable<string>}
+   */
+  public discoverySplashUrl(config: CDNOptions): Nullable<string> {
+    if(!this.discovery_splash) return null;
+    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash, config)
   }
 
   /**

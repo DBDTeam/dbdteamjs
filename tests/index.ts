@@ -1,19 +1,16 @@
 import {
-  ActivityType,
-  ApplicationCommandType,
-  PresenceUpdateStatus,
-} from "discord-api-types/v10";
-
-import {
   Client,
   IntegrationTypes,
   Intents,
   IntentsBitFields,
   InteractionContexts,
+  PresenceStatus,
+  PresenceTypes,
 } from "../src";
 import { SlashInteraction } from "../src/structures/Interactions/SlashInteraction";
 import { ComponentInteraction } from "../src/structures/Interactions/ComponentInteraction";
 import { InteractionModal } from "../src/structures/Interactions/InteractionModal";
+import { ApplicationCommandType } from "discord-api-types/v10";
 
 const $Intents = new IntentsBitFields(
   Intents.Guilds,
@@ -35,9 +32,9 @@ client.on("ready", ({ username }) => {
   console.log(`I have successfully logged on to ${username}`);
 
   client.presence.update({
-    activities: [{ name: `Hello world!`, type: ActivityType.Playing }],
+    activities: [{ name: `Hello world!`, type: PresenceTypes.Competing }],
     since: 0,
-    status: PresenceUpdateStatus.DoNotDisturb,
+    status: PresenceStatus.DND,
   });
 
   client.application?.commands.set([
@@ -127,14 +124,14 @@ client.on("messageCreate", async (msg) => {
         answers: [{ poll_media: { text: "ABC" } }],
         duration: 140,
         allow_multiselect: true,
-        layout_type: 1
+        layout_type: 1,
       },
     });
   }
 });
 
-client.on("error", console.error);
+// client.on("error", console.error);
 
-client.on("debug", console.log);
+// client.on("debug", console.log);
 
 client.connect();

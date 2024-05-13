@@ -134,7 +134,6 @@ export class RequestHandler {
 
       if (["PATCH", "POST", "PUT"].includes(options.method)) {
         if (body?.data && !files?.[0]) {
-          console.log("A")
           req.write(JSON.stringify(body?.data));
         } else if (files?.[0]) {
           if (body?.data) {

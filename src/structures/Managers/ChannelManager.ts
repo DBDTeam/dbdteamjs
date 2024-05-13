@@ -161,11 +161,9 @@ class ChannelManager {
       true
     );
 
-    if (!response) return response;
+    if (!response || response.status !== 200) return response;
 
-    if (!response.error) return response;
-
-    return response.data;
+    return await typeChannel(response.data, this.client);
   }
 }
 
