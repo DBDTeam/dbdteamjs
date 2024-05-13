@@ -9,7 +9,7 @@ export declare abstract class Event<T> {
     client: Client;
     constructor(client: Client);
     abstract handle(data: T, shard: Shard): ProbablyPromise<any>;
-    getMessage(data: any): Message;
+    getMessage(data: any): Promise<Message>;
     getChannel(data: any): import("../../structures").CategoryChannel | import("../../structures").Channel | import("../../structures").VoiceChannel | import("../../structures").TextChannel | import("../../structures").ThreadChannel;
     getUser(data: any): User;
     getMember(data: any, guildId: any): Member;

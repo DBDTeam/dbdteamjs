@@ -14,13 +14,11 @@ import { UserInteraction } from "../../structures/Interactions/UserInteraction";
 export interface ClientOptions {
     token: string;
     intents: number;
-    gateway: any;
+    gateway: GatewayConfig;
 }
 export interface GatewayConfig {
-    url: string;
     mobilePlatform: boolean;
-    totalShards: number | undefined;
-    agent: string;
+    totalShards?: number;
 }
 export interface ClientPresencePayload {
     activities: Array<GatewayActivityPayload>;
@@ -49,7 +47,7 @@ export declare enum EventNames {
     "GuildMemberAdd" = "guildMemberAdd",
     "GuildMemberChunk" = "guildMemberChunk",
     "GuildMemberLeave" = "guildMemberLeave",
-    "GuildMemberUpdate" = "guildMemberUpdate",// Acá vas completando, únicamente los que tienen extensión .js de los events
+    "GuildMemberUpdate" = "guildMemberUpdate",
     "GuildRoleCreate" = "guildRoleCreate",
     "GuildRoleDelete" = "guildRoleDelete",
     "GuildRoleUpdate" = "guildRoleUpdate",
@@ -58,7 +56,7 @@ export declare enum EventNames {
     "MessageDelete" = "messageDelete",
     "MessageUpdate" = "messageUpdate",
     "PresenceUpdate" = "presenceUpdate",
-    "VoiceServerUpdate" = "voiceServerUpdate",// "voiceServerUpdate" es el 2do string de la igualdad
+    "VoiceServerUpdate" = "voiceServerUpdate",
     "VoiceStateUpdate" = "voiceStateUpdate"
 }
 export interface ClientEvents {

@@ -152,13 +152,13 @@ declare class Message extends Base {
      * Patches the message data.
      * @param {APIMessage} data - The data of the message.
      */
-    private patch;
+    ___patch(): Promise<void>;
     /**
      * Replies to the message.
      * @param {MessagePayloadData | string} obj - The message payload or content.
      * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
      */
-    reply(obj: MessageBodyRequest | string): Promise<Message | null>;
+    reply(body: MessageBodyRequest): Promise<Message | null>;
     /**
      * Edits the message.
      * @param {EditMessagePayload | string} obj - The edit message payload or content.

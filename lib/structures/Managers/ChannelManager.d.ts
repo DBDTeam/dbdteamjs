@@ -41,6 +41,6 @@ declare class ChannelManager {
     readonly client: Client;
     cache: Collection<string, Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>;
     constructor(client: Client);
-    fetch(id: string): Promise<Record<any, any> | import("../../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
+    fetch(id: string): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | Channel | null>;
 }
 export { GuildChannelManager, ChannelManager };

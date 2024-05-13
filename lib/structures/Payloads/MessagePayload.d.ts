@@ -29,6 +29,7 @@ import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/mes
  * @property {number | undefined} [nonce] - The nonce of the message. (if any)
  * @property {Array<Object> | undefined} [attachments] - The attachments of the message. (if any)
  */
+export type MessageData = MessagePayloadData;
 declare class MessagePayload {
     private MENTIONS;
     private Data;
@@ -37,10 +38,10 @@ declare class MessagePayload {
     private f;
     /**
      * Creates a message payload to send messages.
-     * @param {MessagePayloadData} data
+     * @param {MessageBodyRequest} data
      * @param {Files} files
      */
-    constructor(data: MessageBodyRequest | string, files?: MessagePayloadFileData[]);
+    constructor(data: MessageBodyRequest, files?: MessagePayloadFileData[]);
     get payload(): MessagePayloadData;
     get files(): MessagePayloadFileData[];
 }

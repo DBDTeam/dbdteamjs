@@ -1,9 +1,9 @@
 import { VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { Channel } from "./BaseChannel";
 import { Message } from "./Message";
+import { TextBasedChannel } from "./TextBasedChannel";
 /** @extends {Channel} */
-declare class VoiceChannel extends Channel {
+declare class VoiceChannel extends TextBasedChannel {
     bitrate: number;
     user_limit: number;
     rate_limit_per_user: number;

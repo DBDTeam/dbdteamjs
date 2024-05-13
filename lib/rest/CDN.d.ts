@@ -1,6 +1,5 @@
+import { Nullable } from "../common";
 import { CDNOptions } from "../interfaces/rest/cdn";
-import { Guild } from "../structures/Guild";
-import { User } from "../structures/User";
 /**
  * Represents a Discord CDN (Content Delivery Network) utility.
  */
@@ -14,27 +13,30 @@ export declare class CDN {
      * @param options - Optional options for the avatar.
      * @returns The avatar URL.
      */
-    avatar(user: User, options?: CDNOptions): string;
+    avatar(id: string, avatar: string, options?: CDNOptions): string;
     /**
      * Generates a default avatar URL for a user.
-     * @param user - The user for which to generate the default avatar URL.
+     * @param discriminator - The user discriminator for which to generate the default avatar URL.
+     * @param id - The user id for which to generate the default avatar URL.
      * @returns The default avatar URL.
      */
-    defaultAvatar(user: User): string;
+    defaultAvatar(discriminator: Nullable<string>, id: string): string;
     /**
      * Generates a banner URL for a user.
-     * @param user - The user for which to generate the banner URL.
+     * @param id - The user id for which to generate the banner URL.
+     * @param banner - The user banner hash for which to generate the banner URL.
      * @param options - Optional options for the banner.
      * @returns The banner URL.
      */
-    banner(user: User, options: CDNOptions): string;
+    banner(id: string, banner: string, options: CDNOptions): string;
     /**
      * Generates a user avatar decoration URL.
-     * @param user - The user for which to generate the avatar decoration URL.
+     * @param id - The user id for which to generate the avatar decoration URL.
+     * @param decoration - The user avatar decoration hash for which to generate the avatar decoration URL.
      * @param options - Optional options for the avatar decoration.
      * @returns The avatar decoration URL.
      */
-    avatarDecoration(user: User, options: CDNOptions): string;
+    avatarDecoration(id: string, decoration: string, options: CDNOptions): string;
     /**
      * Generates an emoji URL.
      * @param emojiId - The ID of the emoji.
@@ -44,32 +46,36 @@ export declare class CDN {
     emoji(emojiId: string, options: CDNOptions): string;
     /**
      * Generates a guild icon URL.
-     * @param guild - The guild for which to generate the icon URL.
+     * @param id - The guild id for which to generate the icon URL.
+     * @param icon - The guild icon for which to generate the icon URL.
      * @param options - Optional options for the icon.
      * @returns The guild icon URL.
      */
-    guildIcon(guild: Guild, options: CDNOptions): string;
+    guildIcon(id: string, icon: string, options: CDNOptions): string;
     /**
      * Generates a guild splash URL.
-     * @param guild - The guild for which to generate the splash URL.
+     * @param id - The guild id for which to generate the splash URL.
+     * @param splash - The guild splash hash for which to generate the splash URL.
      * @param options - Optional options for the splash.
      * @returns The guild splash URL.
      */
-    guildSplash(guild: Guild, options: CDNOptions): string;
+    guildSplash(id: string, splash: string, options: CDNOptions): string;
     /**
      * Generates a discovery splash URL for a guild.
-     * @param guild - The guild for which to generate the discovery splash URL.
+     * @param id - The guild id for which to generate the discovery splash URL.
+     * @param discovery_splash - The guild discovery splash for which to generate the discovery splash URL.
      * @param options - Optional options for the discovery splash.
      * @returns The discovery splash URL.
      */
-    discoverySplash(guild: Guild, options: CDNOptions): string;
+    discoverySplash(id: string, discovery_splash: string, options: CDNOptions): string;
     /**
      * Generates a guild banner URL.
-     * @param guild - The guild for which to generate the banner URL.
+     * @param id - The guild id for which to generate the banner URL.
+     * @param banner - The guild banner for which to generate the banner URL.
      * @param options - Optional options for the banner.
      * @returns The guild banner URL.
      */
-    guildBanner(guild: Guild, options: CDNOptions): string;
+    guildBanner(id: string, banner: string, options: CDNOptions): string;
     /**
      * Generates a sticker URL.
      * @param stickerId - The ID of the sticker.
