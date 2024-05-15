@@ -1,5 +1,6 @@
-import { APIActionRowComponent, APIEmbed, APIInteractionResponseCallbackData, APIMessageActionRowComponent, InteractionResponseType, PermissionFlagsBits, RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
+import { APIActionRowComponent, APIEmbed, APIInteractionResponseCallbackData, APIMessageActionRowComponent, GatewayPresenceClientStatus, InteractionResponseType, PermissionFlagsBits, RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { GatewayActivityPayload, PresenceStatus } from "../../types/Presences";
 export type PermissionStrings = (keyof typeof PermissionFlagsBits)[];
 export type Nullable<T> = T | null | undefined;
 export type ProbablyPromise<T> = Promise<T> | T;
@@ -16,3 +17,8 @@ export type MessageUpdateBodyRequest = Omit<RESTPostAPIChannelMessageJSONBody, "
 export type InteractionBodyRequest = ComponentInteractionMessageUpdate & {
     type?: InteractionResponseType;
 };
+export interface PresenceData {
+    status?: PresenceStatus;
+    activities: GatewayActivityPayload[];
+    platforms: GatewayPresenceClientStatus;
+}

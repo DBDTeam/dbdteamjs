@@ -7,5 +7,5 @@ export declare class ChannelMessageManager<T extends Record<any, any>> {
     cache: Collection<string, Message>;
     constructor(channel: T, client: Client);
     get guild(): any;
-    fetch(msgId: Record<any, any>): Promise<Message | Message[] | null | undefined>;
+    fetch(msgId: string | Record<any, any>): Promise<Message | Message[] | null | undefined>;
 }

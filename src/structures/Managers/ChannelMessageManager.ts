@@ -17,7 +17,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
     if ("guild" in this.channel) return this.channel.guild;
     else null;
   }
-  async fetch(msgId: Record<any, any>) {
+  async fetch(msgId: string | Record<any, any>) {
     if (typeof msgId === "object" && msgId instanceof Object) {
       const config = {
         limit: 50,

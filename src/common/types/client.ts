@@ -11,6 +11,7 @@ import { SlashInteraction } from "../../structures/Interactions/SlashInteraction
 import { MessageInteraction } from "../../structures/Interactions/MessageInteraction";
 import { ComponentInteraction } from "../../structures/Interactions/ComponentInteraction";
 import { UserInteraction } from "../../structures/Interactions/UserInteraction";
+import { PresenceData } from "./utils";
 
 export interface ClientOptions {
   token: string;
@@ -76,9 +77,12 @@ export interface ClientEvents {
   ready: (user: ClientUser, shard: Shard) => unknown;
 
   messageCreate: (message: Message, shard: Shard) => unknown;
+  messageDelete: (oldMessage: Message, shard: Shard) => unknown;
+  messageUpdate: (oldMessage: Message, newMessage: Message, shard: Shard) => unknown;
   interactionCreate: (interaction: SlashInteraction | ComponentInteraction | UserInteraction | MessageInteraction, shard: Shard) => unknown;
 
   guildCreate: (guild: Guild, shard: Shard) => unknown;
+  guildUpdate: (oldGuild: Guild, newGuild: Guild, shard: Shard) => unknown;
   guildBanRemove: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
   guildBanAdd: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
   guildUnavailable: (data: any, shard: Shard) => unknown;
@@ -98,6 +102,8 @@ export interface ClientEvents {
   channelUpdate: (oldChannel: unknown, newChannel: unknown, shard: Shard) => unknown;
   threadCreate: (threadChannel: ThreadChannel, shard: Shard) => unknown
   threadUpdate: (oldThread: ThreadChannel, newThread: ThreadChannel, shard: Shard) => unknown
+
+  presenceUpdate: (member: Member, oldPresence: PresenceData, newPresence: PresenceData, shard: Shard) => unknown;
 }
 
 export enum Intents {

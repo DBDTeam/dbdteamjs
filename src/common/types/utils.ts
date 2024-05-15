@@ -4,11 +4,13 @@ import {
   APIEmbed,
   APIInteractionResponseCallbackData,
   APIMessageActionRowComponent,
+  GatewayPresenceClientStatus,
   InteractionResponseType,
   PermissionFlagsBits,
   RESTPostAPIChannelMessageJSONBody,
 } from "discord-api-types/v10";
 import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { GatewayActivityPayload, PresenceStatus } from "../../types/Presences";
 
 export type PermissionStrings = (keyof typeof PermissionFlagsBits)[];
 
@@ -41,3 +43,9 @@ export type MessageUpdateBodyRequest = Omit<
 export type InteractionBodyRequest = ComponentInteractionMessageUpdate & {
   type?: InteractionResponseType;
 };
+
+export interface PresenceData {
+  status?: PresenceStatus,
+  activities: GatewayActivityPayload[],
+  platforms: GatewayPresenceClientStatus
+}
