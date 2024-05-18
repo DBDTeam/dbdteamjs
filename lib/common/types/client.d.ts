@@ -32,10 +32,12 @@ export interface EditClientUserPayload {
     avatar?: string;
 }
 export declare enum EventNames {
+    "Debug" = "debug",
     "MessageCreate" = "messageCreate",
     "InteractionCreate" = "interactionCreate",
     "ChannelCreate" = "channelCreate",
     "ChannelDelete" = "channelDelete",
+    "ChannelUpdate" = "channelUpdate",
     "GuildBanAdd" = "guildBanAdd",
     "GuildBanRemove" = "guildBanRemove",
     "Ready" = "ready",

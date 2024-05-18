@@ -37,10 +37,12 @@ export interface EditClientUserPayload {
 }
 
 export enum EventNames {
+  "Debug" = "debug",
   "MessageCreate" = "messageCreate",
   "InteractionCreate" = "interactionCreate",
   "ChannelCreate" = "channelCreate",
   "ChannelDelete" = "channelDelete",
+  "ChannelUpdate" = "channelUpdate",
   "GuildBanAdd" = "guildBanAdd",
   "GuildBanRemove" = "guildBanRemove",
   "Ready" = "ready",
@@ -55,7 +57,7 @@ export enum EventNames {
   "GuildMemberLeave" = "guildMemberLeave",
   "GuildMemberUpdate" = "guildMemberUpdate",
   "GuildRoleCreate" = "guildRoleCreate",
-  "GuildRoleDelete" ="guildRoleDelete",
+  "GuildRoleDelete" = "guildRoleDelete",
   "GuildRoleUpdate" = "guildRoleUpdate",
   "GuildStickersUpdate" = "guildStickersUpdate",
   "GuildUpdate" = "guildUpdate",
@@ -63,7 +65,7 @@ export enum EventNames {
   "MessageUpdate" = "messageUpdate",
   "PresenceUpdate" = "presenceUpdate",
   "VoiceServerUpdate" = "voiceServerUpdate",
-  "VoiceStateUpdate" = "voiceStateUpdate" 
+  "VoiceStateUpdate" = "voiceStateUpdate",
 }
 
 export interface ClientEvents {
@@ -78,8 +80,19 @@ export interface ClientEvents {
 
   messageCreate: (message: Message, shard: Shard) => unknown;
   messageDelete: (oldMessage: Message, shard: Shard) => unknown;
-  messageUpdate: (oldMessage: Message, newMessage: Message, shard: Shard) => unknown;
-  interactionCreate: (interaction: SlashInteraction | ComponentInteraction | UserInteraction | MessageInteraction, shard: Shard) => unknown;
+  messageUpdate: (
+    oldMessage: Message,
+    newMessage: Message,
+    shard: Shard
+  ) => unknown;
+  interactionCreate: (
+    interaction:
+      | SlashInteraction
+      | ComponentInteraction
+      | UserInteraction
+      | MessageInteraction,
+    shard: Shard
+  ) => unknown;
 
   guildCreate: (guild: Guild, shard: Shard) => unknown;
   guildUpdate: (oldGuild: Guild, newGuild: Guild, shard: Shard) => unknown;
@@ -89,21 +102,47 @@ export interface ClientEvents {
   guildDelete: (oldGuild: Guild, shard: Shard) => unknown;
   guildEmojiUpdate: (guild: Guild, shard: Shard) => unknown;
   guildMemberAdd: (member: Member, shard: Shard) => unknown;
-  guildMemberChunk: (guild: Guild, members: Member[], chunkData: Record<string, number>, shard: Shard) => unknown;
+  guildMemberChunk: (
+    guild: Guild,
+    members: Member[],
+    chunkData: Record<string, number>,
+    shard: Shard
+  ) => unknown;
   guildMemberLeave: (member: Member, shard: Shard) => unknown;
-  guildMemberUpdate: (oldMember: Member, newMember: Member, shard: Shard) => unknown;
+  guildMemberUpdate: (
+    oldMember: Member,
+    newMember: Member,
+    shard: Shard
+  ) => unknown;
   guildRoleCreate: (role: GuildRole, shard: Shard) => unknown;
   guildRoleDelete: (oldRole: GuildRole, shard: Shard) => unknown;
-  guildRoleUpdate: (newRole: GuildRole, oldRole: GuildRole, shard: Shard) => unknown;
+  guildRoleUpdate: (
+    newRole: GuildRole,
+    oldRole: GuildRole,
+    shard: Shard
+  ) => unknown;
   guildStickersUpdate: (guild: Guild, shard: Shard) => unknown;
-  
+
   channelCreate: (channel: Channel, id: string, shard: Shard) => unknown;
   channelDelete: (oldChannel: Channel, id: string, shard: Shard) => unknown;
-  channelUpdate: (oldChannel: unknown, newChannel: unknown, shard: Shard) => unknown;
-  threadCreate: (threadChannel: ThreadChannel, shard: Shard) => unknown
-  threadUpdate: (oldThread: ThreadChannel, newThread: ThreadChannel, shard: Shard) => unknown
+  channelUpdate: (
+    oldChannel: unknown,
+    newChannel: unknown,
+    shard: Shard
+  ) => unknown;
+  threadCreate: (threadChannel: ThreadChannel, shard: Shard) => unknown;
+  threadUpdate: (
+    oldThread: ThreadChannel,
+    newThread: ThreadChannel,
+    shard: Shard
+  ) => unknown;
 
-  presenceUpdate: (member: Member, oldPresence: PresenceData, newPresence: PresenceData, shard: Shard) => unknown;
+  presenceUpdate: (
+    member: Member,
+    oldPresence: PresenceData,
+    newPresence: PresenceData,
+    shard: Shard
+  ) => unknown;
 }
 
 export enum Intents {

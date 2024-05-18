@@ -1,13 +1,26 @@
-import { APIGuild, GatewayGuildUpdateDispatchData } from "discord-api-types/v10";
+import {
+  GatewayGuildRoleModifyDispatchData,
+  GatewayGuildRoleUpdateDispatchData,
+} from "discord-api-types/v10";
 import { Event } from "../Event";
-import { Shard } from "../../../structures";
+import { GuildRole, Shard } from "../../../structures";
+import { EventNames } from "../../../common";
 
-export default class GuildUpdate extends Event<GatewayGuildUpdateDispatchData> {
-    handle(data: APIGuild, shard: Shard) {
-        const oldGuild = this.client.guilds.cache.get(data.id)
-        if(!oldGuild) return;
-        const newGuild = this.getGuild(data)
+export default class GuildRoleUpdate extends Event<GatewayGuildRoleUpdateDispatchData> {
+  handle(data: GatewayGuildRoleModifyDispatchData, shard: Shard) {
+    const guild = this.client.guilds.cache.get(data.guild_id);
 
-        this.client.emit("guildUpdate", oldGuild, newGuild, shard)
-    }
+    if (!guild) return;
+
+    const oldRole = guild.roles?.cache.get(data.role.id);
+    const newRole = new GuildRole(data.role, guild, this.client);
+    guild.roles?.cache.set(data.role.id, newRole);
+
+    this.client.emit(
+      EventNames.GuildRoleUpdate,
+      newRole,
+      oldRole as GuildRole,
+      shard
+    );
+  }
 }

@@ -45,7 +45,7 @@ export type InteractionBodyRequest = ComponentInteractionMessageUpdate & {
 };
 
 export interface PresenceData {
-  status?: PresenceStatus,
-  activities: GatewayActivityPayload[],
-  platforms: GatewayPresenceClientStatus
+  status?: PresenceStatus;
+  activities: GatewayActivityPayload[];
+  platforms: GatewayPresenceClientStatus;
 }

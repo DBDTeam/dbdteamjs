@@ -1,6 +1,6 @@
-import { APIGuild, GatewayGuildUpdateDispatchData } from "discord-api-types/v10";
+import { GatewayGuildRoleModifyDispatchData, GatewayGuildRoleUpdateDispatchData } from "discord-api-types/v10";
 import { Event } from "../Event";
 import { Shard } from "../../../structures";
-export default class GuildUpdate extends Event<GatewayGuildUpdateDispatchData> {
-    handle(data: APIGuild, shard: Shard): void;
+export default class GuildRoleUpdate extends Event<GatewayGuildRoleUpdateDispatchData> {
+    handle(data: GatewayGuildRoleModifyDispatchData, shard: Shard): void;
 }

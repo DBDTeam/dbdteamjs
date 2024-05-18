@@ -6,6 +6,7 @@ import { getAllStamps } from "../../../utils/utils";
 import { ClientApplication } from "../../ClientApplication";
 import { ClientUser } from "../../ClientUser";
 import { Event } from "../Event";
+import { EventNames } from "../../../common";
 
 export default class MessageCreate extends Event<GatewayReadyDispatchData> {
   async handle(data: GatewayReadyDispatchData, shard: Shard) {
@@ -23,7 +24,7 @@ export default class MessageCreate extends Event<GatewayReadyDispatchData> {
     }
     // @ts-ignore
     this.client.ready = getAllStamps(new Date());
-    this.client.emit("debug", `Client logged successfully`, shard);
-    this.client.emit("ready", this.client.user, shard);
+    this.client.emit(EventNames.Debug, `Client logged successfully`, shard);
+    this.client.emit(EventNames.Ready, this.client.user, shard);
   }
 }

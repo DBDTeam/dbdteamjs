@@ -1,30 +1,39 @@
-import { GatewayPresenceUpdate, GatewayPresenceUpdateDispatchData } from "discord-api-types/v10";
+import {
+  GatewayPresenceUpdate,
+  GatewayPresenceUpdateDispatchData,
+} from "discord-api-types/v10";
 import { Event } from "../Event";
 import { Member, Shard } from "../../../structures";
-import { PresenceData } from "../../../common";
+import { EventNames, PresenceData } from "../../../common";
 
 export default class PresenceUpdate extends Event<GatewayPresenceUpdateDispatchData> {
-    handle(data: GatewayPresenceUpdate, shard: Shard) {
-        const guild = this.client.guilds.cache.get(data.guild_id)
+  handle(data: GatewayPresenceUpdate, shard: Shard) {
+    const guild = this.client.guilds.cache.get(data.guild_id);
 
-        if(!guild) return;
+    if (!guild) return;
 
-        const member = guild.members?.cache.get(data.user.id)
+    const member = guild.members?.cache.get(data.user.id);
 
-        if(!member || !(member instanceof Member)) return;
+    if (!member || !(member instanceof Member)) return;
 
-        const oldPresence = member.presence
+    const oldPresence = member.presence;
 
-        const newPresence = {
-            status: data.status,
-            activities: data.activities,
-            platforms: data.client_status
-        } as PresenceData
+    const newPresence = {
+      status: data.status,
+      activities: data.activities,
+      platforms: data.client_status,
+    } as PresenceData;
 
-        member.presence = newPresence
+    member.presence = newPresence;
 
-        guild.members?.cache.set(data.user.id, member)
+    guild.members?.cache.set(data.user.id, member);
 
-        this.client.emit("presenceUpdate", member, oldPresence, newPresence, shard)
-    }
+    this.client.emit(
+      EventNames.PresenceUpdate,
+      member,
+      oldPresence,
+      newPresence,
+      shard
+    );
+  }
 }

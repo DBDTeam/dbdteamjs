@@ -2,6 +2,7 @@ import { GatewayChannelUpdateDispatchData } from "discord-api-types/v10";
 import { type Shard } from "../../../structures/Sharding";
 import { typeChannel } from "../../../utils/utils";
 import { Event } from "../Event";
+import { EventNames } from "../../../common";
 
 export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchData> {
   handle(data: GatewayChannelUpdateDispatchData, shard: Shard) {
@@ -25,6 +26,6 @@ export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchDat
         }
       });
     }
-    this.client.emit("channelUpdate", oldChannel, newChannel, shard);
+    this.client.emit(EventNames.ChannelUpdate, oldChannel, newChannel, shard);
   }
 }
