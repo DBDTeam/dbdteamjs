@@ -18,11 +18,11 @@ export interface ClientOptions {
     gateway: GatewayConfig;
 }
 export interface GatewayConfig {
-    mobilePlatform: boolean;
+    mobilePlatform?: boolean;
     totalShards?: number;
 }
 export interface ClientPresencePayload {
-    activities: Array<GatewayActivityPayload>;
+    activities?: GatewayActivityPayload[];
     status: PresenceStatus | PresenceUpdateStatus;
     afk?: boolean;
     since?: number;

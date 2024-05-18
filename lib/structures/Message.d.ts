@@ -1,4 +1,4 @@
-import { APIChannelMention } from "discord-api-types/v10";
+import { APIChannelMention, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { MessageBodyRequest, Nullable } from "../common";
 import { Collection } from "../utils/Collection";
@@ -14,7 +14,7 @@ import { TextBasedChannel } from "./TextBasedChannel";
  * Represents a Discord message.
  */
 declare class Message extends Base {
-    data: any;
+    data: GatewayMessageCreateDispatchData;
     /**
      * The client associated with the message.
      * @type {Client}
@@ -147,7 +147,7 @@ declare class Message extends Base {
      * @param {APIMessage} data - The data of the message.
      * @param {Client} client - The client.
      */
-    constructor(data: any, client: Client);
+    constructor(data: GatewayMessageCreateDispatchData, client: Client);
     /**
      * Patches the message data.
      * @param {APIMessage} data - The data of the message.

@@ -1,3 +1,4 @@
+import { RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { Base } from "./Base";
@@ -67,7 +68,7 @@ export declare class User extends Base {
      * @param data - The data payload
      * @param client - The client
      */
-    constructor(data: any, client: Client);
+    constructor(data: RESTGetAPIUserResult, client: Client);
     _patch(data: any): void;
     /**
      * If the User is a partial

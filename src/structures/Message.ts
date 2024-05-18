@@ -1,4 +1,4 @@
-import { APIChannelMention, APIMessage } from "discord-api-types/v10";
+import { APIChannelMention, APIMessage, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { MessageBodyRequest, Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
@@ -168,7 +168,7 @@ class Message extends Base {
    * @param {APIMessage} data - The data of the message.
    * @param {Client} client - The client.
    */
-  constructor(public data: any, client: Client) {
+  constructor(public data: GatewayMessageCreateDispatchData, client: Client) {
     super(client);
 
     this.data = data;
@@ -234,7 +234,8 @@ class Message extends Base {
 
     for (const i of data?.mentions || []) {
       if ("member" in i) {
-        this.mentions.users.set(i.id, new User(i.member, this.client));
+        if(!i.member) continue;
+        this.mentions.users.set(i.id, new Member(i.member, this.guild as Guild, this.client));
       } else {
         this.mentions.users.set(i.id, new User(i, this.client));
       }
@@ -373,13 +374,9 @@ class Message extends Base {
    * @returns {User} The user associated with the message.
    */
   get _user(): User {
-    if (this.webhookId && "user" in this.data) {
-      return this.data.user as User;
-    } else {
-      const x = new User(this.data.author, this.client);
-      this.client.users.cache.set(x.id, x);
-      return x;
-    }
+      const currentUser = new User(this.data.author, this.client);
+      this.client.users.cache.set(currentUser.id, currentUser);
+      return currentUser;
   }
 
   /**

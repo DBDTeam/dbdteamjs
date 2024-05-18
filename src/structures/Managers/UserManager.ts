@@ -1,3 +1,4 @@
+import { APIUser } from "discord-api-types/v10";
 import { Nullable } from "../../../lib/interfaces/other";
 import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
@@ -25,7 +26,8 @@ class UserManager {
     if (result?.error || !result || !result?.data) {
       return result;
     } else {
-      var x = new User(result.data, this.client);
+      //@ts-ignore
+      var x = new User(result.data as APIUser, this.client);
       this.cache.set(result.data.id, x);
       return x;
     }

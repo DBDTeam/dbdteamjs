@@ -16,7 +16,7 @@ export class MessageInteraction extends InteractionBase {
   private patch() {
     this.message = new Message(
       {
-        ...(Object.values(this.#data.data.resolved.messages)[0] as object),
+        ...(Object.values(this.#data.data.resolved.messages)[0] as object), //@ts-ignore
         guild: this.guild,
       },
       this.client

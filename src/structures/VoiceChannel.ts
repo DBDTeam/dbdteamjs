@@ -108,6 +108,7 @@ class VoiceChannel extends TextBasedChannel {
         member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
+      //@ts-ignore
       return new Message(result.data, this.client);
     } else {
       return result;

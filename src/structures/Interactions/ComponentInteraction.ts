@@ -1,6 +1,7 @@
 import {
   APIInteractionResponseCallbackData,
   APIMessageComponentInteraction,
+  APIUser,
   ComponentType,
 } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
@@ -127,7 +128,7 @@ class ComponentInteraction extends InteractionBase {
    */
   private async _patch(): Promise<void> {
     this.message = new Message(this.data.message, this.client);
-    const userData = this.data.member?.user;
+    const userData = this.data.member?.user as APIUser;
     if (this.guild)
       this.member = new Member(
         { ...this.data.member, id: userData?.id },

@@ -92,7 +92,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         return null;
       } else {
         if (!response.data) return null;
-        const msg = new Message(
+        const msg = new Message( //@ts-ignore
           { ...response.data, guild: this.guild },
           this.client
         );

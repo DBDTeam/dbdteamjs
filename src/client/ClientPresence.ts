@@ -9,7 +9,7 @@ class ClientPresence {
   public status;
   public activities: GatewayActivityPayload[];
   public since: Nullable<number>;
-  public mobilePlatform: boolean;
+  public mobilePlatform: Nullable<boolean>;
 
   constructor(private client: Client) {
     this.client = client;
@@ -73,7 +73,7 @@ class ClientPresence {
     };
 
     this.status = obj.status;
-    this.activities = obj.activities;
+    this.activities = obj.activities || [];
     this.since = obj.since;
 
     try {

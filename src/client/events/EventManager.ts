@@ -45,10 +45,6 @@ export class EventManager {
     this._r("GUILD_EMOJIS_UPDATE");
     this._r("GUILD_STICKERS_UPDATE");
 
-    // GUILD INTEGRATIONS 1 << 4
-
-    this._r("GUILD_INTEGRATION_UPDATE");
-
     // GUILD PRESENCES 1 << 8
     this._r("PRESENCE_UPDATE");
 

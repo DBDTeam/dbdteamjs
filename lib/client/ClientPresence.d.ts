@@ -9,7 +9,7 @@ declare class ClientPresence {
     status: string;
     activities: GatewayActivityPayload[];
     since: Nullable<number>;
-    mobilePlatform: boolean;
+    mobilePlatform: Nullable<boolean>;
     constructor(client: Client);
     /**
      *

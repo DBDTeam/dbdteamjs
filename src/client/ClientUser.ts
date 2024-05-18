@@ -1,3 +1,4 @@
+import { APIUser } from "discord-api-types/v10";
 import { EditClientUserPayload } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { User } from "../structures/User";
@@ -42,7 +43,7 @@ class ClientUser extends User {
     if (result.error || !this.client.user) {
       return result;
     } else {
-      var bot = new ClientUser(result.data, this.client);
+      var bot = new ClientUser(result.data as APIUser, this.client);
       this.client.users.cache.set(this.client.user.id, bot);
       return bot;
     }
