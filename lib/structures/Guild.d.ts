@@ -11,7 +11,7 @@ import { VoiceChannel } from "./VoiceChannel";
 import { GuildEditData } from "../interfaces/guild/Guild";
 import { GuildBanManager } from "./Managers/BanManager";
 declare class Guild extends Base {
-    private exists;
+    #private;
     readonly client: Client;
     name: string;
     icon: Nullable<string>;

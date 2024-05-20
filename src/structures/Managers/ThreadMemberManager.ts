@@ -10,7 +10,7 @@ export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
 }
 
 class ThreadMemberManager {
-  private client: Client;
+  #client: Client;
   id: string;
   guild?: Guild;
   memberCount: number;
@@ -18,7 +18,7 @@ class ThreadMemberManager {
   constructor(client: Client, thread: ThreadChannel) {
     this.id = thread.id;
     this.guild = thread.guild;
-    this.client = client;
+    this.#client = client;
     this.memberCount = 0;
     this.cache = new Collection();
   }
@@ -40,13 +40,13 @@ class ThreadMemberManager {
     if (obj?.before && typeof obj?.before == "string") {
       endpoint += "&before=" + obj?.before;
     }
-    const response = await this.client.rest.request("GET", endpoint, true);
+    const response = await this.#client.rest.request("GET", endpoint, true);
 
     if (response?.error || !response || !response.data) {
       return null;
     } else {
       for (var m of response.data as Array<any>) {
-        var x = new ThreadMember(m, this.guild, this.client);
+        var x = new ThreadMember(m, this.guild, this.#client);
         this.cache.set(x.id, x);
       }
 
@@ -55,7 +55,7 @@ class ThreadMemberManager {
   }
   async fetch(memberId: string | FetchWithLimitAfterAndBefore) {
     if (typeof memberId === "string") {
-      const result = await this.client.rest.request(
+      const result = await this.#client.rest.request(
         "GET",
         Endpoints.ChannelThreadMember(this.id, memberId)
       );
@@ -66,7 +66,7 @@ class ThreadMemberManager {
         var x = new ThreadMember(
           result.data as Record<string, any>,
           this.guild,
-          this.client
+          this.#client
         );
         this.cache.set(x.id, x);
 
@@ -82,7 +82,7 @@ class ThreadMemberManager {
   }
 
   async remove(memberId: string) {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.id, memberId),
       true

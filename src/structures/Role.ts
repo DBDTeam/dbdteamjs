@@ -36,9 +36,11 @@ export class GuildRole extends Base {
   tags: APIRoleTags;
   flags: any;
   readonly guild?: Guild;
+  #client: Client;
 
-  constructor(public data: APIRole, guild: Guild, private client: Client) {
+  constructor(public data: APIRole, guild: Guild, client: Client) {
     super(client);
+    this.#client = client;
 
     this.data = data;
     this.id = data.id;
@@ -68,7 +70,7 @@ export class GuildRole extends Base {
   }
 
   async delete(reason = undefined) {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.GuildRole(this.guildId, this.id),
       true,
@@ -83,7 +85,7 @@ export class GuildRole extends Base {
     body: RESTPatchAPIGuildRoleJSONBody & { position?: number },
     reason?: string
   ) {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "PATCH",
       Endpoints.GuildRole(this.guildId, this.id),
       true,
@@ -94,7 +96,7 @@ export class GuildRole extends Base {
     if (!response) {
       return response;
     } else {
-      return new GuildRole(response.data as APIRole, this.guildId, this.client);
+      return new GuildRole(response.data as APIRole, this.guildId, this.#client);
     }
   }
 

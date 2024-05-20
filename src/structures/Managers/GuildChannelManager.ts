@@ -9,14 +9,14 @@ import { type ThreadChannel } from "../ThreadChannel";
 import { type VoiceChannel } from "../VoiceChannel";
 
 class GuildChannelManager {
-  readonly client: Client;
+  #client: Client;
   readonly guildId: string;
   public cache: Collection<
     string,
     Channel | TextChannel | VoiceChannel | ThreadChannel | CategoryChannel
   >;
   constructor(guildId: string, client: Client) {
-    this.client = client;
+    this.#client = client;
     this.guildId = guildId;
     this.cache = new Collection();
     this._fetchAllChannels();
@@ -24,7 +24,7 @@ class GuildChannelManager {
 
   async _fetchAllChannels() {
     try {
-      const response = await this.client.rest.request(
+      const response = await this.#client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
@@ -37,12 +37,12 @@ class GuildChannelManager {
 
       for (var i of allChannels as Array<any>) {
         var guild =
-          this.client.channels.cache.get(i.id)?.guild ||
+          this.#client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
         i.guild = guild;
-        this.client.channels.cache.set(i.id, typeChannel(i, this.client));
-        this.cache.set(i.id, typeChannel(i, this.client));
-        _return.set(i.id, typeChannel(i, this.client));
+        this.#client.channels.cache.set(i.id, typeChannel(i, this.#client));
+        this.cache.set(i.id, typeChannel(i, this.#client));
+        _return.set(i.id, typeChannel(i, this.#client));
       }
 
       return _return;
@@ -57,7 +57,7 @@ class GuildChannelManager {
 
       return res;
     } else {
-      const response = await this.client.rest.request(
+      const response = await this.#client.rest.request(
         "GET",
         Endpoints.Channel(id),
         true
@@ -70,7 +70,7 @@ class GuildChannelManager {
       if (!channel) return null;
 
       this.cache.set(channel.id, channel);
-      this.client.channels.cache.set(channel.id, channel);
+      this.#client.channels.cache.set(channel.id, channel);
       return channel;
     }
   }

@@ -11,12 +11,12 @@ export interface FetchWithLimitAndAfter {
 }
 
 class GuildMemberManager {
-  private client: Client;
+  #client: Client;
   public guild: Guild;
   public guildId: string;
   public cache: Collection<string, Member>;
   constructor(client: Client, guild: Guild) {
-    this.client = client;
+    this.#client = client;
     this.guild = guild;
     this.guildId = guild?.id || guild;
     this.cache = new Collection();
@@ -39,7 +39,7 @@ class GuildMemberManager {
     if (conditions.after) {
       endpoint += (conditions.limit ? "&after=" : "?after=") + config.after;
     }
-    const response = await this.client.rest.request("GET", endpoint, true);
+    const response = await this.#client.rest.request("GET", endpoint, true);
 
     if (!response) return null;
 
@@ -52,8 +52,8 @@ class GuildMemberManager {
           x.id,
           new Member(
             x,
-            this.client.guilds.cache.get(this.guildId) || this.guild,
-            this.client
+            this.#client.guilds.cache.get(this.guildId) || this.guild,
+            this.#client
           )
         );
       }
@@ -63,7 +63,7 @@ class GuildMemberManager {
   }
   async fetch(memberId: string | Record<string, any>) {
     if (typeof memberId === "string") {
-      const result = await this.client.rest.request(
+      const result = await this.#client.rest.request(
         "GET",
         Endpoints.GuildMember(this.guildId, memberId),
         true
@@ -79,11 +79,11 @@ class GuildMemberManager {
           ...result.data,
           id: result.data.user.id,
         };
-        this.client.users.cache.set(x.id, new User(x.user, this.client));
+        this.#client.users.cache.set(x.id, new User(x.user, this.#client));
         var m = new Member(
           x,
-          this.client.guilds.cache.get(this.guildId) || this.guild,
-          this.client
+          this.#client.guilds.cache.get(this.guildId) || this.guild,
+          this.#client
         );
         this.cache.set(x.id, m);
 
@@ -100,8 +100,8 @@ class GuildMemberManager {
 
   get me() {
     try {
-      if (!this.client.user) return null;
-      var member = this.cache.get(this.client.user.id);
+      if (!this.#client.user) return null;
+      var member = this.cache.get(this.#client.user.id);
 
       return member;
     } catch (err) {

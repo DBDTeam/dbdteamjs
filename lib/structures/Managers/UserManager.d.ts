@@ -5,13 +5,13 @@ import { type Guild } from "../Guild";
 import { Member } from "../Member";
 import { User } from "../User";
 declare class UserManager {
-    private client;
+    #private;
     cache: Collection<string, User>;
     constructor(client: Client);
     fetch(userId: string): Promise<User | import("../../interfaces/rest/requestHandler").ResponseFromApi | null>;
 }
 declare class GuildMemberManager {
-    private client;
+    #private;
     readonly guild: Guild;
     guildId: string;
     cache: Collection<string, Member>;

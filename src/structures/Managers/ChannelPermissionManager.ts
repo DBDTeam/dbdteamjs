@@ -5,14 +5,14 @@ import { Member } from "../Member";
 import { type Client } from "../../client/Client";
 
 export class ChannelPermissionManager {
-  readonly Perms: Record<string, any>;
-  private client: Client;
+  #Perms: Record<string, any>;
+  #client: Client;
   private target: any;
   public overwrites: Record<string, any>;
   constructor(overwrites: any, target: string, client: Client) {
-    this.client = client;
+    this.#client = client;
     this.target = target;
-    this.Perms = PermissionsBitField.Channels;
+    this.#Perms = PermissionsBitField.Channels;
     this.overwrites = overwrites;
   }
 
@@ -31,19 +31,19 @@ export class ChannelPermissionManager {
 
     for (const allowPerm of permsObj.allow) {
       if (
-        this.Perms.hasOwnProperty(allowPerm) &&
+        this.#Perms.hasOwnProperty(allowPerm) &&
         !permsObj.deny.includes(allowPerm)
       ) {
-        addedPerms |= this.Perms[allowPerm];
+        addedPerms |= this.#Perms[allowPerm];
       }
     }
 
     for (const denyPerm of permsObj.deny) {
       if (
-        this.Perms.hasOwnProperty(denyPerm) &&
+        this.#Perms.hasOwnProperty(denyPerm) &&
         !permsObj.allow.includes(denyPerm)
       ) {
-        removedPerms |= this.Perms[denyPerm];
+        removedPerms |= this.#Perms[denyPerm];
       }
     }
     const data = {
@@ -53,7 +53,7 @@ export class ChannelPermissionManager {
       type: obj.type,
     };
 
-    var response = await this.client.rest.request(
+    var response = await this.#client.rest.request(
       "PUT",
       Endpoints.ChannelPermissions(obj.id, obj.targetId),
       true,
@@ -78,10 +78,10 @@ export class ChannelPermissionManager {
 
     for (const allowPerm of permsObj.allow) {
       if (
-        this.Perms.hasOwnProperty(allowPerm) &&
+        this.#Perms.hasOwnProperty(allowPerm) &&
         !permsObj.deny.includes(allowPerm)
       ) {
-        addedPerms |= this.Perms[allowPerm];
+        addedPerms |= this.#Perms[allowPerm];
       }
     }
 
@@ -104,10 +104,10 @@ export class ChannelPermissionManager {
 
     for (const denyPerm of permsObj.deny) {
       if (
-        this.Perms.hasOwnProperty(denyPerm) &&
+        this.#Perms.hasOwnProperty(denyPerm) &&
         !permsObj.allow.includes(denyPerm)
       ) {
-        removedPerms |= this.Perms[denyPerm];
+        removedPerms |= this.#Perms[denyPerm];
       }
     }
 

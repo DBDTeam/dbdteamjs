@@ -7,7 +7,7 @@ export interface FetchWithLimitAndAfter {
     after?: number;
 }
 declare class GuildMemberManager {
-    private client;
+    #private;
     guild: Guild;
     guildId: string;
     cache: Collection<string, Member>;

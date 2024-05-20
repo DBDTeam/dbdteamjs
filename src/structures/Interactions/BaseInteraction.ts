@@ -9,7 +9,6 @@ import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
 import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
 import { MessagePayload } from "../Payloads/MessagePayload";
-import { Message } from "../Message";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
 import { InteractionModalPayload, ModalPayloadData } from "../Payloads/ModalPayload";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";

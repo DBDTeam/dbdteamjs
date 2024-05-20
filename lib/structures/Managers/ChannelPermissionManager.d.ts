@@ -1,7 +1,6 @@
 import { type Client } from "../../client/Client";
 export declare class ChannelPermissionManager {
-    readonly Perms: Record<string, any>;
-    private client;
+    #private;
     private target;
     overwrites: Record<string, any>;
     constructor(overwrites: any, target: string, client: Client);

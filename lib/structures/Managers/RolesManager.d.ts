@@ -6,12 +6,11 @@ import { type Guild } from "../Guild";
 import { type Member } from "../Member";
 import { GuildRole } from "../Role";
 export declare class MemberRolesManager {
-    private client;
+    #private;
     readonly guild: Guild;
     readonly member: Member;
     cache: Collection<string, GuildRole>;
     constructor(guild: Guild, member: Member, client: Client);
-    private patch;
     add(addObject: GuildMemberRoleOptions): Promise<{
         error: ErrorResponseFromApi[];
         success: ResponseFromApi[];
@@ -23,7 +22,7 @@ export declare class MemberRolesManager {
     fetch(roleId?: string | null | undefined): Promise<Collection<string, GuildRole> | null>;
 }
 export declare class GuildRolesManager {
-    private client;
+    #private;
     guild: Guild;
     cache: Collection<string, GuildRole>;
     constructor(guild: Guild, client: Client);

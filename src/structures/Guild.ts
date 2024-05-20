@@ -21,7 +21,7 @@ import { GuildEditData } from "../interfaces/guild/Guild";
 import { GuildBanManager } from "./Managers/BanManager";
 
 class Guild extends Base {
-  private exists: any;
+  #exists: any;
   readonly client: Client;
   name: string;
   icon: Nullable<string>;
@@ -70,7 +70,7 @@ class Guild extends Base {
   constructor(data: Record<any, any>, client: Client) {
     super(data);
     this.client = client;
-    this.exists = client.guilds.cache.get(data.id);
+    this.#exists = client.guilds.cache.get(data.id);
     /**
      * The Guild name
      * @type {string}
@@ -101,13 +101,13 @@ class Guild extends Base {
      * @type {number | undefined}
      */
     this.approximate_members =
-      data.approximate_member_count || this.exists?.approximate_members;
+      data.approximate_member_count || this.#exists?.approximate_members;
     /**
      * The Guild approximate presence count
      * @type {number | undefined}
      */
     this.approximate_presences =
-      data.approximate_presence_count || this.exists?.approximate_presences;
+      data.approximate_presence_count || this.#exists?.approximate_presences;
     /**
      * The Guild emojis
      * @type {Collection}

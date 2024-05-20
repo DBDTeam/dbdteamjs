@@ -8,7 +8,7 @@ export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
     before: string;
 }
 declare class ThreadMemberManager {
-    private client;
+    #private;
     id: string;
     guild?: Guild;
     memberCount: number;

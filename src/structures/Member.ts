@@ -9,10 +9,10 @@ import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { User } from "./User";
 
 class Member extends Base {
-  DATE: any;
-  private PREMIUM: any;
-  private TIMEOUTED: any;
-  private d: any;
+  readonly #DATE: any;
+  readonly #PREMIUM: any;
+  readonly #TIMEOUTED: any;
+  readonly #d: any;
   joined: any;
   user: any;
   muted: any;
@@ -30,10 +30,12 @@ class Member extends Base {
   timeoutUntil: any;
   communicationDisabled: any;
   timeouted: any;
+  #client: Client;
 
-  constructor(data: Record<any, any>, readonly guild: Guild, private client: Client) {
+  constructor(data: Record<any, any>, readonly guild: Guild, client: Client) {
     super(client);
-    this.d = data;
+    this.#client = client;
+    this.#d = data;
 
     if(typeof guild === "string") {
       this.guild = client.guilds.cache.get(guild) as Guild
@@ -41,9 +43,9 @@ class Member extends Base {
 
     this.guild = guild as Guild
 
-    this.DATE = new Date(data.joined_at);
-    this.PREMIUM = new Date(data.premium_since);
-    this.TIMEOUTED = new Date(data.communication_disabled_until);
+    this.#DATE = new Date(data.joined_at);
+    this.#PREMIUM = new Date(data.premium_since);
+    this.#TIMEOUTED = new Date(data.communication_disabled_until);
 
     this.joined = getAllStamps(this);
     this.user = this.author;
@@ -54,7 +56,7 @@ class Member extends Base {
     this.permissions = data.permissions;
     this.role_ids = data.roles;
 
-    this.roles = new MemberRolesManager(this.guild, this, this.client);
+    this.roles = new MemberRolesManager(this.guild, this, this.#client);
     this.presence = null;
 
     this._patch(data);
@@ -62,19 +64,19 @@ class Member extends Base {
 
   get author() {
     var x: any;
-    if (this.id !== this.client.user.id) {
-      if (this.client.users.cache.get(this.id)) {
-        x = this.client.users.cache.get(this.id);
+    if (this.id !== this.#client.user.id) {
+      if (this.#client.users.cache.get(this.id)) {
+        x = this.#client.users.cache.get(this.id);
       } else {
-        var user = this.d.user;
+        var user = this.#d.user;
         if (!user) {
-          user = this.d.author;
+          user = this.#d.author;
         }
-        this.client.users.cache.set(this.id, new User(user, this.client));
-        x = this.client.users.cache.get(this.id);
+        this.#client.users.cache.set(this.id, new User(user, this.#client));
+        x = this.#client.users.cache.get(this.id);
       }
     } else {
-      x = this.client.user;
+      x = this.#client.user;
     }
     return x;
   }
@@ -91,7 +93,7 @@ class Member extends Base {
       data.premium_since !== null &&
       data.premium_since !== undefined
     ) {
-      this.premiumSince = getAllStamps(this.PREMIUM);
+      this.premiumSince = getAllStamps(this.#PREMIUM);
     }
     if ("pending" in data) {
       this.pending = data.pending;
@@ -100,7 +102,7 @@ class Member extends Base {
       this.permissions = data.permissions;
     }
     if ("communication_disabled_until" in data) {
-      this.communicationDisabledUntil = getAllStamps(this.TIMEOUTED);
+      this.communicationDisabledUntil = getAllStamps(this.#TIMEOUTED);
       this.timeoutUntil = this.communicationDisabledUntil;
       this.communicationDisabled = data.communication_disabled_until
         ? true
@@ -108,12 +110,12 @@ class Member extends Base {
       this.timeouted = this.communicationDisabled;
     }
 
-    if (this.id === this.client.user.id) {
+    if (this.id === this.#client.user.id) {
       this.edit;
       this.kick;
       this.ban;
       this.leave = async () => {
-        const response = await this.client.rest.request(
+        const response = await this.#client.rest.request(
           "DELETE",
           Endpoints.UserGuild(this.guild.id),
           true
@@ -142,7 +144,7 @@ class Member extends Base {
       kick:
         _p & PermissionsBitField.Roles.KickMembers ||
         _p & PermissionsBitField.Roles.Administrator,
-      client: this.id !== this.client.user.id,
+      client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
       highest: _h <= _h1,
     };
@@ -175,7 +177,7 @@ class Member extends Base {
       ban:
         _p & PermissionsBitField.Roles.BanMembers ||
         _p & PermissionsBitField.Roles.Administrator,
-      client: this.id !== this.client.user.id,
+      client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
       highest: _h <= _h1,
     };
@@ -196,7 +198,7 @@ class Member extends Base {
 
     delete payload.payload.reason;
 
-    var response = await this.client.rest.request(
+    var response = await this.#client.rest.request(
       "PATCH",
       Endpoints.GuildMember(this.guild.id, this.id),
       true,
@@ -213,7 +215,7 @@ class Member extends Base {
 
   async changeNickname(nickname: string, reason: string) {
     reason = reason?.trim();
-    var response = await this.client.rest.request(
+    var response = await this.#client.rest.request(
       "PATCH",
       Endpoints.GuildMember(this.guild.id, this.id),
       true,
@@ -227,7 +229,7 @@ class Member extends Base {
   async kick(reason: string) {
     reason = reason?.trim();
 
-    var response = await this.client.rest.request(
+    var response = await this.#client.rest.request(
       "DELETE",
       Endpoints.GuildMember(this.guild.id, this.id),
       true,
@@ -248,7 +250,7 @@ class Member extends Base {
       delete_message_seconds: "deleteMessageSeconds",
     });
 
-    var response = await this.client.rest.request(
+    var response = await this.#client.rest.request(
       "PUT",
       Endpoints.GuildBan(this.guild.id, this.id),
       true,

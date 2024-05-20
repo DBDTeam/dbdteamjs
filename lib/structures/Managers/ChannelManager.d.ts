@@ -28,7 +28,7 @@ export interface ChannnelCreatePayload {
     reason?: string;
 }
 declare class GuildChannelManager {
-    private client;
+    #private;
     private guildId;
     cache: Collection<string, Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>;
     constructor(guildId: string, client: Client);
@@ -38,7 +38,7 @@ declare class GuildChannelManager {
     delete(channelId: string, reason?: string): Promise<true | Channel | null>;
 }
 declare class ChannelManager {
-    readonly client: Client;
+    #private;
     cache: Collection<string, Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>;
     constructor(client: Client);
     fetch(id: string): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | Channel | null>;

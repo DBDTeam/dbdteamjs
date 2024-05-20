@@ -109,11 +109,11 @@ export interface ApplicationCommand extends APIApplicationCommand {
 }
 
 class ApplicationCommandManager {
-  private client: Client;
+  #client: Client;
   public target: string;
   public cache: Collection<string, Record<any, any>>;
   constructor(client: Client, guildId: string | null | undefined = "global") {
-    this.client = client;
+    this.#client = client;
     this.target = guildId || "global";
     this.cache = new Collection();
   }
@@ -121,18 +121,18 @@ class ApplicationCommandManager {
     //Reference: https://discord.com/developers/docs/interactions/application-commands#registering-a-command
 
     var data = setObj(Data, obj, Mapping);
-    if (!this.client.user) return;
+    if (!this.#client.user) return;
     if (this.target !== "global") {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "POST",
-        Endpoints.ApplicationGuildCommands(this.client.user.id, this.target),
+        Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
         true,
         { data }
       );
     } else {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "POST",
-        Endpoints.ApplicationCommands(this.client.user.id),
+        Endpoints.ApplicationCommands(this.#client.user.id),
         true,
         { data }
       );
@@ -148,17 +148,17 @@ class ApplicationCommandManager {
     }
   }
   async fetch(id: string) {
-    if (!this.client.user) return;
+    if (!this.#client.user) return;
     if (this.target !== "global") {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "GET",
-        Endpoints.ApplicationGuildCommand(this.client.user.id, this.target, id),
+        Endpoints.ApplicationGuildCommand(this.#client.user.id, this.target, id),
         true
       );
     } else {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "GET",
-        Endpoints.ApplicationCommand(this.client.user.id, id),
+        Endpoints.ApplicationCommand(this.#client.user.id, id),
         true
       );
     }
@@ -180,19 +180,19 @@ class ApplicationCommandManager {
         data.push(setObj(Data, i, Mapping));
       }
 
-      if (!this.client.user) return;
+      if (!this.#client.user) return;
 
       if (this.target !== "global") {
-        var response = await this.client.rest.request(
+        var response = await this.#client.rest.request(
           "PUT",
-          Endpoints.ApplicationGuildCommands(this.client.user.id, this.target),
+          Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
           true,
           { data }
         );
       } else {
-        var response = await this.client.rest.request(
+        var response = await this.#client.rest.request(
           "PUT",
-          Endpoints.ApplicationCommands(this.client.user.id),
+          Endpoints.ApplicationCommands(this.#client.user.id),
           true,
           { data }
         );
@@ -213,17 +213,17 @@ class ApplicationCommandManager {
     }
   }
   async remove(id: string) {
-    if (!this.client.user) return;
+    if (!this.#client.user) return;
     if (this.target !== "global") {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "DELETE",
-        Endpoints.ApplicationGuildCommand(this.client.user.id, this.target, id),
+        Endpoints.ApplicationGuildCommand(this.#client.user.id, this.target, id),
         true
       );
     } else {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "DELETE",
-        Endpoints.ApplicationCommand(this.client.user.id, id),
+        Endpoints.ApplicationCommand(this.#client.user.id, id),
         true
       );
     }

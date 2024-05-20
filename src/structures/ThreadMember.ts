@@ -21,7 +21,7 @@ interface StampInformation {
 }
 
 class ThreadMember {
-  private client: Client;
+  #client: Client;
   id: string;
   guild: Nullable<Guild>;
   flags: number;
@@ -42,7 +42,7 @@ class ThreadMember {
     client: Client
   ) {
     this.thread = null;
-    this.client = client;
+    this.#client = client;
     /**
      * The thread user ID
      * @type {string}
@@ -68,12 +68,12 @@ class ThreadMember {
      * @type {string}
      */
     this.threadId = data.id;
-    if (this.client.channels.cache.get(data.id)) {
+    if (this.#client.channels.cache.get(data.id)) {
       /**
        * The Thread Channel (if it can be finded in the cache)
        * @type {ThreadChannel}
        */
-      this.thread = this.client.channels.cache.get(data.id) as ThreadChannel;
+      this.thread = this.#client.channels.cache.get(data.id) as ThreadChannel;
     }
     /**
      * The time information when the user joined to the Thread
@@ -94,7 +94,7 @@ class ThreadMember {
    */
 
   async kick() {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.threadId, this.id),
       true

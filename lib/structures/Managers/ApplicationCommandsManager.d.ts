@@ -12,7 +12,7 @@ export interface ApplicationCommand extends APIApplicationCommand {
     dmPermission: boolean;
 }
 declare class ApplicationCommandManager {
-    private client;
+    #private;
     target: string;
     cache: Collection<string, Record<any, any>>;
     constructor(client: Client, guildId?: string | null | undefined);

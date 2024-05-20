@@ -4,7 +4,7 @@ import { type Guild } from "./Guild";
 import { Member } from "./Member";
 import { ThreadChannel } from "./ThreadChannel";
 declare class ThreadMember {
-    private client;
+    #private;
     id: string;
     guild: Nullable<Guild>;
     flags: number;

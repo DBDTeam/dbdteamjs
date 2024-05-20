@@ -16,18 +16,18 @@ import { type Member } from "../Member";
 import { GuildRole } from "../Role";
 
 export class MemberRolesManager {
-  private client: Client;
+  #client: Client;
   readonly guild: Guild;
   readonly member: Member;
   public cache: Collection<string, GuildRole>;
   constructor(guild: Guild, member: Member, client: Client) {
     this.guild = guild;
     this.member = member;
-    this.client = client;
+    this.#client = client;
     this.cache = new Collection();
-    this.patch();
+    this.#patch();
   }
-  private patch() {
+  #patch() {
     for (var i in this.member.roles || []) {
       if (!this.guild.roles) return null;
       var roleFound = this.guild.roles.cache.get(this.member.roles[i]);
@@ -47,7 +47,7 @@ export class MemberRolesManager {
     var success: any = [];
 
     for (var i in roles) {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "PUT",
         Endpoints.GuildMemberRole(this.guild.id, this.member.id, roles[i]),
         true,
@@ -81,7 +81,7 @@ export class MemberRolesManager {
     var success: ResponseFromApi[] = [];
 
     for (var i in roles) {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "DELETE",
         Endpoints.GuildMemberRole(this.guild.id, this.member.id, roles[i]),
         true,
@@ -128,11 +128,11 @@ export class MemberRolesManager {
 }
 
 export class GuildRolesManager {
-  private client: Client;
+  #client: Client;
   public guild: Guild;
   public cache: Collection<string, GuildRole>;
   constructor(guild: Guild, client: Client) {
-    this.client = client;
+    this.#client = client;
     this.guild = guild;
     this.cache = new Collection();
   }
@@ -140,7 +140,7 @@ export class GuildRolesManager {
   async fetch(
     roleId: string | null | undefined
   ): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi> {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "GET",
       Endpoints.GuildRoles(this.guild.id),
       true
@@ -153,7 +153,7 @@ export class GuildRolesManager {
     var _allGuildRoles = response.data;
 
     for (var i of _allGuildRoles as Array<any>) {
-      var x = new GuildRole(i, this.guild, this.client);
+      var x = new GuildRole(i, this.guild, this.#client);
       this.cache.set(i.id, x);
 
       if (roleId == i.id) {
@@ -177,7 +177,7 @@ export class GuildRolesManager {
     var success: ResponseFromApi[] = [];
 
     for (var i in roles) {
-      var response = await this.client.rest.request(
+      var response = await this.#client.rest.request(
         "DELETE",
         Endpoints.GuildRole(this.guild.id, roles[i]),
         true,
@@ -215,7 +215,7 @@ export class GuildRolesManager {
 
     delete data.reason;
 
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "POST",
       Endpoints.GuildRoles(this.guild.id),
       true,
@@ -232,7 +232,7 @@ export class GuildRolesManager {
 
       this.cache.set(
         response.data.id,
-        new GuildRole(response.data as APIRole, this.guild.id, this.client)
+        new GuildRole(response.data as APIRole, this.guild.id, this.#client)
       );
 
       return response.data;

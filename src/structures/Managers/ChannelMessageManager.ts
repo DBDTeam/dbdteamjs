@@ -5,11 +5,11 @@ import { setObj } from "../../utils/utils";
 import { Message } from "../Message";
 
 export class ChannelMessageManager<T extends Record<any, any>> {
-  private client: Client;
+  #client: Client;
   public cache: Collection<string, Message>;
   constructor(public channel: T, client: Client) {
     this.channel = channel;
-    this.client = client;
+    this.#client = client;
     this.cache = new Collection();
   }
 
@@ -54,7 +54,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
           data.round;
       }
 
-      const messages = await this.client.rest.request("GET", endpoint, true);
+      const messages = await this.#client.rest.request("GET", endpoint, true);
 
       if (!messages) return;
 
@@ -63,7 +63,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
       } else {
         var response = [];
         for (var i of messages.data as Array<any>) {
-          const msg = new Message(i, this.client);
+          const msg = new Message(i, this.#client);
 
           if (!this.channel.messages) return null;
 
@@ -80,7 +80,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         return response;
       }
     } else if (typeof msgId === "string") {
-      const response = await this.client.rest.request(
+      const response = await this.#client.rest.request(
         "GET",
         Endpoints.ChannelMessage(this.channel.id, msgId),
         true
@@ -94,7 +94,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         if (!response.data) return null;
         const msg = new Message( //@ts-ignore
           { ...response.data, guild: this.guild },
-          this.client
+          this.#client
         );
         if (!msg.channel && !this.channel) {
           msg.channel = this.channel;

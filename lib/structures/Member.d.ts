@@ -2,12 +2,8 @@ import { Client } from "../client/Client";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 declare class Member extends Base {
+    #private;
     readonly guild: Guild;
-    private client;
-    DATE: any;
-    private PREMIUM;
-    private TIMEOUTED;
-    private d;
     joined: any;
     user: any;
     muted: any;

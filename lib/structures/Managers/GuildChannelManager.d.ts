@@ -6,7 +6,7 @@ import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type VoiceChannel } from "../VoiceChannel";
 declare class GuildChannelManager {
-    readonly client: Client;
+    #private;
     readonly guildId: string;
     cache: Collection<string, Channel | TextChannel | VoiceChannel | ThreadChannel | CategoryChannel>;
     constructor(guildId: string, client: Client);

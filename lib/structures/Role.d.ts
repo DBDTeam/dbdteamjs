@@ -16,8 +16,8 @@ export interface EditRolePayload {
  * Represents a Discord Guild Role
  */
 export declare class GuildRole extends Base {
+    #private;
     data: APIRole;
-    private client;
     guildId: any;
     name: any;
     hoist: boolean;

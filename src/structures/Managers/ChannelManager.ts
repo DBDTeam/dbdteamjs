@@ -40,7 +40,7 @@ export interface ChannnelCreatePayload {
 }
 
 class GuildChannelManager {
-  private client: Client;
+  #client: Client;
   private guildId: string;
   public cache: Collection<
     string,
@@ -48,7 +48,7 @@ class GuildChannelManager {
   >;
 
   constructor(guildId: string, client: Client) {
-    this.client = client;
+    this.#client = client;
     this.guildId = guildId;
     this.cache = new Collection();
     this._fetchAllChannels();
@@ -56,7 +56,7 @@ class GuildChannelManager {
 
   async _fetchAllChannels() {
     try {
-      const result = await this.client.rest.request(
+      const result = await this.#client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
@@ -69,12 +69,12 @@ class GuildChannelManager {
 
       for (const i of allChannels as Array<any>) {
         var guild =
-          this.client.channels.cache.get(i.id)?.guild ||
+          this.#client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
         i.guild = guild;
-        this.client.channels.cache.set(i.id, typeChannel(i, this.client));
-        this.cache.set(i.id, typeChannel(i, this.client));
-        _return.set(i.id, typeChannel(i, this.client));
+        this.#client.channels.cache.set(i.id, typeChannel(i, this.#client));
+        this.cache.set(i.id, typeChannel(i, this.#client));
+        _return.set(i.id, typeChannel(i, this.#client));
       }
 
       return _return;
@@ -89,7 +89,7 @@ class GuildChannelManager {
 
       return res;
     } else {
-      const response = await this.client.rest.request(
+      const response = await this.#client.rest.request(
         "GET",
         Endpoints.Channel(id),
         true
@@ -100,14 +100,14 @@ class GuildChannelManager {
 
       const channel: Record<string, any> = response.data;
       this.cache.set(channel.id, channel);
-      this.client.channels.cache.set(channel.id, channel);
+      this.#client.channels.cache.set(channel.id, channel);
       return channel;
     }
   }
 
   async create(channelObj: ChannnelCreatePayload) {
     const reason = channelObj?.reason;
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "POST",
       Endpoints.GuildChannels(this.guildId),
       true,
@@ -120,12 +120,12 @@ class GuildChannelManager {
     if (response?.error) {
       return response.error;
     } else {
-      return await typeChannel(response.data, this.client);
+      return await typeChannel(response.data, this.#client);
     }
   }
 
   async delete(channelId: string, reason?: string) {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.Channel(channelId),
       true,
@@ -138,24 +138,24 @@ class GuildChannelManager {
     if (response.error) {
       return response.error;
     } else {
-      return await typeChannel(response.data, this.client);
+      return await typeChannel(response.data, this.#client);
     }
   }
 }
 
 class ChannelManager {
-  readonly client: Client;
+  #client: Client;
   public cache: Collection<
     string,
     Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
   >;
   constructor(client: Client) {
-    this.client = client;
+    this.#client = client;
     this.cache = new Collection();
   }
 
   async fetch(id: string) {
-    const response = await this.client.rest.request(
+    const response = await this.#client.rest.request(
       "GET",
       Endpoints.Channel(id),
       true
@@ -163,7 +163,7 @@ class ChannelManager {
 
     if (!response || response.status !== 200) return response;
 
-    return await typeChannel(response.data, this.client);
+    return await typeChannel(response.data, this.#client);
   }
 }
 
