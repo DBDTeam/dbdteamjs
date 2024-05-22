@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 // @ts-ignore shh
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
-import { GatewayConfig } from "../common";
+import { EventNames, GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
 
 class Shard extends EventEmitter {
@@ -89,6 +89,8 @@ class Shard extends EventEmitter {
       this.authenticated = false;
       this.restartTimes++;
       this.connect();
+      this.client.emit(EventNames.Debug, `${reason}`, this.shardID);
+      return;
     }
     this.client.emit("error", {
       type: "Close",
@@ -98,8 +100,10 @@ class Shard extends EventEmitter {
     });
     this.client.emit("shardDisconnect", this.shardID);
     clearInterval(this.heartbeatInterval);
-    if (this.sessionID) this.resume();
-    this.authenticated = false;
+    if (this.sessionID) {
+      this.authenticated = false;
+      this.resume();
+    }
   }
 
   async identify() {
@@ -182,7 +186,6 @@ class Shard extends EventEmitter {
         this.identify();
         break;
       case 11:
-
         this.client.emit("debug", "Heartbeat ACK received.", this.shardID);
         this.client.ping = Date.now() - this.latency;
         break;

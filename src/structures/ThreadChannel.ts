@@ -7,8 +7,6 @@ import { CategoryChannel } from "./CategoryChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
 import { Member } from "./Member";
-import { Message } from "./Message";
-import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextBasedChannel } from "./TextBasedChannel";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
@@ -92,7 +90,7 @@ class ThreadChannel extends TextBasedChannel {
       this.channel = this.client.channels.cache.get(
         this.channel_id
       ) as TextChannel;
-    } // pa cuando no em cambies de rubro xd
+    }
     /**
      * The owner id of the ThreadChannel (The owner id means the creator of the ThreadChannel)
      * @type {number}
@@ -124,48 +122,6 @@ class ThreadChannel extends TextBasedChannel {
    * @async
    */
 
-  async edit(
-    obj: any
-  ): Promise<
-    | Channel
-    | VoiceChannel
-    | TextChannel
-    | CategoryChannel
-    | ThreadChannel
-    | null
-    | ErrorResponseFromApi
-  > {
-    const thread = {
-      name: this.name,
-      archived: false,
-      auto_archive_duration: 1440,
-      locked: false,
-      invitable: true,
-      rate_limit_per_user: 0,
-      flags: 0,
-      applied_tags: [],
-    };
-
-    const data = setObj(thread, obj, {
-      applied_tags: "tags",
-      rate_limit_per_user: ["cooldown", "rateLimitPerUser"],
-      auto_archive_duration: ["autoArchiveDuration"],
-    });
-
-    const response = await this.client.rest.request(
-      "PATCH",
-      Endpoints.Channel(this.id),
-      true,
-      { data }
-    );
-
-    if (!response) return null;
-
-    return response?.error
-      ? (response as ErrorResponseFromApi)
-      : typeChannel(response.data, this.client);
-  }
-
   async leave() {
     const response = await this.client.rest.request(
       "DELETE",
@@ -191,6 +147,25 @@ class ThreadChannel extends TextBasedChannel {
     //     : `?limit=${config.limit}`;
     // }
   }
+
+  async setTags(tagsIds: string[], reason?: string) {
+    let tags = this.available_tags;
+    if(!tagsIds || !tagsIds.some((id) => typeof id !== "string")) return;
+
+    let combinedTags = Array.from(new Set([...tags, tagsIds]))
+
+    let tagsAsUnion: Record<any, any>[]= []
+
+    for(var id in combinedTags) {
+        tagsAsUnion.push({ id: id })
+    }
+
+    const result = await this.edit({ //@ts-ignore
+        available_tags: tagsAsUnion
+    }, reason)
+
+    return result
+}
 }
 
 export { ThreadChannel };

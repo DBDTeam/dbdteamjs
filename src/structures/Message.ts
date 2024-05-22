@@ -1,4 +1,8 @@
-import { APIChannelMention, APIMessage, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
+import {
+  APIChannelMention,
+  APIMessage,
+  GatewayMessageCreateDispatchData,
+} from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { MessageBodyRequest, Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
@@ -34,7 +38,7 @@ class Message extends Base {
    * The ID of the guild where the message was sent.
    * @type {string | undefined}
    */
-  guildId?: string;
+  guildId!: string;
 
   /**
    * The author of the message.
@@ -52,7 +56,7 @@ class Message extends Base {
    * The member object associated with the message.
    * @type {Member | undefined}
    */
-  member?: Member;
+  member!: Member;
 
   /**
    * Mentions in the message.
@@ -96,13 +100,13 @@ class Message extends Base {
    * The channel where the message was sent.
    * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
    */
-  channel?: TextBasedChannel
+  channel!: TextBasedChannel;
 
   /**
    * The guild where the message was sent.
    * @type {(Guild | undefined)}
    */
-  guild?: Guild;
+  guild!: Guild;
 
   /**
    * Reactions associated with the message.
@@ -184,11 +188,12 @@ class Message extends Base {
       roles: new Collection(),
       channels: new Collection(),
     };
-    this.channel = this.client.channels.cache.get(data.channel_id) as TextBasedChannel;
-    this.guild =
-      this.client.guilds.cache.get(this.guildId!) ||
-      this.client.channels.cache.get(this.channelId)?.guild;
-    this.member = this.guild?.members?.cache.get(this.user.id);
+    this.channel = this.client.channels.cache.get(
+      data.channel_id
+    ) as TextBasedChannel;
+    this.guild = (this.client.guilds.cache.get(this.guildId!) ||
+      this.client.channels.cache.get(this.channelId)?.guild) as Guild;
+    this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.reactions = new MessageReactions(
       this.client,
       this,
@@ -209,9 +214,11 @@ class Message extends Base {
    * @param {APIMessage} data - The data of the message.
    */
   async ___patch(): Promise<void> {
-    const data = this.data
-    if(!this.channel) {
-      this.channel = (await this.client.channels.fetch(this.channelId)) as TextBasedChannel
+    const data = this.data;
+    if (!this.channel) {
+      this.channel = (await this.client.channels.fetch(
+        this.channelId
+      )) as TextBasedChannel;
     }
     if ("member" in data && data.member) {
       this.member = new Member(
@@ -234,8 +241,11 @@ class Message extends Base {
 
     for (const i of data?.mentions || []) {
       if ("member" in i) {
-        if(!i.member) continue;
-        this.mentions.users.set(i.id, new Member(i.member, this.guild as Guild, this.client));
+        if (!i.member) continue;
+        this.mentions.users.set(
+          i.id,
+          new Member(i.member, this.guild as Guild, this.client)
+        );
       } else {
         this.mentions.users.set(i.id, new User(i, this.client));
       }
@@ -264,10 +274,12 @@ class Message extends Base {
    * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
    */
   async reply(body: MessageBodyRequest): Promise<Message | null> {
-    if(!body.message_reference) { body.message_reference = { message_id:  this.id } }
+    if (!body.message_reference) {
+      body.message_reference = { message_id: this.id };
+    }
     const message = new MessagePayload(body, body?.files);
 
-    var data = message.payload
+    var data = message.payload;
 
     var result = await this.client.rest.request(
       "POST",
@@ -359,14 +371,16 @@ class Message extends Base {
 
   /**
    * Deletes the message.
-   * @returns {Promise<void>} A promise that resolves once the message is deleted.
+   * @returns {Promise<boolean>} A promise that resolves once the message is deleted.
    */
-  async delete(): Promise<void> {
-    await this.client.rest.request(
+  async delete(): Promise<boolean> {
+    const deleted = await this.client.rest.request(
       "DELETE",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true
     );
+
+    return deleted?.error ? true : false
   }
 
   /**
@@ -374,9 +388,9 @@ class Message extends Base {
    * @returns {User} The user associated with the message.
    */
   get _user(): User {
-      const currentUser = new User(this.data.author, this.client);
-      this.client.users.cache.set(currentUser.id, currentUser);
-      return currentUser;
+    const currentUser = new User(this.data.author || this.data?.interaction?.user, this.client);
+    this.client.users.cache.set(currentUser.id, currentUser);
+    return currentUser;
   }
 
   /**
