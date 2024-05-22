@@ -27,6 +27,9 @@ export class EventManager {
     this._r("CHANNEL_DELETE");
     this._r("THREAD_UPDATE");
     this._r("THREAD_CREATE");
+    this._r("THREAD_DELETE");
+    this._r("THREAD_LIST_SYNC");
+    this._r("THREAD_MEMBER_UPDATE");
 
     // //GUILD MEMBERS 1 << 1
 
