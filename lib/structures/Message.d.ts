@@ -29,7 +29,7 @@ declare class Message extends Base {
      * The ID of the guild where the message was sent.
      * @type {string | undefined}
      */
-    guildId?: string;
+    guildId: string;
     /**
      * The author of the message.
      * @type {User}
@@ -44,7 +44,7 @@ declare class Message extends Base {
      * The member object associated with the message.
      * @type {Member | undefined}
      */
-    member?: Member;
+    member: Member;
     /**
      * Mentions in the message.
      * @type {{
@@ -82,12 +82,12 @@ declare class Message extends Base {
      * The channel where the message was sent.
      * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
      */
-    channel?: TextBasedChannel;
+    channel: TextBasedChannel;
     /**
      * The guild where the message was sent.
      * @type {(Guild | undefined)}
      */
-    guild?: Guild;
+    guild: Guild;
     /**
      * Reactions associated with the message.
      * @type {MessageReactions}
@@ -172,9 +172,9 @@ declare class Message extends Base {
     removeEmbeds(): Promise<Message | undefined>;
     /**
      * Deletes the message.
-     * @returns {Promise<void>} A promise that resolves once the message is deleted.
+     * @returns {Promise<boolean>} A promise that resolves once the message is deleted.
      */
-    delete(): Promise<void>;
+    delete(): Promise<boolean>;
     /**
      * Gets the user associated with the message.
      * @returns {User} The user associated with the message.

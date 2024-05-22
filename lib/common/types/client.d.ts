@@ -12,6 +12,8 @@ import { MessageInteraction } from "../../structures/Interactions/MessageInterac
 import { ComponentInteraction } from "../../structures/Interactions/ComponentInteraction";
 import { UserInteraction } from "../../structures/Interactions/UserInteraction";
 import { PresenceData } from "./utils";
+import { Collection } from "../../utils/Collection";
+import { ThreadMember } from "../../structures/ThreadMember";
 export interface ClientOptions {
     token: string;
     intents: number;
@@ -43,6 +45,9 @@ export declare enum EventNames {
     "Ready" = "ready",
     "ThreadCreate" = "threadCreate",
     "ThreadUpdate" = "threadUpdate",
+    "ThreadDelete" = "threadDelete",
+    "ThreadListSync" = "threadListSync",
+    "ThreadMemberUpdate" = "threadMemberUpdate",
     "GuildCreate" = "guildCreate",
     "GuildUnavailable" = "guildUnavailable",
     "GuildDelete" = "guildDelete",
@@ -93,6 +98,9 @@ export interface ClientEvents {
     channelUpdate: (oldChannel: unknown, newChannel: unknown, shard: Shard) => unknown;
     threadCreate: (threadChannel: ThreadChannel, shard: Shard) => unknown;
     threadUpdate: (oldThread: ThreadChannel, newThread: ThreadChannel, shard: Shard) => unknown;
+    threadDelete: (oldThreadChannel: ThreadChannel, shard: Shard) => unknown;
+    threadListSync: (guild: Guild, channels: Collection<string, ThreadChannel>, members: Collection<string, ThreadMember>, shard: Shard) => unknown;
+    threadMemberUpdate: (threadChannel: ThreadChannel, threadMember: ThreadMember, shard: Shard) => unknown;
     presenceUpdate: (member: Member, oldPresence: PresenceData, newPresence: PresenceData, shard: Shard) => unknown;
 }
 export declare enum Intents {

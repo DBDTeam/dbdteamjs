@@ -24,8 +24,9 @@ const client = new Client({
     "",
   intents: $Intents.intents,
   gateway: {
-    mobilePlatform: false,
-  },
+    mobilePlatform: true,
+    totalShards: 5
+  }
 });
 
 client.on("ready", ({ username }) => {

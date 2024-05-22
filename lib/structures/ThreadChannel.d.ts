@@ -42,8 +42,8 @@ declare class ThreadChannel extends TextBasedChannel {
      * @returns {Promise<ThreadChannel>}
      * @async
      */
-    edit(obj: any): Promise<Channel | VoiceChannel | TextChannel | CategoryChannel | ThreadChannel | null | ErrorResponseFromApi>;
     leave(): Promise<true | import("../interfaces/rest/requestHandler").ResponseFromApi>;
     archivedThreads(config: any): Promise<void>;
+    setTags(tagsIds: string[], reason?: string): Promise<import("..").Nullable<ErrorResponseFromApi | CategoryChannel | Channel | VoiceChannel | TextChannel | ThreadChannel>>;
 }
 export { ThreadChannel };

@@ -51,7 +51,7 @@ const $Intents = new IntentsBitFields(
 
 const client = new Client({
   token:
-    "Here your token",
+    "Here your bot token",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: false,
@@ -62,7 +62,12 @@ client.on("ready", ({ username }) => {
   console.log(`I have successfully logged on to ${username}`);
 
   client.presence.update({
-    activities: [{ name: `Hello world!`, type: PresenceTypes.Competing }],
+    activities: [
+        {
+          name: `Hello world!`,
+          type: PresenceTypes.Competing
+        }
+      ],
     since: 0,
     status: PresenceStatus.DND,
   });
@@ -97,7 +102,7 @@ Intents.add("Guilds")
 Intents.add("GuildMembers")
 
 const client = new Client({
-   token: `HERE GOES THE ROBOT TOKEN`,
+   token: `Here your bot token`,
    intents: Intents.intents,
    gateway: {
      mobilePlatform: false // Only this if you want the robot to have the online icon on a mobile device.
@@ -107,9 +112,14 @@ const client = new Client({
 client.on("ready", () => {
    console.log(`I have successfully logged on to ${client.user.username}`)
    client.presence.update({
-     activities: [{ name: `Hello world!`, type: PresenceTypes }],
+     activities: [
+        {
+          name: `Hello world!`,
+          type: PresenceTypes.Competing
+        }
+      ], 
      since: 0,
-     status: PresenceStatus
+     status: PresenceStatus.DND // This means Do not Disturb
    })
 
    client.application.commands.set(
@@ -119,7 +129,7 @@ client.on("ready", () => {
         description: "Pong!",
         options: [],
         type: InteractionTypes.Slash
-      }, //You can add more application commands adding it in the object.
+      }, //You can add more application commands adding it in the array.
     ]
    )
 })
