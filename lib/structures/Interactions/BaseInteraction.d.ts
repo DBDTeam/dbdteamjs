@@ -7,6 +7,9 @@ import { InteractionResponse } from "./InteractionResponse";
 import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
 import { ModalPayloadData } from "../Payloads/ModalPayload";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { SlashInteraction } from "./SlashInteraction";
+import { ComponentInteraction } from "./ComponentInteraction";
+import { UserInteraction } from "./UserInteraction";
 /**
  * Represents the base class for interactions.
  */
@@ -82,22 +85,22 @@ declare class InteractionBase {
     get _member(): Member | null;
     /**
      * Returns whether the Interaction is a ComponentInteraction.
-     * @type {boolean}
+     * @returns {boolean}
      */
-    get isComponent(): boolean;
+    isComponent(): this is ComponentInteraction;
     /**
      * Returns whether the Interaction is a SlashInteraction.
-     * @type {boolean}
+     * @returns {boolean}
      */
-    get isSlash(): boolean;
+    isSlash(): this is SlashInteraction;
     /**
      * Returns whether the Interaction is a UserInteraction.
-     * @type {boolean}
+     * @returns {boolean}
      */
-    get isUser(): boolean;
+    isUser(): this is UserInteraction;
     /**
      * Returns whether the Interaction is a MessageInteraction.
-     * @type {boolean}
+     * @returns {boolean}
      */
     get isMessage(): boolean;
     /**

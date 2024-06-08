@@ -10,6 +10,11 @@ class GuildManager {
     this.#client = client;
     this.cache = new Collection();
   }
+  /**
+   * Fetches a guild using the guild id.
+   * @param id - The Guild id
+   * @returns {Guild | null}
+   */
   async fetch(id: string) {
     const response = await this.#client.rest.request(
       "GET",

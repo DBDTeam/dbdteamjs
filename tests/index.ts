@@ -7,8 +7,6 @@ import {
   PresenceStatus,
   PresenceTypes,
 } from "../src";
-import { SlashInteraction } from "../src/structures/Interactions/SlashInteraction";
-import { ComponentInteraction } from "../src/structures/Interactions/ComponentInteraction";
 import { InteractionModal } from "../src/structures/Interactions/InteractionModal";
 import { ApplicationCommandType } from "discord-api-types/v10";
 
@@ -54,8 +52,7 @@ client.on("ready", ({ username }) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (interaction.isSlash) {
-    interaction = interaction as SlashInteraction;
+  if (interaction.isSlash()) {
     if (interaction.name === "ping") {
       interaction.reply({
         content: "A",
@@ -74,9 +71,7 @@ client.on("interactionCreate", async (interaction) => {
         ],
       });
     }
-  } else if (interaction.isComponent) {
-    interaction = interaction as ComponentInteraction;
-
+  } else if (interaction.isComponent()) {
     if (interaction.isButton) {
       interaction.modal({
         title: "a",

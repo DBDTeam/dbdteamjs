@@ -12,6 +12,9 @@ import { MessagePayload } from "../Payloads/MessagePayload";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
 import { InteractionModalPayload, ModalPayloadData } from "../Payloads/ModalPayload";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { SlashInteraction } from "./SlashInteraction";
+import { ComponentInteraction } from "./ComponentInteraction";
+import { UserInteraction } from "./UserInteraction";
 
 /**
  * Represents the base class for interactions.
@@ -133,31 +136,31 @@ class InteractionBase {
   }
   /**
    * Returns whether the Interaction is a ComponentInteraction.
-   * @type {boolean}
+   * @returns {boolean}
    */
-  public get isComponent(): boolean {
+  public isComponent(): this is ComponentInteraction {
     return !!this.rawData.custom_id;
   }
 
   /**
    * Returns whether the Interaction is a SlashInteraction.
-   * @type {boolean}
+   * @returns {boolean}
    */
-  public get isSlash(): boolean {
+  public isSlash(): this is SlashInteraction {
     return this.rawData.type === 1;
   }
 
   /**
    * Returns whether the Interaction is a UserInteraction.
-   * @type {boolean}
+   * @returns {boolean}
    */
-  public get isUser(): boolean {
+  public isUser(): this is UserInteraction {
     return this.rawData.type === 2;
   }
 
   /**
    * Returns whether the Interaction is a MessageInteraction.
-   * @type {boolean}
+   * @returns {boolean}
    */
   public get isMessage(): boolean {
     return this.rawData.type === 3;

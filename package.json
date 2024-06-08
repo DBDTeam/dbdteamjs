@@ -16,6 +16,7 @@
   "author": "DBDTeam",
   "license": "Apache-2.0",
   "dependencies": {
+    "@types/node": "^20.14.2",
     "discord-api-types": "^0.37.83",
     "tiny-typed-emitter": "^2.1.0",
     "ws": "^8.17.0"

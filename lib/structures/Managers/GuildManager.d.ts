@@ -5,6 +5,11 @@ declare class GuildManager {
     #private;
     cache: Collection<string, Guild>;
     constructor(client: Client);
+    /**
+     * Fetches a guild using the guild id.
+     * @param id - The Guild id
+     * @returns {Guild | null}
+     */
     fetch(id: string): Promise<Record<any, any> | null | undefined>;
 }
 export { GuildManager };
