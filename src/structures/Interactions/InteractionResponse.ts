@@ -66,7 +66,7 @@ export class InteractionResponse extends Message {
     );
 
     if (response?.error) {
-      // return error;
+      return response
     } else {
       return new InteractionResponse(
         {

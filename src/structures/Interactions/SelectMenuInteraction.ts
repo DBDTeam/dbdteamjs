@@ -4,7 +4,7 @@ import { ComponentInteraction } from "./ComponentInteraction";
 
 export class SelectMenuInteraction extends ComponentInteraction {
   #data;
-  declare values: any[];
+  declare values: string[];
   declare resolved: any[];
 
   constructor(data: any, client: Client) {

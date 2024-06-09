@@ -3,6 +3,7 @@ import {
   APIMessageComponentInteraction,
   APIUser,
   ComponentType,
+  InteractionType,
 } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import { ComponentInteractionMessageUpdate, Nullable } from "../../common";
@@ -65,15 +66,6 @@ class ComponentInteraction extends InteractionBase {
       ComponentType.ChannelSelect,
     ].includes(this.data.data?.component_type);
   }
-
-  /**
-   * Checks if the ComponentInteraction is a Modal.
-   * @type {boolean}
-   */
-  // ??
-  // get isModal(): boolean {
-  //   return this.data.type === InteractionType.ModalSubmit;
-  // }
 
   /**
    * Updates the original reply.

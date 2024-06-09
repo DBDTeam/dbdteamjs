@@ -34,10 +34,6 @@ declare class ComponentInteraction extends InteractionBase {
      */
     get isSelectMenu(): boolean;
     /**
-     * Checks if the ComponentInteraction is a Modal.
-     * @type {boolean}
-     */
-    /**
      * Updates the original reply.
      * @param {InteractionPayloadData} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse>}

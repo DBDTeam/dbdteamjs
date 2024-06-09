@@ -1,9 +1,16 @@
 import { Intents } from "../../common";
 
 export class IntentsBitFields {
+  /**
+   * The bitwise value of all intents added.
+   */
   public intents: number;
-  private iced: boolean;
+  #iced: boolean;
 
+  /**
+   * The intents that will be added to the Client.
+   * @param {Intents[]} intents
+   */
   constructor(...intents: Intents[]) {
     this.intents = 0;
 
@@ -12,28 +19,76 @@ export class IntentsBitFields {
       this.intents |= intent;
     }
 
-    this.iced = false;
+    this.#iced = false;
   }
 
-  add(intent: Intents) {
-    if (this.iced) return;
-    if ((this.intents & intent) === intent) return;
+  /**
+   * Add intents to the property 'intents' of the class.
+   * @param {...Intents} intents - The intents bitwise values.
+   * @returns {IntentsBitFields}
+   */
 
-    this.intents |= intent;
+  add(...intents: Intents[]) {
+    if (this.#iced) return;
+    for(var intent of intents) {
+      if ((this.intents & intent) === intent) return;
+
+      this.intents |= intent;
+    }
+
+    return this;
   }
 
-  remove(intent: Intents) {
-    if (this.iced) return;
-    if ((this.intents & intent) === 0) return;
+  /**
+   * Remove intents to the property 'intents' of the class.
+   * @param {...Intents} intents - The intents bitwise values.
+   * @returns {IntentsBitFields}
+   */
 
-    this.intents &= ~intent;
+  remove(...intents: Intents[]) {
+    if (this.#iced) return;
+    for(var intent of intents) {
+      if ((this.intents & intent) === intent) return;
+
+      this.intents =~ intent;
+    }
+
+    return this;
   }
 
-  has(intent: Intents) {
-    return (this.intents & intent) !== 0;
+  /**
+   * Check if any of the bitwise values exists in the property 'intents'.
+   * @param {...Intents} intents - The intents bitwise values.
+   * @returns {boolean}
+   */
+
+  hasAny(...intents: Intents[]) {
+    return intents.some((intent) => (this.intents & intent) !== 0);
   }
+
+  /**
+   * Check if all of the bitwise values exists in the property 'intents'.
+   * @param {...Intents} intents - The intents bitwise values.
+   * @returns {boolean}
+   */
+
+  has(...intents: Intents[]) {
+    for(var intent of intents) {
+      if((this.intents & intent) === 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Freezes the current class, so, you can't add or remove any intent.
+   * @returns {IntentsBitFields}
+   */
 
   freeze() {
-    this.iced = true;
+    this.#iced = true;
+    return this;
   }
 }

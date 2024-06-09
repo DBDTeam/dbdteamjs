@@ -3,8 +3,8 @@ import { Client } from "../../client";
 import { InteractionBase } from "./BaseInteraction";
 
 export class SlashInteraction extends InteractionBase {
-  name: any;
-  options: Collection<unknown, unknown>;
+  name: string;
+  options: Collection<string, unknown>;
 
   constructor(data: any, client: Client) {
     super(data, client);
