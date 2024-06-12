@@ -39,56 +39,36 @@ export declare class ChannelPermissionManager {
     #private;
     private target;
     overwrites: Record<string, any>;
+    /**
+     * Constructs a new ChannelPermissionManager instance.
+     * @param {any} overwrites - The permission overwrites for the channel.
+     * @param {string} target - The target channel or guild ID.
+     * @param {Client} client - The client instance to interact with the Discord API.
+     */
     constructor(overwrites: any, target: string, client: Client);
     /**
-     *
-     * @param targetObj
-     * @param permsObj
-     * @param reason
-     * @returns
+     * Edits the permissions for a target object.
+     * @param {targetObj | "everyone"} targetObj - The target object or "everyone".
+     * @param {ObjectOfThePerms} permsObj - The permissions object.
+     * @param {Nullable<string>} reason - The reason for the permission change.
+     * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
      */
     edit(targetObj: targetObj | "everyone", permsObj: ObjectOfThePerms, reason?: Nullable<string>): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>;
-    add(targetObj: targetObj | "everyone", permsObj: ObjectOfThePerms, reason?: Nullable<string>): Promise<{
-        allow: number;
-    } | {
-        allow: number;
-        d?: Record<string, any> | undefined;
-        shard: string | number | null | undefined;
-        type: string;
-        time: number;
-        data?: Record<any, any> | undefined;
-        status: number;
-        error: boolean;
-    } | {
-        allow: number;
-        /**
-         * The disallowed perms of the response. (if any)
-         */
-        deny?: number | undefined;
-        data?: Record<any, any> | undefined;
-        status: number;
-        error: boolean;
-    }>;
-    remove(targetObj: Record<string, any> | "everyone", permsObj: Record<string, any>, reason?: string | null | undefined): Promise<{
-        deny: number;
-    } | {
-        deny: number;
-        d?: Record<string, any> | undefined;
-        shard: string | number | null | undefined;
-        type: string;
-        time: number;
-        data?: Record<any, any> | undefined;
-        status: number;
-        error: boolean;
-    } | {
-        deny: number;
-        /**
-        * The allowed perms of the response. (if any)
-        */
-        allow?: number | undefined;
-        data?: Record<any, any> | undefined;
-        status: number;
-        error: boolean;
-    }>;
+    /**
+     * Adds permissions to a target object.
+     * @param {targetObj | "everyone"} targetObj - The target object or "everyone".
+     * @param {ObjectOfThePerms} permsObj - The permissions object.
+     * @param {Nullable<string>} reason - The reason for adding the permissions.
+     * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+     */
+    add(targetObj: targetObj | "everyone", permsObj: ObjectOfThePerms, reason?: Nullable<string>): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>;
+    /**
+     * Removes permissions from a target object.
+     * @param {Record<string, any> | "everyone"} targetObj - The target object or "everyone".
+     * @param {Record<string, any>} permsObj - The permissions object.
+     * @param {string | null | undefined} reason - The reason for removing the permissions.
+     * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+     */
+    remove(targetObj: Record<string, any> | "everyone", permsObj: Record<string, any>, reason?: string | null | undefined): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>;
 }
 export {};
