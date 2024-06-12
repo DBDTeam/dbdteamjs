@@ -1,23 +1,41 @@
 import { type Client } from "../../client/Client";
+import { Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { setObj } from "../../utils/utils";
+import { Guild } from "../Guild";
 import { Message } from "../Message";
 
 export class ChannelMessageManager<T extends Record<any, any>> {
   #client: Client;
   public cache: Collection<string, Message>;
+
+  /**
+   * Constructs a new ChannelMessageManager instance.
+   * @param {T} channel - The channel this manager handles messages for.
+   * @param {Client} client - The client instance to interact with the Discord API.
+   */
   constructor(public channel: T, client: Client) {
     this.channel = channel;
     this.#client = client;
     this.cache = new Collection();
   }
 
-  get guild() {
+  /**
+   * Gets the guild associated with the channel, if available.
+   * @returns {Guild | null} - The guild associated with the channel or null if none exists.
+   */
+  get guild(): Guild | null {
     if ("guild" in this.channel) return this.channel.guild;
-    else null;
+    else return null;
   }
-  async fetch(msgId: string | Record<any, any>) {
+
+  /**
+   * Fetches messages from the channel.
+   * @param {string | Record<any, any>} msgId - The ID of the message to fetch or an object with query parameters.
+   * @returns {Promise<Message | Message[] | null>} - The fetched message(s) or null if not found.
+   */
+  async fetch(msgId: string | Record<any, any>): Promise<Nullable<Message | Message[]>> {
     if (typeof msgId === "object" && msgId instanceof Object) {
       const config = {
         limit: 50,
@@ -34,7 +52,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         limit: data.limit >= 1 && data.limit <= 100,
         after: !!data.after,
         before: !!data.before,
-        round: !!data.round,
+        around: !!data.around,
       };
 
       if (conditions.limit) {
@@ -56,7 +74,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
 
       const messages = await this.#client.rest.request("GET", endpoint, true);
 
-      if (!messages) return;
+      if (!messages) return null;
 
       if (messages.error) {
         return null;

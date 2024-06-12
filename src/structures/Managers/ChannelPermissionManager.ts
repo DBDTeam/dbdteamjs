@@ -49,6 +49,13 @@ export class ChannelPermissionManager {
   #client: Client;
   private target: any;
   public overwrites: Record<string, any>;
+
+  /**
+   * Constructs a new ChannelPermissionManager instance.
+   * @param {any} overwrites - The permission overwrites for the channel.
+   * @param {string} target - The target channel or guild ID.
+   * @param {Client} client - The client instance to interact with the Discord API.
+   */
   constructor(overwrites: any, target: string, client: Client) {
     this.#client = client;
     this.target = target;
@@ -56,38 +63,44 @@ export class ChannelPermissionManager {
     this.overwrites = overwrites;
   }
 
+  /**
+   * Resolves permissions from the provided permissions object.
+   * @private
+   * @param {ObjectOfThePerms} permsObj - The permissions object.
+   * @returns {Object} - An object containing added and removed permissions.
+   */
   #resolve(permsObj: ObjectOfThePerms) {
     var addedPerms = 0, addedPermsArr = [];
     var removedPerms = 0, removedPermsArr = [];
-      for (const allowPerm of (permsObj?.allow || [])) {
-        if (
-          this.#Perms.hasOwnProperty(allowPerm) &&
-          !permsObj?.deny?.includes(allowPerm)
-        ) {
-          addedPerms |= this.#Perms[allowPerm];
-          addedPermsArr.push(this.#Perms[allowPerm]);
-        }
+    for (const allowPerm of (permsObj?.allow || [])) {
+      if (
+        this.#Perms.hasOwnProperty(allowPerm) &&
+        !permsObj?.deny?.includes(allowPerm)
+      ) {
+        addedPerms |= this.#Perms[allowPerm];
+        addedPermsArr.push(this.#Perms[allowPerm]);
       }
-    
-      for (const denyPerm of (permsObj.deny || [])) {
-        if (
-          this.#Perms.hasOwnProperty(denyPerm) &&
-          !permsObj?.allow?.includes(denyPerm)
-        ) {
-          removedPerms |= this.#Perms[denyPerm];
-          removedPermsArr.push(this.#Perms[denyPerm]);
-        }
-      }
-
-      return { removedPerms, addedPerms, removedPermsArr, addedPermsArr }
     }
 
+    for (const denyPerm of (permsObj.deny || [])) {
+      if (
+        this.#Perms.hasOwnProperty(denyPerm) &&
+        !permsObj?.allow?.includes(denyPerm)
+      ) {
+        removedPerms |= this.#Perms[denyPerm];
+        removedPermsArr.push(this.#Perms[denyPerm]);
+      }
+    }
+
+    return { removedPerms, addedPerms, removedPermsArr, addedPermsArr }
+  }
+
   /**
-   * 
-   * @param targetObj 
-   * @param permsObj 
-   * @param reason 
-   * @returns 
+   * Edits the permissions for a target object.
+   * @param {targetObj | "everyone"} targetObj - The target object or "everyone".
+   * @param {ObjectOfThePerms} permsObj - The permissions object.
+   * @param {Nullable<string>} reason - The reason for the permission change.
+   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
    */
   async edit(
     targetObj: targetObj | "everyone",
@@ -127,11 +140,18 @@ export class ChannelPermissionManager {
     }
   }
 
+  /**
+   * Adds permissions to a target object.
+   * @param {targetObj | "everyone"} targetObj - The target object or "everyone".
+   * @param {ObjectOfThePerms} permsObj - The permissions object.
+   * @param {Nullable<string>} reason - The reason for adding the permissions.
+   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+   */
   async add(
     targetObj: targetObj | "everyone",
     permsObj: ObjectOfThePerms,
     reason: Nullable<string> = null
-  ) {
+  ): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null> {
     const obj = getType(
       targetObj == "everyone" ? this.target.guildId : targetObj,
       this.target
@@ -141,14 +161,21 @@ export class ChannelPermissionManager {
 
     const response = await this.edit(obj, { allow: result?.addedPermsArr }, reason);
 
-    return { ...response, allow: result?.addedPerms };
+    return response;
   }
 
+  /**
+   * Removes permissions from a target object.
+   * @param {Record<string, any> | "everyone"} targetObj - The target object or "everyone".
+   * @param {Record<string, any>} permsObj - The permissions object.
+   * @param {string | null | undefined} reason - The reason for removing the permissions.
+   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+   */
   async remove(
     targetObj: Record<string, any> | "everyone",
     permsObj: Record<string, any>,
     reason: string | null | undefined = null
-  ) {
+  ): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null> {
     const obj = getType(
       targetObj == "everyone" ? this.target.guildId : targetObj,
       this.target
@@ -158,9 +185,10 @@ export class ChannelPermissionManager {
 
     const response = await this.edit(obj, { deny: result?.removedPermsArr }, reason);
 
-    return { ...response, deny: result?.removedPerms };
+    return response;
   }
 }
+
 
 function getType(obj: any, channel: any) {
   var isUser = obj instanceof User || obj instanceof Member || obj instanceof ThreadMember;

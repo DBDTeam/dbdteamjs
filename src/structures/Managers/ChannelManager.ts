@@ -16,6 +16,8 @@ import { type VoiceChannel } from "../VoiceChannel";
 import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type CategoryChannel } from "../CategoryChannel";
+import { Nullable } from "../../common";
+import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 
 export interface ChannnelCreatePayload {
   name: string;
@@ -47,6 +49,11 @@ class GuildChannelManager {
     Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
   >;
 
+  /**
+   * Constructs a new GuildChannelManager instance.
+   * @param {string} guildId - The ID of the guild to manage channels for.
+   * @param {Client} client - The client instance to interact with the Discord API.
+   */
   constructor(guildId: string, client: Client) {
     this.#client = client;
     this.guildId = guildId;
@@ -54,14 +61,19 @@ class GuildChannelManager {
     this._fetchAllChannels();
   }
 
-  async _fetchAllChannels() {
+  /**
+   * Fetches all channels for the guild and populates the cache.
+   * @private
+   * @returns {Promise<Collection<string, Channel>> | null} - A collection of channels or null if an error occurs.
+   */
+  async _fetchAllChannels(): Promise<Nullable<Collection<string, any>>> {
     try {
       const result = await this.#client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
       );
-      var _return = new Collection();
+      var _return = new Collection<string, any>();
       if (!result) return null;
       var allChannels = result.data;
 
@@ -83,7 +95,12 @@ class GuildChannelManager {
     }
   }
 
-  async fetch(id: string) {
+  /**
+   * Fetches a specific channel by its ID.
+   * @param {string} id - The ID of the channel to fetch.
+   * @returns {Promise<Channel | null>} - The fetched channel or null if not found.
+   */
+  async fetch(id: string): Promise<Nullable<Channel | Collection<string, any>>> {
     if (!id || id?.length >= 17 || id?.length <= 18) {
       var res = await this._fetchAllChannels();
 
@@ -98,14 +115,19 @@ class GuildChannelManager {
       if (!response) return null;
       if (!response.data) return null;
 
-      const channel: Record<string, any> = response.data;
+      const channel= await typeChannel(response.data, this.#client);
       this.cache.set(channel.id, channel);
       this.#client.channels.cache.set(channel.id, channel);
       return channel;
     }
   }
 
-  async create(channelObj: ChannnelCreatePayload) {
+  /**
+   * Creates a new channel in the guild.
+   * @param {ChannnelCreatePayload} channelObj - The channel creation payload.
+   * @returns {Promise<Nullable<Channel | ErrorResponseFromApi>>} - The created channel or null if an error occurs.
+   */
+  async create(channelObj: ChannnelCreatePayload): Promise<Nullable<Channel | ErrorResponseFromApi>> {
     const reason = channelObj?.reason;
     const response = await this.#client.rest.request(
       "POST",
@@ -118,13 +140,19 @@ class GuildChannelManager {
     if (!response) return response;
 
     if (response?.error) {
-      return response.error;
+      return response as ErrorResponseFromApi;
     } else {
       return await typeChannel(response.data, this.#client);
     }
   }
 
-  async delete(channelId: string, reason?: string) {
+  /**
+   * Deletes a channel from the guild.
+   * @param {string} channelId - The ID of the channel to delete.
+   * @param {string} [reason] - The reason for deleting the channel.
+   * @returns {Promise<Nullable<Channel | ErrorResponseFromApi>>} - The deleted channel or null if an error occurs.
+   */
+  async delete(channelId: string, reason?: string): Promise<Nullable<Channel | ErrorResponseFromApi>> {
     const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.Channel(channelId),
@@ -136,12 +164,13 @@ class GuildChannelManager {
     if (!response) return response;
 
     if (response.error) {
-      return response.error;
+      return response as ErrorResponseFromApi;
     } else {
       return await typeChannel(response.data, this.#client);
     }
   }
 }
+
 
 class ChannelManager {
   #client: Client;
@@ -149,11 +178,21 @@ class ChannelManager {
     string,
     Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
   >;
+
+  /**
+   * Constructs a new ChannelManager instance.
+   * @param {Client} client - The client instance to interact with the Discord API.
+   */
   constructor(client: Client) {
     this.#client = client;
     this.cache = new Collection();
   }
 
+  /**
+   * Fetches a specific channel by its ID.
+   * @param {string} id - The ID of the channel to fetch.
+   * @returns {Promise<Channel | null>} - The fetched channel or null if an error occurs.
+   */
   async fetch(id: string) {
     const response = await this.#client.rest.request(
       "GET",
@@ -166,5 +205,6 @@ class ChannelManager {
     return await typeChannel(response.data, this.#client);
   }
 }
+
 
 export { GuildChannelManager, ChannelManager };
