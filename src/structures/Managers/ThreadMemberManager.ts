@@ -5,16 +5,29 @@ import { type Guild } from "../Guild";
 import { type ThreadChannel } from "../ThreadChannel";
 import { ThreadMember } from "../ThreadMember";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
+
+/**
+ * Interface for fetching members with limit, after, and before parameters.
+ */
 export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
   before: string;
 }
 
+/**
+ * Manages the members of a thread in a guild.
+ */
 class ThreadMemberManager {
   #client: Client;
   id: string;
   guild?: Guild;
   memberCount: number;
   cache: Collection<string, ThreadMember>;
+
+  /**
+   * Constructs a new ThreadMemberManager.
+   * @param client - The client instance.
+   * @param thread - The thread channel whose members are being managed.
+   */
   constructor(client: Client, thread: ThreadChannel) {
     this.id = thread.id;
     this.guild = thread.guild;
@@ -23,15 +36,16 @@ class ThreadMemberManager {
     this.cache = new Collection();
   }
 
-  private async _fetchAllMembersInThread(obj: FetchWithLimitAfterAndBefore) {
-    var endpoint =
-      Endpoints.ChannelThreadMembers(this.id) + `?with_member=true`;
+  /**
+   * Fetches all members in a thread with specified options.
+   * @param obj - Options for fetching members.
+   * @returns A collection of thread members or null if an error occurs.
+   * @private
+   */
+  async #fetchAllMembersInThread(obj: FetchWithLimitAfterAndBefore) {
+    var endpoint = Endpoints.ChannelThreadMembers(this.id) + `?with_member=true`;
 
-    if (
-      obj?.limit &&
-      Number.isInteger(obj?.limit) &&
-      (obj?.limit >= 1 || obj?.limit <= 100)
-    ) {
+    if (obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <= 100)) {
       endpoint += "&limit=" + obj?.limit;
     }
     if (obj?.after && typeof obj?.after == "string") {
@@ -53,6 +67,12 @@ class ThreadMemberManager {
       return this.cache;
     }
   }
+
+  /**
+   * Fetches a thread member by ID or fetches all members with specified options.
+   * @param memberId - The ID of the member to fetch or options for fetching members.
+   * @returns A thread member, a collection of thread members, or an error response.
+   */
   async fetch(memberId: string | FetchWithLimitAfterAndBefore) {
     if (typeof memberId === "string") {
       const result = await this.#client.rest.request(
@@ -77,10 +97,15 @@ class ThreadMemberManager {
       memberId === null ||
       memberId === undefined
     ) {
-      return await this._fetchAllMembersInThread(memberId || {});
+      return await this.#fetchAllMembersInThread(memberId || {});
     }
   }
 
+  /**
+   * Removes a member from a thread.
+   * @param memberId - The ID of the member to remove.
+   * @returns {boolean} - Returns true or false if the member was removed from the thread.
+   */
   async remove(memberId: string) {
     const response = await this.#client.rest.request(
       "DELETE",
@@ -88,7 +113,12 @@ class ThreadMemberManager {
       true
     );
 
-    return response;
+    if(!response) return null;
+
+    if(response?.error) return false;
+
+    this.cache.delete(memberId)
+    return true;
   }
 }
 

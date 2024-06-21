@@ -156,7 +156,7 @@ export interface ClientEvents {
 
   presenceUpdate: (
     member: Member,
-    oldPresence: PresenceData,
+    oldPresence: Nullable<PresenceData>,
     newPresence: PresenceData,
     shard: Shard
   ) => unknown;

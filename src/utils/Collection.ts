@@ -22,11 +22,11 @@ class Collection<K, V> extends Map<K, V> {
    * myFirstCollection.set("hallo", "hi")
    * console.log(myFirstCollection.toJSON()) // ["hello", "hi"]
    */
-  toJSON() {
+  toJSON(): V[] {
     const copy = new Map(this);
     let jsonObj = [];
-    for (let [key] of copy) {
-      jsonObj.push(key);
+    for (let [key, value] of copy) {
+      jsonObj.push(value);
     }
     return jsonObj;
   }

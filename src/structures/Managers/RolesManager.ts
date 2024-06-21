@@ -11,15 +11,25 @@ import {
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
 import { setObj } from "../../utils/utils";
-import { type Guild } from "../Guild";
+import { Guild } from "../Guild";
 import { type Member } from "../Member";
 import { GuildRole } from "../Role";
 
+/**
+ * Manages the roles of a member in a guild.
+ */
 export class MemberRolesManager {
   #client: Client;
   readonly guild: Guild;
   readonly member: Member;
   public cache: Collection<string, GuildRole>;
+
+  /**
+   * Constructs a new MemberRolesManager.
+   * @param guild - The guild the member belongs to.
+   * @param member - The member whose roles are being managed.
+   * @param client - The client instance.
+   */
   constructor(guild: Guild, member: Member, client: Client) {
     this.guild = guild;
     this.member = member;
@@ -27,14 +37,26 @@ export class MemberRolesManager {
     this.cache = new Collection();
     this.#patch();
   }
+
+  /**
+   * Patches the cache with the member's roles.
+   */
   #patch() {
-    for (var i in this.member.roles || []) {
+    for (var i in this.member.role_ids) {
       if (!this.guild.roles) return null;
-      var roleFound = this.guild.roles.cache.get(this.member.roles[i]);
-      this.cache.set(this.member.roles[i], roleFound);
+      var roleFound = this.guild.roles.cache.get(this.member.role_ids[i]);
+
+      if(roleFound instanceof GuildRole) {
+        this.cache.set(roleFound.id, roleFound)
+      }
     }
   }
 
+  /**
+   * Adds roles to a member.
+   * @param addObject - An object containing roles to add and a reason.
+   * @returns An object containing errors and success responses.
+   */
   async add(addObject: GuildMemberRoleOptions): Promise<{
     error: ErrorResponseFromApi[];
     success: ResponseFromApi[];
@@ -69,6 +91,12 @@ export class MemberRolesManager {
       success,
     };
   }
+
+  /**
+   * Removes roles from a member.
+   * @param removeObject - An object containing roles to remove and a reason.
+   * @returns An object containing errors and success responses.
+   */
   async remove(removeObject: GuildMemberRoleOptions): Promise<{
     error: ErrorResponseFromApi[];
     success: ResponseFromApi[];
@@ -101,6 +129,11 @@ export class MemberRolesManager {
     return { error: errors, success };
   }
 
+  /**
+   * Fetches roles of a member.
+   * @param roleId - The role ID to fetch, or null to fetch all roles.
+   * @returns A collection of guild roles or null if not found.
+   */
   async fetch(
     roleId: string | null | undefined = null
   ): Promise<Collection<string, GuildRole> | null> {
@@ -113,7 +146,7 @@ export class MemberRolesManager {
       if (response instanceof Collection) {
         var i: any = response
           .toJSON()
-          .filter((i: any) => this.member?.roles?.includes(i.id));
+          .filter((i: any) => this.member?.role_ids?.includes(i.id));
 
         for (var x of i) {
           this.cache.set(x.id, x);
@@ -127,16 +160,30 @@ export class MemberRolesManager {
   }
 }
 
+/**
+ * Manages the roles in a guild.
+ */
 export class GuildRolesManager {
   #client: Client;
   public guild: Guild;
   public cache: Collection<string, GuildRole>;
+
+  /**
+   * Constructs a new GuildRolesManager.
+   * @param guild - The guild whose roles are being managed.
+   * @param client - The client instance.
+   */
   constructor(guild: Guild, client: Client) {
     this.#client = client;
     this.guild = guild;
     this.cache = new Collection();
   }
 
+  /**
+   * Fetches roles from the guild.
+   * @param roleId - The role ID to fetch, or null to fetch all roles.
+   * @returns A collection of guild roles, a single guild role, or an error response.
+   */
   async fetch(
     roleId: string | null | undefined
   ): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi> {
@@ -163,6 +210,11 @@ export class GuildRolesManager {
     return r;
   }
 
+  /**
+   * Deletes roles from the guild.
+   * @param deleteObject - An object containing roles to delete and a reason.
+   * @returns An object containing errors and success responses or the current cache.
+   */
   async delete(
     deleteObject: GuildMemberRoleOptions
   ): Promise<
@@ -197,6 +249,11 @@ export class GuildRolesManager {
     return { error: errors, success };
   }
 
+  /**
+   * Creates a new role in the guild.
+   * @param createObject - An object containing the role creation data.
+   * @returns The created role data or an error response.
+   */
   async create(createObject: GuildRoleCreatePayload) {
     const base = {
       name: "New Role",

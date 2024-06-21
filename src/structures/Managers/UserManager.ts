@@ -7,16 +7,30 @@ import { type Guild } from "../Guild";
 import { Member } from "../Member";
 import { User } from "../User";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
+import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 
+/**
+ * Manages user-related operations such as fetching user data.
+ */
 class UserManager {
   #client: Client;
   public cache: Collection<string, User>;
+
+  /**
+   * Constructs a new UserManager.
+   * @param client - The client instance.
+   */
   constructor(client: Client) {
     this.#client = client;
     this.cache = new Collection();
   }
 
-  async fetch(userId: string) {
+  /**
+   * Fetches a user by their ID.
+   * @param userId - The ID of the user to fetch.
+   * @returns The fetched User instance or an error response.
+   */
+  async fetch(userId: string): Promise<Nullable<User | ErrorResponseFromApi>> {
     const result = await this.#client.rest.request(
       "GET",
       Endpoints.User(userId),
@@ -24,9 +38,8 @@ class UserManager {
     );
 
     if (result?.error || !result || !result?.data) {
-      return result;
+      return result as ErrorResponseFromApi;
     } else {
-      //@ts-ignore
       var x = new User(result.data as APIUser, this.#client);
       this.cache.set(result.data.id, x);
       return x;
@@ -34,11 +47,20 @@ class UserManager {
   }
 }
 
+/**
+ * Manages guild member-related operations such as fetching and caching members.
+ */
 class GuildMemberManager {
   #client: Client;
   readonly guild: Guild;
   public guildId: string;
   public cache: Collection<string, Member>;
+
+  /**
+   * Constructs a new GuildMemberManager.
+   * @param client - The client instance.
+   * @param guild - The guild whose members are being managed.
+   */
   constructor(client: Client, guild: Guild) {
     this.#client = client;
     this.guild = guild;
@@ -46,6 +68,12 @@ class GuildMemberManager {
     this.cache = new Collection();
   }
 
+  /**
+   * Fetches all members of the guild with specified options.
+   * @param obj - Options for fetching members.
+   * @returns A collection of guild members or null if an error occurs.
+   * @private
+   */
   private async _fetchAllMembers(obj: FetchWithLimitAndAfter) {
     var endpoint = Endpoints.GuildMembers(this.guildId);
 
@@ -83,7 +111,13 @@ class GuildMemberManager {
       return this.cache;
     }
   }
-  async fetch(memberId: string | undefined | null) {
+
+  /**
+   * Fetches a guild member by their ID or fetches all members with specified options.
+   * @param memberId - The ID of the member to fetch or options for fetching members.
+   * @returns A guild member, a collection of guild members, or an error response.
+   */
+  async fetch(memberId: string | undefined | null): Promise<Nullable<Collection<string, Member> | Member | ErrorResponseFromApi>> {
     if (typeof memberId === "string") {
       const result = await this.#client.rest.request(
         "GET",
@@ -92,7 +126,7 @@ class GuildMemberManager {
       );
 
       if (result?.error || !result || !result?.data) {
-        return result;
+        return result as ErrorResponseFromApi;
       } else {
         var x: Record<any, any> = { ...result.data, id: result.data.user.id };
         this.#client.users.cache.set(x.id, new User(x.user, this.#client));
@@ -114,6 +148,10 @@ class GuildMemberManager {
     }
   }
 
+  /**
+   * Gets the member instance of the client user.
+   * @returns The client user's member instance or null if not available.
+   */
   get me(): Nullable<Member> {
     if (!this.#client.user) return null;
     var member = this.cache.get(this.#client.user.id);

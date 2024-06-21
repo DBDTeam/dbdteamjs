@@ -1,53 +1,134 @@
+import { APIUser } from "discord-api-types/v10";
 import { Client } from "../client/Client";
+import { Nullable, PresenceData } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { PermissionsBitField } from "../types/PermissionsBitFields";
-import { getAllStamps, setObj } from "../utils/utils";
+import { SnowflakeInformation, getAllStamps, setObj } from "../utils/utils";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
 import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { User } from "./User";
+import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
 
+/**
+ * Represents a guild member and provides methods to manage and interact with it.
+ */
 class Member extends Base {
-  readonly #DATE: any;
-  readonly #PREMIUM: any;
-  readonly #TIMEOUTED: any;
+  readonly #DATE: Date;
+  readonly #PREMIUM: Date;
+  readonly #TIMEOUTED: Date;
   readonly #d: any;
-  joined: any;
-  user: any;
-  muted: any;
-  deafened: any;
-  flags: any;
+  
+  /**
+   * The date the member joined the guild.
+   */
+  joined: SnowflakeInformation;
+
+  /**
+   * The user associated with this member.
+   */
+  user: User;
+
+  /**
+   * Whether the member is muted.
+   */
+  muted: boolean;
+
+  /**
+   * Whether the member is deafened.
+   */
+  deafened: boolean;
+
+  /**
+   * The flags associated with the member.
+   */
+  flags: bigint;
+
+  /**
+   * The permissions of the member.
+   */
   permissions: any;
-  role_ids: any;
-  roles: any;
-  presence: any;
-  nick: any;
-  avatar: any;
-  premiumSince: any;
-  pending: any;
-  communicationDisabledUntil: any;
-  timeoutUntil: any;
-  communicationDisabled: any;
-  timeouted: any;
+
+  /**
+   * The IDs of the roles assigned to the member.
+   */
+  role_ids: string[];
+
+  /**
+   * The roles manager for the member.
+   */
+  roles: MemberRolesManager;
+
+  /**
+   * The presence status of the member.
+   */
+  presence: Nullable<PresenceData>;
+
+  /**
+   * The nickname of the member.
+   */
+  nick: Nullable<string>;
+
+  /**
+   * The avatar of the member.
+   */
+  avatar: Nullable<string>;
+
+  /**
+   * The date the member started boosting the guild.
+   */
+  premiumSince!: SnowflakeInformation;
+
+  /**
+   * Whether the member is pending.
+   */
+  pending!: boolean;
+
+  /**
+   * The date until the member is communication disabled.
+   */
+  communicationDisabledUntil!: Nullable<SnowflakeInformation>;
+
+  /**
+   * The timeout date of the member.
+   */
+  timeoutUntil!: Nullable<SnowflakeInformation>;
+
+  /**
+   * Whether the member is communication disabled.
+   */
+  communicationDisabled!: boolean;
+
+  /**
+   * Whether the member is timeouted.
+   */
+  timeouted!: boolean;
+
   #client: Client;
 
+  /**
+   * Creates a new Member instance.
+   * @param data - The data for the member.
+   * @param guild - The guild the member belongs to.
+   * @param client - The client instance.
+   */
   constructor(data: Record<any, any>, readonly guild: Guild, client: Client) {
     super(client);
     this.#client = client;
     this.#d = data;
 
-    if(typeof guild === "string") {
-      this.guild = client.guilds.cache.get(guild) as Guild
+    if (typeof guild === "string") {
+      this.guild = client.guilds.cache.get(guild) as Guild;
     }
 
-    this.guild = guild as Guild
+    this.guild = guild as Guild;
 
     this.#DATE = new Date(data.joined_at);
     this.#PREMIUM = new Date(data.premium_since);
     this.#TIMEOUTED = new Date(data.communication_disabled_until);
 
-    this.joined = getAllStamps(this);
+    this.joined = getAllStamps(this) as SnowflakeInformation;
     this.user = this.author;
 
     this.muted = data.mute;
@@ -62,25 +143,30 @@ class Member extends Base {
     this._patch(data);
   }
 
+  /**
+   * Gets the user associated with this member.
+   * @returns The User instance of the member.
+   */
   get author() {
-    var x: any;
-    if (this.id !== this.#client.user.id) {
-      if (this.#client.users.cache.get(this.id)) {
-        x = this.#client.users.cache.get(this.id);
-      } else {
-        var user = this.#d.user;
-        if (!user) {
-          user = this.#d.author;
-        }
-        this.#client.users.cache.set(this.id, new User(user, this.#client));
-        x = this.#client.users.cache.get(this.id);
-      }
-    } else {
-      x = this.#client.user;
+    if (this.id === this.#client.user.id) {
+      return this.#client.user;
     }
-    return x;
-  }
+  
+    let user:any = this.#client.users.cache.get(this.id);
+    
+    if (!user) {
+      user = this.#d.user as APIUser || this.#d.author as APIUser;
+      this.#client.users.cache.set(this.id, new User(user, this.#client));
+    }
+    
+    return user;
+  }  
 
+  /**
+   * Patches the member with new data.
+   * @param data - The data to patch the member with.
+   * @private
+   */
   _patch(data: any) {
     if ("nick" in data && data.nick !== null && data.nick !== undefined) {
       this.nick = data.nick;
@@ -93,7 +179,7 @@ class Member extends Base {
       data.premium_since !== null &&
       data.premium_since !== undefined
     ) {
-      this.premiumSince = getAllStamps(this.#PREMIUM);
+      this.premiumSince = getAllStamps(this.#PREMIUM) as SnowflakeInformation;
     }
     if ("pending" in data) {
       this.pending = data.pending;
@@ -102,7 +188,7 @@ class Member extends Base {
       this.permissions = data.permissions;
     }
     if ("communication_disabled_until" in data) {
-      this.communicationDisabledUntil = getAllStamps(this.#TIMEOUTED);
+      this.communicationDisabledUntil = getAllStamps(this.#TIMEOUTED) as SnowflakeInformation;
       this.timeoutUntil = this.communicationDisabledUntil;
       this.communicationDisabled = data.communication_disabled_until
         ? true
@@ -124,7 +210,16 @@ class Member extends Base {
       };
     }
   }
+
+  /**
+   * Makes the member leave the guild.
+   */
   leave() {}
+
+  /**
+   * Checks if the member is kickable.
+   * @returns True if the member can be kicked, false otherwise.
+   */
   get kickable() {
     var _p = 0;
     var _h =
@@ -136,7 +231,7 @@ class Member extends Base {
       c?.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c?.roles.cache.toJSON()) {
+    for (var perms of c?.roles?.cache.toJSON() || []) {
       _p |= perms.permissions;
     }
 
@@ -158,7 +253,11 @@ class Member extends Base {
     return expression;
   }
 
-  get banneable() {
+  /**
+   * Checks if the member is bannable.
+   * @returns True if the member can be banned, false otherwise.
+   */
+  get bannable() {
     var _p = 0;
     var _h =
       this.roles.cache
@@ -169,7 +268,7 @@ class Member extends Base {
       c?.roles.cache
         .toJSON()
         .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c?.roles.cache.toJSON()) {
+    for (var perms of c?.roles.cache.toJSON() || []) {
       _p |= perms.permissions;
     }
 
@@ -191,7 +290,12 @@ class Member extends Base {
     return expression;
   }
 
-  async edit(obj: any) {
+  /**
+   * Edits the member with the provided payload.
+   * @param obj - The payload for editing the member.
+   * @returns {Promise<boolean>} True if the edit was successful, false otherwise.
+   */
+  async edit(obj: any): Promise<boolean> {
     var payload = new MemberEditPayload(obj);
 
     var reason = payload.payload.reason;
@@ -213,7 +317,13 @@ class Member extends Base {
     }
   }
 
-  async changeNickname(nickname: string, reason: string) {
+  /**
+   * Changes the nickname of the member.
+   * @param nickname - The new nickname.
+   * @param reason - The reason for changing the nickname.
+   * @returns The response from the API.
+   */
+  async changeNickname(nickname: string, reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     reason = reason?.trim();
     var response = await this.#client.rest.request(
       "PATCH",
@@ -226,7 +336,12 @@ class Member extends Base {
     return response;
   }
 
-  async kick(reason: string) {
+  /**
+   * Kicks the member from the guild.
+   * @param reason - The reason for kicking the member.
+   * @returns The response from the API.
+   */
+  async kick(reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     reason = reason?.trim();
 
     var response = await this.#client.rest.request(
@@ -240,7 +355,12 @@ class Member extends Base {
     return response;
   }
 
-  async ban(obj: any) {
+  /**
+   * Bans the member from the guild.
+   * @param obj - The payload for banning the member.
+   * @returns The response from the API.
+   */
+  async ban(obj: { delete_message_seconds: number, reason: string }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     const banObj = {
       delete_message_seconds: 0,
       reason: null,
@@ -261,6 +381,10 @@ class Member extends Base {
     return response;
   }
 
+  /**
+   * Returns a string representation of the member.
+   * @returns The mention string of the member.
+   */
   toString() {
     return `<@${this.id}>`;
   }

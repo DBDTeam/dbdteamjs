@@ -29,7 +29,7 @@ export class GuildRole extends Base {
   name: any;
   hoist: boolean;
   icon: string | null;
-  position: any;
+  position: number;
   permissions: any;
   managed: boolean;
   mentionable: boolean;

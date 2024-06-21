@@ -17,6 +17,7 @@ import { UserInteraction } from "../structures/Interactions/UserInteraction";
 import { TextChannel } from "../structures/TextChannel";
 import { ThreadChannel } from "../structures/ThreadChannel";
 import { VoiceChannel } from "../structures/VoiceChannel";
+import { Nullable } from "../common";
 
 export const getId = (t: string) => {
   return t
@@ -126,10 +127,16 @@ export function getKeyByValue(object: object, value: any) {
   return f;
 }
 
-export function getAllStamps(c: Base) {
+export interface SnowflakeInformation {
+  stamp: number;
+  unix: number;
+  date: Date;
+}
+
+export function getAllStamps(c: Base | Date): Nullable<SnowflakeInformation> {
   if (!c) return null;
 
-  const stamp = new Date(Number(c.getEpoch) + Number(c.getBinary));
+  const stamp = c instanceof Base ? new Date(Number(c.getEpoch) + Number(c.getBinary)) : c;
 
   return {
     stamp: stamp.getTime(),

@@ -5,6 +5,7 @@ import {
 import { Event } from "../Event";
 import { Member, Shard } from "../../../structures";
 import { EventNames, PresenceData } from "../../../common";
+import { GatewayActivityPayload, PresencePlatforms, PresenceStatus } from "../../../types/Presences";
 
 export default class PresenceUpdate extends Event<GatewayPresenceUpdateDispatchData> {
   handle(data: GatewayPresenceUpdate, shard: Shard) {
