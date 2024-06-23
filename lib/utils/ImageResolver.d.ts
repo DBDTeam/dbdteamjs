@@ -1,4 +1,3 @@
-/// <reference types="node" />
 /**
  * @param {string | Buffer} image
  * @returns {Promise<Buffer | string>}

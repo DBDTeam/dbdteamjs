@@ -16,7 +16,7 @@ class GuildChannelManager {
   readonly guildId: string;
   public cache: Collection<
     string,
-    Channel | TextChannel | VoiceChannel | ThreadChannel | CategoryChannel
+    Channel
   >;
   constructor(guildId: string, client: Client) {
     this.#client = client;
@@ -25,7 +25,7 @@ class GuildChannelManager {
   }
 
   async _fetchAllChannels(): Promise<
-    | Collection<string, CategoryChannel | TextBasedChannel | ForumChannel>
+    | Collection<string, CategoryChannel | TextBasedChannel | ForumChannel | Channel>
     | ErrorResponseFromApi
   > {
     try {
@@ -36,7 +36,7 @@ class GuildChannelManager {
       );
       var _return = new Collection<
         string,
-        CategoryChannel | TextBasedChannel | ForumChannel
+        CategoryChannel | TextBasedChannel | ForumChannel | Channel
       >();
 
       if (!response?.error) return response as ErrorResponseFromApi;
@@ -48,9 +48,10 @@ class GuildChannelManager {
           this.#client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
         i.guild = guild;
-        this.#client.channels.cache.set(i.id, typeChannel(i, this.#client));
-        this.cache.set(i.id, typeChannel(i, this.#client));
-        _return.set(i.id, typeChannel(i, this.#client));
+        const ch = typeChannel(i, this.#client)
+        this.#client.channels.cache.set(i.id, ch);
+        this.cache.set(i.id, ch);
+        _return.set(i.id, ch);
       }
 
       return _return;
@@ -78,7 +79,7 @@ class GuildChannelManager {
     if (!id || id?.length >= 17 || id?.length <= 18) {
       var res = await this._fetchAllChannels();
 
-      return res;
+      return res as Collection<string, CategoryChannel | TextBasedChannel | ForumChannel>;
     } else {
       const response = await this.#client.rest.request(
         "GET",

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { EventEmitter } from "events";
 import { type Client } from "../client/Client";
 import { GatewayConfig } from "../common";

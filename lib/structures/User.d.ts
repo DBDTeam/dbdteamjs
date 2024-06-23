@@ -6,6 +6,7 @@ import { Base } from "./Base";
  * Represents a User
  */
 export declare class User extends Base {
+    #private;
     /**
      * The User ID
      */
@@ -57,12 +58,11 @@ export declare class User extends Base {
     /**
      * Display's the User banner URL.
      */
-    displayBannerUrl: (opts: any) => any;
+    readonly displayBannerUrl: (opts: any) => any;
     /**
      * Display's the User default avatar URL.
      */
-    displayDefaultAvatarUrl: () => any;
-    readonly client: Client;
+    readonly displayDefaultAvatarUrl: () => any;
     /**
      * @constructor
      * @param data - The data payload

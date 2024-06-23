@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import { AllowedMentionsTypes, MessageFlags, RESTAPIPollCreate } from "discord-api-types/v10";
 import { MessageEmbedPayload } from "./Embeds";
 export interface MessagePayloadMentionData {

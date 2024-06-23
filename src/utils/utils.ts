@@ -29,7 +29,7 @@ export const getId = (t: string) => {
 export function typeChannel(
   channelData: any,
   client: Client
-): TextChannel | VoiceChannel | CategoryChannel | ThreadChannel | Channel {
+): Channel {
   switch (channelData.type) {
     case ChannelType.GuildText:
       return new TextChannel(channelData, client);

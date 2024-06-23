@@ -1,9 +1,12 @@
 import { EditClientUserPayload } from "../common";
 import { User } from "../structures/User";
+import { Client } from "./Client";
 /**
  * @extends {User}
  */
 declare class ClientUser extends User {
+    #private;
+    constructor(data: any, client: Client);
     /**
      *
      * @param {object} object - The new info to edit the client

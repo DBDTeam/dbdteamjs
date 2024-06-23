@@ -101,7 +101,7 @@ export interface ClientEvents {
     threadDelete: (oldThreadChannel: ThreadChannel, shard: Shard) => unknown;
     threadListSync: (guild: Guild, channels: Collection<string, ThreadChannel>, members: Collection<string, ThreadMember>, shard: Shard) => unknown;
     threadMemberUpdate: (threadChannel: ThreadChannel, threadMember: ThreadMember, shard: Shard) => unknown;
-    presenceUpdate: (member: Member, oldPresence: PresenceData, newPresence: PresenceData, shard: Shard) => unknown;
+    presenceUpdate: (member: Member, oldPresence: Nullable<PresenceData>, newPresence: PresenceData, shard: Shard) => unknown;
 }
 export declare enum Intents {
     Guilds = 1,

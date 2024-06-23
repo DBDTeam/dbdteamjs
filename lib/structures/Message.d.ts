@@ -176,11 +176,6 @@ declare class Message extends Base {
      */
     delete(): Promise<boolean>;
     /**
-     * Gets the user associated with the message.
-     * @returns {User} The user associated with the message.
-     */
-    get _user(): User;
-    /**
      * Gets the channel by its ID.
      * @param {string} channelId - The ID of the channel.
      * @returns {Promise<Channel | null>} A promise that resolves to the channel, or null if not found.
