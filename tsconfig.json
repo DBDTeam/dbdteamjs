@@ -1,39 +1,49 @@
 {
-   "compilerOptions": {
-      "module": "NodeNext",
-      "moduleResolution": "NodeNext",
-      "target": "ESNext",
-      "declaration": true,
-      "skipLibCheck": true,
-      "strict": true,
-      /* tyoes */
-      "noImplicitAny": true,
-      "strictNullChecks": true,
-      "strictFunctionTypes": true,
-      "noImplicitThis": true,
-      "noUnusedParameters": true,
-      "noImplicitReturns": false,
-      "noFallthroughCasesInSwitch": true,
-      "paths": {
-         "@types": [
-            "./typings/index.d.ts"
-         ]
-      },
-      "outDir": "./lib",
-      "rootDir": "./src"
-   },
-   "include": [
-      "./src"
-   ],
-   "exclude": [
-      "./lib"
-   ],
-   "typedocOptions": {
-      "entryPoints": [
-         "./src/"
-      ],
-      "out": "././docs",
-      // "plugin": ["typedoc-material-theme"],
-      // "themeColor": "#cb9820",
-   }
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "target": "ESNext",
+    "declaration": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@types": ["./typings/index.d.ts"]
+    },
+    "outDir": "./lib",
+    "rootDir": "./src"
+  },
+  "include": ["./src"],
+  "exclude": ["./lib"],
+  "typedocOptions": {
+    "entryPoints": ["./src/"],
+    "out": "././docs",
+    "highlightLanguages": [
+      "bash",
+      "console",
+      "css",
+      "html",
+      "javascript",
+      "json",
+      "jsonc",
+      "json5",
+      "tsx",
+      "typescript"
+    ],
+    "customFooterHtml": "Copyright <strong>I.D.C.Team</strong> 2024",
+    "lang": "en-US",
+    "titleLink": "https://js.idcteam.xyz",
+    "sidebarLinks": {
+      "Discord": "https://discord.idcteam.xyz",
+      "NPM": "https://dbdjs.idcteam.xyz"
+    },
+    "hostedBaseUrl": "https://js.idcteam.xyz",
+    "customCss": "./theme/style.css"
+  }
 }

@@ -59,13 +59,13 @@ export class User extends Base {
   /**
    * Display's the User banner URL.
    */
-  displayBannerUrl: (opts: any) => any;
+  readonly displayBannerUrl: (opts: any) => any;
   /**
    * Display's the User default avatar URL.
    */
-  displayDefaultAvatarUrl: () => any;
+  readonly displayDefaultAvatarUrl: () => any;
 
-  readonly client: Client;
+  #client: Client;
 
   /**
    * @constructor
@@ -76,7 +76,7 @@ export class User extends Base {
     super(data.id);
 
     this.id = data.id;
-    this.client = client;
+    this.#client = client;
     this.bot = false;
     this.system = false;
     this.flags = 0;
@@ -138,7 +138,7 @@ export class User extends Base {
    */
   avatarUrl(opts?: CDNOptions): undefined | string {
     if (!this.id) return;
-    return this.client.rest.cdn.avatar(this.id, this.avatar as string, opts);
+    return this.#client.rest.cdn.avatar(this.id, this.avatar as string, opts);
   }
 
   /**
@@ -150,7 +150,7 @@ export class User extends Base {
    */
   defaultAvatarUrl(): undefined | string {
     if (!this.id) return;
-    return this.client.rest.cdn.defaultAvatar(this.discriminator, this.id);
+    return this.#client.rest.cdn.defaultAvatar(this.discriminator, this.id);
   }
 
   /**
@@ -163,7 +163,7 @@ export class User extends Base {
    */
   bannerUrl(opts: CDNOptions) {
     if (!this.id) return;
-    return this.client.rest.cdn.banner(this.id, this.banner as string, opts);
+    return this.#client.rest.cdn.banner(this.id, this.banner as string, opts);
   }
 
   /**

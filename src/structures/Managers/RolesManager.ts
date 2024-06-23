@@ -43,7 +43,7 @@ export class MemberRolesManager {
    */
   #patch() {
     for (var i in this.member.role_ids) {
-      if (!this.guild.roles) return null;
+      if (!this.guild?.roles) return null;
       var roleFound = this.guild.roles.cache.get(this.member.role_ids[i]);
 
       if(roleFound instanceof GuildRole) {

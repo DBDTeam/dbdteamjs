@@ -180,8 +180,8 @@ class Message extends Base {
     this.id = data.id;
     this.type = data.type || 0;
     this.channelId = data.channel_id;
-    this.author = this._user;
-    this.user = this._user;
+    this.author = new User(this.data.author || this.data?.interaction?.user, this.client);
+    this.user = this.author;
     this.content = data.content;
     this.mentions = {
       users: new Collection(),
@@ -283,7 +283,7 @@ class Message extends Base {
 
     var result = await this.client.rest.request(
       "POST",
-      Endpoints.ChannelMessages(this.id),
+      Endpoints.ChannelMessages(this.channelId),
       true,
       { data },
       null,
@@ -381,16 +381,6 @@ class Message extends Base {
     );
 
     return deleted?.error ? true : false
-  }
-
-  /**
-   * Gets the user associated with the message.
-   * @returns {User} The user associated with the message.
-   */
-  get _user(): User {
-    const currentUser = new User(this.data.author || this.data?.interaction?.user, this.client);
-    this.client.users.cache.set(currentUser.id, currentUser);
-    return currentUser;
   }
 
   /**

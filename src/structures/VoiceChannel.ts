@@ -1,20 +1,50 @@
-import { VideoQualityMode } from "discord-api-types/v10";
+import { RESTGetAPIChannelMessageResult, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
 import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextBasedChannel } from "./TextBasedChannel";
+import { MessageBodyRequest } from "../common";
 
 /** @extends {Channel} */
 class VoiceChannel extends TextBasedChannel {
+  /**
+   * The actual bitrate of the Voice Channel
+   */
   bitrate: number;
+  /**
+   * The maximum amount of users that are able to be in the Voice Channel
+   */
   user_limit: number;
+  /**
+   * The cooldown of the Text Channel of the Voice Channel in seconds
+   */
   rate_limit_per_user: number;
+  /**
+   * The region of the Voice Channel
+   */
   region: string;
+  /**
+   * The video quality of the Voice Channel
+   */
   video_quality: VideoQualityMode;
+  /**
+   * The session Id to join the Voice Channel
+   * @type {string}
+   */
   session_id: string;
-  sendMessage: Function;
-  send: Function;
+  /**
+   * Creates a message in the Text Channel
+   * @readonly
+   * @function
+   */
+  readonly sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
+  /**
+   * Creates a message in the Text Channel
+   * @readonly
+   * @function
+   */
+  readonly send = (body: MessageBodyRequest) => this.createMessage(body);
   readonly client: Client;
   /**
    * Represents a Voice Channel
@@ -25,51 +55,14 @@ class VoiceChannel extends TextBasedChannel {
     super(data, client);
 
     this.client = client;
-
-    /**
-     * The actual bitrate of the Voice Channel
-     * @type {string}
-     */
     this.bitrate = data.bitrate;
-    /**
-     * The maximum amount of users that are able to be in the Voice Channel
-     * @type {number | undefined}
-     */
     this.user_limit = data.user_limit;
-    /**
-     * The cooldown of the Text Channel of the Voice Channel in seconds
-     * @type {number}
-     */
     this.rate_limit_per_user = data.rate_limit_per_user;
-    /**
-     * The region of the Voice Channel
-     * @type {string}
-     */
     this.region = data.rtc_region;
-    /**
-     * The video quality of the Voice Channel
-     * @type {string}
-     */
     this.video_quality = data.video_quality_mode;
-    /**
-     * The session Id to join the Voice Channel
-     * @type {string}
-     */
     this.session_id = data.session_id;
-    /**
-     * Voice channel message manager
-     * @type {ChannelMessageManager}
-     */
-    /**
-     * Creates a message in the Text Channel
-     * @readonly
-     */
-    this.sendMessage = (...args: any) => this.createMessage(args);
-    /**
-     * Creates a message in the Text Channel
-     * @readonly
-     */
-    this.send = (...args: any) => this.createMessage(args);
+    this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
+    this.send = (body: MessageBodyRequest) => this.createMessage(body);
   }
 
   /**
@@ -108,8 +101,7 @@ class VoiceChannel extends TextBasedChannel {
         member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
-      //@ts-ignore
-      return new Message(result.data, this.client);
+      return new Message(result.data as RESTGetAPIChannelMessageResult, this.client);
     } else {
       return result;
     }

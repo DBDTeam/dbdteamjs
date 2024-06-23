@@ -48,19 +48,19 @@ class InteractionBase {
 
   /**
    * The Guild.
-   * @type {Guild}
+   * @type {Guild | undefined}
    */
   public guild: Guild | undefined;
 
   /**
    * The Channel where the Interaction was triggered.
-   * @type {Channel | VoiceChannel | TextChannel | ThreadChannel | TextBasedChannel}
+   * @type {TextBasedChannel}
    */
   public channel: TextBasedChannel;
 
   /**
    * The Interaction User.
-   * @type {User}
+   * @type {User | undefined}
    */
   public user: User | undefined;
 
@@ -84,12 +84,31 @@ class InteractionBase {
 
   #d: any;
 
-  showModal: (obj: any) => Promise<any>;
-  reply: (obj: any) => Promise<InteractionResponse | object>;
+  /**
+   * Sends a modal as the interaction response.
+   * @async
+   * @param {ModalPayloadData} body - The ModalPayloadData
+   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   */
+  showModal: (body: ModalPayloadData) => Promise<InteractionResponse | ErrorResponseFromApi>
+
+  /**
+   * Makes a reply using the gateway.
+   * @async
+   * @param {InteractionBodyRequest} obj - The InteractionPayloadData
+   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   */
+  reply: (obj: InteractionBodyRequest) => Promise<InteractionResponse | ErrorResponseFromApi>
+
+  /**
+   * The ID of the interaction.
+   * @type {any}
+   */
   id: any;
+
   /**
    * The Interaction Member.
-   * @type {Nullable<Member>}
+   * @type {Member | null}
    */
   member: Member | null;
 
@@ -124,16 +143,22 @@ class InteractionBase {
     this.showModal = this.modal;
   }
 
+  /**
+   * Gets the member associated with the interaction.
+   * @private
+   * @type {Member | null}
+   */
   get _member() {
-    if (this.guild)
-      if (this.#d && this.#d.member)
-        return new Member(
-          { ...this.#d.member, id: this.#d.member.user.id },
-          this.guild,
-          this.client
-        );
+    if (this.guild && this.#d && this.#d.member) {
+      return new Member(
+        { ...this.#d.member, id: this.#d.member.user.id },
+        this.guild,
+        this.client
+      );
+    }
     return null;
   }
+
   /**
    * Returns whether the Interaction is a ComponentInteraction.
    * @returns {boolean}
@@ -168,12 +193,19 @@ class InteractionBase {
 
   /**
    * Returns the Interaction Author.
-   * @type {User}
+   * @type {User | undefined}
    */
   public get author(): User | undefined {
     return this.member?.user;
   }
 
+  /**
+   * Makes a reply using the gateway.
+   * @private
+   * @async
+   * @param {InteractionPayload} obj - The InteractionPayloadData
+   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   */
   private async __makeReply(obj: any): Promise<InteractionResponse | ErrorResponseFromApi> {
     const data = { type: obj.type, data: obj.data };
 
@@ -205,13 +237,13 @@ class InteractionBase {
       );
     }
 
-    return response ?? res as ErrorResponseFromApi;
+    return response ?? (res as ErrorResponseFromApi);
   }
 
   /**
    * Makes a reply using the gateway.
    * @async
-   * @param {InteractionPayload} obj - The InteractionPayloadData
+   * @param {InteractionBodyRequest} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
   public async makeReply(obj: InteractionBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
@@ -231,9 +263,9 @@ class InteractionBase {
 
   /**
    * Defers the reply.
+   * @async
    * @param {boolean} ephemeral - If the defer will be sent ephemerally.
    * @returns {Promise<InteractionResponse | object>}
-   * @async
    */
   public async deferReply(ephemeral: boolean): Promise<any> {
     ephemeral = !!ephemeral;
@@ -246,12 +278,12 @@ class InteractionBase {
   /**
    * Edits the original response. (if any)
    * @async
-   * @param {MessageUpdateBodyRequest} obj - The Body of the new Message.
+   * @param {MessageUpdateBodyRequest} body - The Body of the new Message.
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
   public async editReply(body: MessageUpdateBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
     if (!body) return body;
-    const MessagePayloadData = new EditMessagePayload(body, body.files)
+    const MessagePayloadData = new EditMessagePayload(body, body.files);
 
     const [data, files] = [
       MessagePayloadData.payload,
@@ -276,9 +308,9 @@ class InteractionBase {
 
   /**
    * Follows up the Interaction response.
-   * @param {InteractionBodyRequest} obj - The Body of the new Message.
-   * @returns {Promise<InteractionResponse>}
    * @async
+   * @param {MessageBodyRequest} body - The Body of the new Message.
+   * @returns {Promise<InteractionResponse>}
    */
   public async followUp(body: MessageBodyRequest): Promise<any> {
     if (!body) return;
@@ -307,18 +339,18 @@ class InteractionBase {
 
   /**
    * Sends a modal as the interaction response.
-   * @param {InteractionPayloadData} obj - The ModalPayloadData
-   * @returns {Promise<InteractionResponse | object>}
    * @async
+   * @param {ModalPayloadData} body - The ModalPayloadData
+   * @returns {Promise<InteractionResponse | object>}
    */
-  public async modal(body: ModalPayloadData): Promise<InteractionResponse | object> {
-    const ModalData = new InteractionModalPayload(body)
+  public async modal(body: ModalPayloadData): Promise<InteractionResponse | ErrorResponseFromApi> {
+    const ModalData = new InteractionModalPayload(body);
 
-    const payload = ModalData.payload
+    const payload = ModalData.payload;
 
-    const response = await this.__makeReply({ type: InteractionResponseType.Modal, data: payload })
+    const response = await this.__makeReply({ type: InteractionResponseType.Modal, data: payload });
 
-    return response
+    return response;
   }
 }
 

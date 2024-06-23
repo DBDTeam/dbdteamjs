@@ -155,7 +155,7 @@ class ApplicationCommandManager {
     if (response.error) {
       return response as ErrorResponseFromApi;
     } else {
-      this.cache.set(response.data?.id, response.data);
+      this.cache.set(response.data?.id, response.data as APIApplicationCommand);
       return this.cache.get(response.data?.id) as APIApplicationCommand;
     }
   }
@@ -187,7 +187,7 @@ class ApplicationCommandManager {
     if (response.error) {
       return response as ErrorResponseFromApi;
     } else {
-      this.cache.set(response.data?.id, response.data);
+      this.cache.set(response.data?.id, response.data as APIApplicationCommand);
       return this.cache.get(response.data?.id) as APIApplicationCommand;
     }
   }

@@ -79,7 +79,8 @@ class Shard extends EventEmitter {
 
   async closeEvent(code: number, reason: string) {
     if (
-      code === 1001 &&
+      code === 1001 ||
+      code === 1006 ||
       reason
         .toString()
         ?.toLowerCase()

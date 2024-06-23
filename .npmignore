@@ -5,3 +5,6 @@ package-lock.json
 src/
 tsconfig.json
 .vscode
+tsconfig.json
+theme/
+tests/

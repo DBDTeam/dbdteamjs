@@ -1,7 +1,7 @@
 import { Channel } from "./BaseChannel";
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
-import { getAllStamps } from "../utils/utils";
+import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
 import { MessageData, MessagePayload } from "./Payloads/MessagePayload";
@@ -12,40 +12,55 @@ import { MessageBodyRequest } from "../common";
 
 export class TextBasedChannel extends Channel {
   #client: Client;
-  messages: ChannelMessageManager<TextChannel | VoiceChannel | ThreadChannel | TextBasedChannel>;
+  /**
+   * The Text Channel message manager
+   */
+  messages: ChannelMessageManager<
+    TextChannel | VoiceChannel | ThreadChannel | TextBasedChannel
+  >;
+  /**
+   * The last Text Channel message
+   */
   last_message_id: string;
+  /**
+   * The Text Channel cooldown per user in seconds
+   * @type {number}
+   */
   rate_limit_per_user: number;
+  /**
+   * The Text Channel cooldown per user in seconds
+   */
   readonly cooldown: number;
-  readonly sendMessage: Function;
-  readonly send: Function;
-  readonly last_pin: any;
+  /**
+   * Creates a message in the Text Channel
+   * @readonly
+   * @function
+   */
+  readonly sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
+  /**
+   * Creates a message in the Text Channel
+   * @readonly
+   * @function
+   */
+  readonly send = (body: MessageBodyRequest) => this.createMessage(body);
+  /**
+     * The Text Channel last pin time information
+     */
+  readonly last_pin!: SnowflakeInformation;
   constructor(data: any, client: Client) {
     super(data, client);
     this.#client = client;
-    /**
-     * The last Text Channel message
-     * @type {string | undefined}
-     */
     this.last_message_id = data.last_message_id;
     /**
      * The Text Channel parent id (category id)
      * @type {string}
      */
     this.parent_id = data.parent_id;
-    /**
-     * The Text Channel last pin time information
-     * @type {object}
-     */
-    this.last_pin = getAllStamps(data.last_pin_timestamp);
+    this.last_pin = getAllStamps(data.last_pin_timestamp) as SnowflakeInformation;
     /**
      * The Text Channel cooldown per user in seconds
-     * @type {number}
      */
     this.rate_limit_per_user = data.rate_limit_per_user;
-    /**
-     * The Text Channel message manager
-     * @type {ChannelMessageManager}
-     */
     this.messages = new ChannelMessageManager(this, this.#client);
     /**
      * The Text Channel cooldown per user in seconds
@@ -53,15 +68,7 @@ export class TextBasedChannel extends Channel {
      * @type {number}
      */
     this.cooldown = this.rate_limit_per_user;
-    /**
-     * Creates a message in the Text Channel
-     * @readonly
-     */
     this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
-    /**
-     * Creates a message in the Text Channel
-     * @readonly
-     */
     this.send = (body: MessageBodyRequest) => this.createMessage(body);
   }
 

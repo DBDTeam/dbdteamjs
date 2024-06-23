@@ -1,4 +1,4 @@
-import { AllowedMentionsTypes, APIAttachment } from "discord-api-types/v10";
+import { AllowedMentionsTypes } from "discord-api-types/v10";
 import { MessageBodyRequest } from "../../common";
 import {
   MessagePayloadData,

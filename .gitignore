@@ -3,3 +3,5 @@ main.js
 package-lock.json
 .env
 .vscode
+theme/
+tests/

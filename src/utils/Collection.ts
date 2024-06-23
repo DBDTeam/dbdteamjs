@@ -1,45 +1,51 @@
 /**
- * Represents a Collection (Extended from map).
+ * Represents a Collection (Extended from Map).
  * @extends {Map}
- * @param {number} limit
+ * @template K, V
  */
 class Collection<K, V> extends Map<K, V> {
+  /**
+   * The limit of the Collection.
+   * @type {number | null}
+   */
   public limit: number | null;
+
+  /**
+   * Creates an instance of Collection.
+   * @param {number} [limit=Infinity] - The limit of the Collection.
+   */
   constructor(limit: number = Infinity) {
     super();
-    /**
-     * Represents the limit of the Collection.
-     */
     this.limit = limit;
   }
+
   /**
-   * Returns a the Collection values in a object
-   * @returns {Array<*>}
+   * Returns the Collection values as an array.
+   * @returns {V[]} The values of the Collection.
    * @example
-   * const myFirstCollection = new Collection()
+   * const myFirstCollection = new Collection();
    *
-   * myFirstCollection.set("hi", "hello")
-   * myFirstCollection.set("hallo", "hi")
-   * console.log(myFirstCollection.toJSON()) // ["hello", "hi"]
+   * myFirstCollection.set("hi", "hello");
+   * myFirstCollection.set("hallo", "hi");
+   * console.log(myFirstCollection.toJSON()); // ["hello", "hi"]
    */
   toJSON(): V[] {
     const copy = new Map(this);
-    let jsonObj = [];
-    for (let [key, value] of copy) {
+    const jsonObj: V[] = [];
+    for (const [key, value] of copy) {
       jsonObj.push(value);
     }
     return jsonObj;
   }
 
   /**
-   * Check if the Collection has any value that you are trying to check.
-   * @param {object} keys
-   * @returns {boolean}
+   * Checks if the Collection has any of the specified keys.
+   * @param {Array<K>} keys - The keys to check.
+   * @returns {boolean} True if the Collection has any of the keys, otherwise false.
    */
-
-  hasAny(keys: Array<string>) {
-    for (let key of keys) {
-      if (this.has(key as K)) {
+  hasAny(keys: K[]): boolean {
+    for (const key of keys) {
+      if (this.has(key)) {
         return true;
       }
     }
@@ -47,37 +53,48 @@ class Collection<K, V> extends Map<K, V> {
   }
 
   /**
-   * Returns the first value. (or firsts values)
-   * @param {number} [x = 1] - The number of amount values you want to get.
-   * @returns {Array}
+   * Returns the first value(s) in the Collection.
+   * @param {number} [x=1] - The number of values to get.
+   * @returns {V | V[]} The first value or values.
    */
-
-  first(x: number = 1) {
-    let result = [];
+  first(x: number = 1): V | V[] {
+    const result: V[] = [];
     let count = 0;
-    for (let [key] of this) {
-      result.push(key);
+    for (const value of this.values()) {
+      result.push(value);
       count++;
       if (count === x) {
         break;
       }
     }
-    return result?.[1] ? result : result[0];
+    return result.length > 1 ? result : result[0];
   }
-  last(x: number = 1) {
-    let result = [];
+
+  /**
+   * Returns the last value(s) in the Collection.
+   * @param {number} [x=1] - The number of values to get.
+   * @returns {V | V[]} The last value or values.
+   */
+  last(x: number = 1): V | V[] {
+    const result: V[] = [];
     let count = 0;
-    for (let [id, key] of [...this.entries()].reverse()) {
-      result.unshift([id, key]);
+    for (const [key, value] of [...this.entries()].reverse()) {
+      result.unshift(value);
       count++;
       if (count === x) {
         break;
       }
     }
-    return result?.[1] ? result : result[0];
+    return result.length > 1 ? result : result[0];
   }
 
-  set(key: any, value: any) {
+  /**
+   * Sets a value in the Collection, respecting the limit.
+   * @param {K} key - The key of the value.
+   * @param {V} value - The value to set.
+   * @returns {this} The Collection instance.
+   */
+  set(key: K, value: V): this {
     if (this.size >= (this.limit || Infinity)) {
       const firstKey = this.keys().next().value;
       this.delete(firstKey);
@@ -86,8 +103,13 @@ class Collection<K, V> extends Map<K, V> {
     return this;
   }
 
-  find(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
-    for (let [key, value] of this.entries()) {
+  /**
+   * Finds a value in the Collection that matches the expression.
+   * @param {function} expression - The expression to evaluate.
+   * @returns {V | undefined} The value if found, otherwise undefined.
+   */
+  find(expression: (value: V, key: K, map: Map<K, V>) => boolean): V | undefined {
+    for (const [key, value] of this.entries()) {
       if (expression(value, key, this)) {
         return value;
       }
@@ -95,9 +117,14 @@ class Collection<K, V> extends Map<K, V> {
     return undefined;
   }
 
-  filter(expression: (value: V, key: K, map: Map<K, V>) => boolean) {
+  /**
+   * Filters the Collection based on the expression.
+   * @param {function} expression - The expression to evaluate.
+   * @returns {Collection<K, V>} A new Collection with the filtered values.
+   */
+  filter(expression: (value: V, key: K, map: Map<K, V>) => boolean): Collection<K, V> {
     const result = new Collection<K, V>();
-    for (let [key, value] of this.entries()) {
+    for (const [key, value] of this.entries()) {
       if (expression(value, key, this)) {
         result.set(key, value);
       }

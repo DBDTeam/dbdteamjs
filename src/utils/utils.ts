@@ -136,7 +136,7 @@ export interface SnowflakeInformation {
 export function getAllStamps(c: Base | Date): Nullable<SnowflakeInformation> {
   if (!c) return null;
 
-  const stamp = c instanceof Base ? new Date(Number(c.getEpoch) + Number(c.getBinary)) : c;
+  const stamp: Date = c instanceof Base ? new Date(Number(c.getEpoch) + Number(c.getBinary)) : new Date(c);
 
   return {
     stamp: stamp.getTime(),

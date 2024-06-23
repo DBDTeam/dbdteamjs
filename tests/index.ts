@@ -7,7 +7,6 @@ import {
   PresenceStatus,
   PresenceTypes,
 } from "../src";
-import { InteractionModal } from "../src/structures/Interactions/InteractionModal";
 import { ApplicationCommandType } from "discord-api-types/v10";
 
 const $Intents = new IntentsBitFields(
@@ -23,7 +22,7 @@ const client = new Client({
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: true,
-    totalShards: 5
+    totalShards: 1
   }
 });
 
@@ -52,46 +51,7 @@ client.on("ready", ({ username }) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (interaction.isSlash()) {
-    if (interaction.name === "ping") {
-      interaction.reply({
-        content: "A",
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                type: 2,
-                label: "A",
-                custom_id: "a",
-                style: 1,
-              },
-            ],
-          },
-        ],
-      });
-    }
-  } else if (interaction.isComponent()) {
-    if (interaction.isButton) {
-      interaction.modal({
-        title: "a",
-        custom_id: "BCCC",
-        components: [
-          {
-            type: 1,
-            components: [
-              {
-                custom_id: "A",
-                label: "A",
-              },
-            ],
-          },
-        ],
-      });
-    } else {
-      const int = interaction as InteractionModal;
-    }
-  }
+  interaction.reply({ content: `ABC` })
 });
 
 client.on("messageCreate", async (msg) => {
@@ -99,22 +59,8 @@ client.on("messageCreate", async (msg) => {
   if (msg.content.startsWith("!hello!"))
     return msg.channel?.createMessage({ content: "A" });
   if (msg.content.startsWith("!pollTEST")) {
-    /*client.rest.request("POST", `/channels/${msg.channel?.id}/messages`, true, {
-      data: {
-        content: "ABC",
-        poll: {
-          question: { text: "¿ABC es BCA?" },
-          answers: [{ poll_media: { text: "ABC" } }],
-          duration: 140,
-          allow_multiselect: false,
-          layout_type: 1,
-        },
-      },
-    });*/
-
-    msg.channel?.createMessage({
+    msg.reply({
       content: `A`,
-      message_reference: { message_id: msg.id },
       poll: {
         question: { text: "¿ABC es BCA?" },
         answers: [{ poll_media: { text: "ABC" } }],
@@ -123,6 +69,9 @@ client.on("messageCreate", async (msg) => {
         layout_type: 1,
       },
     });
+  }
+  if(msg.content.startsWith("!helA")) {
+    msg.channel.send({ content: `ABC` })
   }
 });
 

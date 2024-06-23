@@ -3,11 +3,17 @@ import { EditClientUserPayload } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { User } from "../structures/User";
 import { resolveImage } from "../utils/ImageResolver";
+import { Client } from "./Client";
 
 /**
  * @extends {User}
  */
 class ClientUser extends User {
+  #client: Client;
+  constructor(data: any, client: Client) {
+    super(data, client)
+    this.#client = client;
+  }
   /**
    *
    * @param {object} object - The new info to edit the client
@@ -26,7 +32,7 @@ class ClientUser extends User {
       object.avatar = await resolveImage(object.avatar);
     }
 
-    const result = await this.client.rest.request(
+    const result = await this.#client.rest.request(
       "PATCH",
       Endpoints.User("@me"),
       true,
@@ -40,11 +46,11 @@ class ClientUser extends User {
 
     if (!result) return result;
 
-    if (result.error || !this.client.user) {
+    if (result.error || !this.#client.user) {
       return result;
     } else {
-      var bot = new ClientUser(result.data as APIUser, this.client);
-      this.client.users.cache.set(this.client.user.id, bot);
+      var bot = new ClientUser(result.data as APIUser, this.#client);
+      this.#client.users.cache.set(this.#client.user.id, bot);
       return bot;
     }
   }
