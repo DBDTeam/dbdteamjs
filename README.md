@@ -1,5 +1,5 @@
 # @dbdteam.js
-✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](https://www.dbdteam.xyz/discord) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://jsdocs.dbdteam.xyz/) (actually depracated).
+✨ Introducing a compact JavaScript library ([NodeJS](https://nodejs.org/en) module) designed to streamline the development of Discord bots using the [Discord API](https://discord.com/developers/docs/intro). While it's in its initial stages, your feedback is invaluable. Should you encounter any bugs, please do not hesitate to notify us. Join our [official Discord server](http://discord.idcteam.xyz/) (alternative [link here](https://discord.gg/FTtVXfj)), where you can open a forum in the "support-projects" channel. Our team is committed to providing immediate assistance, ensuring your concerns are promptly addressed (or at least acknowledged). Visit [our documentation here](https://js.idcteam.xyz/).
 
 ### NPM:
 ![](https://img.shields.io/npm/v/dbdteamjs) ![](https://img.shields.io/npm/dt/dbdteamjs)
@@ -34,7 +34,7 @@ pnpm i dbdteamjs
 Once you have that done, it's time to start creating the robot using the package. See under.
 
 # Example using MessageContent Intent
-```javascript
+```typescript
 const {
   Client,
   Intents,
@@ -85,7 +85,7 @@ client.on("messageCreate", async(msg) => {
 client.connect() // Will establish the connection between the robot and the WS.
 ```
 # Example using Interactions
-```javascript
+```typescript
 import {
   Client,
   IntegrationTypes,
