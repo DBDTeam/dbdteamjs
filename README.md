@@ -41,7 +41,7 @@ const {
   IntentsBitFields,
   PresenceStatus,
   PresenceTypes,
-} require("dbdteamjs");
+} = require("dbdteamjs");
 const $Intents = new IntentsBitFields(
   Intents.Guilds,
   Intents.GuildMembers,
