@@ -4,10 +4,12 @@ import {
   Intents,
   IntentsBitFields,
   InteractionContexts,
+  Nullable,
   PresenceStatus,
   PresenceTypes,
 } from "../src";
-import { ApplicationCommandType } from "discord-api-types/v10";
+import { ApplicationCommandType, ChannelType } from "discord-api-types/v10";
+import { TextChannel } from "../src/structures";
 
 const $Intents = new IntentsBitFields(
   Intents.Guilds,
@@ -52,6 +54,7 @@ client.on("ready", ({ username }) => {
 
 client.on("interactionCreate", async (interaction) => {
   interaction.reply({ content: `ABC` })
+  interaction.reply({ content: `ABC` })
 });
 
 client.on("messageCreate", async (msg) => {
@@ -69,11 +72,8 @@ client.on("messageCreate", async (msg) => {
         layout_type: 1,
       },
     });
-  }
-  if(msg.content.startsWith("!helA")) {
-    msg.channel.send({ content: `ABC` })
-  }
-});
+    }
+  })
 
 // client.on("error", console.error);
 

@@ -1,4 +1,5 @@
 import { type Client } from "../../client/Client";
+import { Nullable } from "../../common";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
@@ -10,76 +11,74 @@ import { TextBasedChannel } from "../TextBasedChannel";
 import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type VoiceChannel } from "../VoiceChannel";
+import { ChannnelCreatePayload } from "./ChannelManager";
 
 class GuildChannelManager {
   #client: Client;
-  readonly guildId: string;
+  private guildId: string;
   public cache: Collection<
     string,
-    Channel
+    Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
   >;
+
+  /**
+   * Constructs a new GuildChannelManager instance.
+   * @param {string} guildId - The ID of the guild to manage channels for.
+   * @param {Client} client - The client instance to interact with the Discord API.
+   */
   constructor(guildId: string, client: Client) {
     this.#client = client;
     this.guildId = guildId;
     this.cache = new Collection();
+    this._fetchAllChannels();
   }
 
-  async _fetchAllChannels(): Promise<
-    | Collection<string, CategoryChannel | TextBasedChannel | ForumChannel | Channel>
-    | ErrorResponseFromApi
-  > {
+  /**
+   * Fetches all channels for the guild and populates the cache.
+   * @private
+   * @returns {Promise<Collection<string, Channel>> | null} - A collection of channels or null if an error occurs.
+   */
+  async _fetchAllChannels(): Promise<Nullable<Collection<string, any>>> {
     try {
-      const response = await this.#client.rest.request(
+      const result = await this.#client.rest.request(
         "GET",
         Endpoints.GuildChannels(this.guildId),
         true
       );
-      var _return = new Collection<
-        string,
-        CategoryChannel | TextBasedChannel | ForumChannel | Channel
-      >();
+      var _return = new Collection<string, any>();
+      if (!result) return null;
+      var allChannels = result.data;
 
-      if (!response?.error) return response as ErrorResponseFromApi;
+      if (!allChannels) return null;
 
-      var allChannels = response.data;
-
-      for (var i of allChannels as Array<any>) {
+      for (const i of allChannels as Array<any>) {
         var guild =
           this.#client.channels.cache.get(i.id)?.guild ||
           this.cache.get(i.id)?.guild;
         i.guild = guild;
-        const ch = typeChannel(i, this.#client)
-        this.#client.channels.cache.set(i.id, ch);
-        this.cache.set(i.id, ch);
-        _return.set(i.id, ch);
+        this.#client.channels.cache.set(i.id, typeChannel(i, this.#client));
+        this.cache.set(i.id, typeChannel(i, this.#client));
+        _return.set(i.id, typeChannel(i, this.#client));
       }
 
       return _return;
     } catch (err) {
-      return err as ErrorResponseFromApi;
+      console.log(err);
     }
   }
 
   /**
-   * Fetches a channel in the current guild (if param id is defined, otherwise, fetches the first 100 channels of the guild.)
-   * @param {string|undefined|null} id - The Channel Id that will be fetched in the current guild.
-   * @returns {Promise<Collection<string, CategoryChannel | TextBasedChannel | ForumChannel> | ErrorResponseFromApi | undefined | CategoryChannel | TextBasedChannel | ForumChannel> | ErrorResponseFromApi>}
+   * Fetches a specific channel by its ID.
+   * @param {string} id - The ID of the channel to fetch.
+   * @returns {Promise<Channel | null>} - The fetched channel or null if not found.
    */
-
   async fetch(
-    id: string | undefined | null
-  ): Promise<
-    | Collection<string, CategoryChannel | TextBasedChannel | ForumChannel>
-    | ErrorResponseFromApi
-    | CategoryChannel
-    | TextBasedChannel
-    | ForumChannel
-    | Channel
-  > {
+    id: string
+  ): Promise<Nullable<Channel | Collection<string, any>>> {
     if (!id || id?.length >= 17 || id?.length <= 18) {
       var res = await this._fetchAllChannels();
 
-      return res as Collection<string, CategoryChannel | TextBasedChannel | ForumChannel>;
+      return res;
     } else {
       const response = await this.#client.rest.request(
         "GET",
@@ -87,16 +86,77 @@ class GuildChannelManager {
         true
       );
 
-      if (!response || response?.error === true)
-        return response as ErrorResponseFromApi;
+      if (!response) return null;
+      if (!response.data) return null;
 
-      var channel = typeChannel(response.data, this.#client);
-
-      if (!channel) return response as ErrorResponseFromApi;
-
+      const channel = await typeChannel(response.data, this.#client);
       this.cache.set(channel.id, channel);
       this.#client.channels.cache.set(channel.id, channel);
       return channel;
+    }
+  }
+
+  /**
+   * Creates a new channel in the guild.
+   * @param {ChannnelCreatePayload} channelObj - The channel creation payload.
+   * @returns {Promise<Nullable<Channel | VoiceChannel | ThreadChannel | CategoryChannel | ForumChannel | TextBasedChannel | TextChannel | ErrorResponseFromApi>>} - The created channel or null if an error occurs.
+   */
+  async create(
+    channelObj: ChannnelCreatePayload
+  ): Promise<
+    Nullable<
+      | Channel
+      | VoiceChannel
+      | ThreadChannel
+      | CategoryChannel
+      | ForumChannel
+      | TextBasedChannel
+      | TextChannel
+      | ErrorResponseFromApi
+    >
+  > {
+    const reason = channelObj?.reason;
+    const response = await this.#client.rest.request(
+      "POST",
+      Endpoints.GuildChannels(this.guildId),
+      true,
+      { data: channelObj },
+      reason
+    );
+
+    if (!response) return response;
+
+    if (response?.error) {
+      return response as ErrorResponseFromApi;
+    } else {
+      return await typeChannel(response.data, this.#client);
+    }
+  }
+
+  /**
+   * Deletes a channel from the guild.
+   * @param {string} channelId - The ID of the channel to delete.
+   * @param {string} [reason] - The reason for deleting the channel.
+   * @returns {Promise<Nullable<Channel | ErrorResponseFromApi>>} - The deleted channel or null if an error occurs.
+   */
+  async delete(
+    channelId: string,
+    reason?: string
+  ): Promise<Nullable<Channel | ErrorResponseFromApi>> {
+    const response = await this.#client.rest.request(
+      "DELETE",
+      Endpoints.Channel(channelId),
+      true,
+      undefined,
+      reason
+    );
+
+    if (!response) return response;
+
+    if (response.error) {
+      return response as ErrorResponseFromApi;
+    } else {
+      return await typeChannel(response.data, this.#client);
     }
   }
 }

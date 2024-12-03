@@ -1,3 +1,6 @@
+import { CategoryChannel, Channel, ForumChannel, TextChannel, ThreadChannel, VoiceChannel } from "../structures"
+import { TextBasedChannel } from "../structures/TextBasedChannel"
+
 export const ChannelTypes = {
     "Text": 0,
     "DM": 1,
