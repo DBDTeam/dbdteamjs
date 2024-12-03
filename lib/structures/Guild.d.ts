@@ -4,7 +4,7 @@ import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
-import { GuildChannelManager } from "./Managers/ChannelManager";
+import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
 import { GuildMemberManager } from "./Managers/UserManager";
 import { VoiceChannel } from "./VoiceChannel";

@@ -11,7 +11,7 @@ import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
-import { GuildChannelManager } from "./Managers/ChannelManager";
+import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
 import { GuildMemberManager } from "./Managers/UserManager";
 import { GuildRole } from "./Role";

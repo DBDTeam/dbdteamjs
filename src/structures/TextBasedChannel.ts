@@ -4,7 +4,7 @@ import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
-import { MessageData, MessagePayload } from "./Payloads/MessagePayload";
+import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
