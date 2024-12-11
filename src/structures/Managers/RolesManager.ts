@@ -13,7 +13,8 @@ import { Collection } from "../../utils/Collection";
 import { setObj } from "../../utils/utils";
 import { Guild } from "../Guild";
 import { type Member } from "../Member";
-import { GuildRole } from "../Role";
+import { EditRolePayload, GuildRole } from "../Role";
+import { Nullable } from "../../common";
 
 /**
  * Manages the roles of a member in a guild.
@@ -46,8 +47,8 @@ export class MemberRolesManager {
       if (!this.guild?.roles) return null;
       var roleFound = this.guild.roles.cache.get(this.member.role_ids[i]);
 
-      if(roleFound instanceof GuildRole) {
-        this.cache.set(roleFound.id, roleFound)
+      if (roleFound instanceof GuildRole) {
+        this.cache.set(roleFound.id, roleFound);
       }
     }
   }
@@ -208,6 +209,43 @@ export class GuildRolesManager {
       }
     }
     return r;
+  }
+
+  /**
+   * Edits a role in the guild.
+   *
+   * @param {string} id - The ID of the role to edit.
+   * @param {EditRolePayload} editOptions - An object containing the properties to edit and optionally a reason for the edit.
+   *
+   * @returns {Nullable<ErrorResponseFromApi | GuildRole | Collection<string, GuildRole[]>>} Returns the edited role if the request was successful, otherwise returns an error.
+   */
+  async edit(id: string, editOptions: EditRolePayload): Promise<Nullable<ErrorResponseFromApi | GuildRole>> {
+    let reason = editOptions.reason;
+    delete editOptions.reason;
+    var response = await this.#client.rest.request(
+      "PATCH",
+      Endpoints.GuildRole(this.guild.id, id),
+      true,
+      { data: editOptions },
+      reason
+    );
+
+    if (!response) return null;
+
+    if (response.error) return response as ErrorResponseFromApi;
+    else {
+      if (response?.data) {
+        let role = new GuildRole(
+          response.data as APIRole,
+          this.guild,
+          this.#client
+        );
+        this.cache.set(role.id, role);
+        return role;
+      }
+
+      return null;
+    }
   }
 
   /**
