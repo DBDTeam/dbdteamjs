@@ -1,5 +1,5 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { ClientEvents, ClientOptions, GatewayConfig } from "../common";
+import { CacheOptions, ClientEvents, ClientOptions, GatewayConfig, Nullable } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -9,6 +9,7 @@ import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
 import { EventManager } from "./events/EventManager";
+import { SnowflakeInformation } from "../utils/utils";
 
 class Client extends TypedEmitter<ClientEvents> {
   /**
@@ -27,6 +28,10 @@ class Client extends TypedEmitter<ClientEvents> {
    * The Gateway Configuration of the client
    */
   readonly configGateway: GatewayConfig;
+  /**
+   * The Cache options of the client.
+   */
+  readonly cacheOpts?: CacheOptions
   /**
    * The shard manager of the client
    */
@@ -51,7 +56,7 @@ class Client extends TypedEmitter<ClientEvents> {
   /**
    * The timestamp when the client execute's the event "READY"
    */
-  ready = 0;
+  ready: Nullable<SnowflakeInformation>;
   /**
    * The client ping
    */
@@ -94,6 +99,7 @@ class Client extends TypedEmitter<ClientEvents> {
     this.intents = opts.intents;
     this.rest = new REST(this);
     this.configGateway = opts?.gateway;
+    this.cacheOpts = opts?.cache;
     this.shardManager = new ShardManager(this, this.configGateway);
     this.gateway = this.shardManager.gateway;
     this.guilds = new GuildManager(this);
