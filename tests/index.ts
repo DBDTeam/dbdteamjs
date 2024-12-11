@@ -19,7 +19,7 @@ const $Intents = new IntentsBitFields(
 );
 
 const client = new Client({
-  token: "MTIxNDk4MzE1NTY0ODU2OTM1NA.GtD9Nd.QEUMNPZi0p15JqJFKLayy0yxT3iuGcrIO_RNOA",
+  token: "",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: true,
@@ -61,7 +61,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.on("messageCreate", async (msg) => {
   if (msg.author.bot) return;
-  if (msg.content.startsWith("!hello!"))
+  if (msg.content.startsWith("!hello"))
     return msg.channel?.createMessage({ content: "A" });
   if (msg.content.startsWith("!pollTEST")) {
     msg.reply({
