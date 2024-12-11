@@ -22,7 +22,7 @@ export class RequestHandler {
   constructor(client: Client) {
     this.client = client;
     this.options = {
-      agent:null,
+      agent: null,
       baseURL: Endpoints.BASE_URL,
     };
     this.ping = 0;
@@ -176,8 +176,8 @@ export class RequestHandler {
     this.requestCount++;
     this.lastRequestTime = currentTime;
 
-    if (this.requestCount % 3 === 0) {
-      await this._sleep(1500);
+    if (this.requestCount % 4 === 0) {
+      await this._sleep(800);
     }
   }
 
