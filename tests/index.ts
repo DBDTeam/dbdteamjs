@@ -19,12 +19,14 @@ const $Intents = new IntentsBitFields(
 );
 
 const client = new Client({
-  token:
-    "",
+  token: "MTIxNDk4MzE1NTY0ODU2OTM1NA.GtD9Nd.QEUMNPZi0p15JqJFKLayy0yxT3iuGcrIO_RNOA",
   intents: $Intents.intents,
   gateway: {
     mobilePlatform: true,
-    totalShards: 1
+    totalShards: 1,
+  },
+  cache: {
+    guild_emojis: false
   }
 });
 
@@ -53,8 +55,8 @@ client.on("ready", ({ username }) => {
 });
 
 client.on("interactionCreate", async (interaction) => {
-  interaction.reply({ content: `ABC` })
-  interaction.reply({ content: `ABC` })
+  interaction.reply({ content: `ABC` });
+  interaction.reply({ content: `ABC` });
 });
 
 client.on("messageCreate", async (msg) => {
@@ -72,11 +74,9 @@ client.on("messageCreate", async (msg) => {
         layout_type: 1,
       },
     });
-    }
-  })
+  }
+});
 
-// client.on("error", console.error);
-
-// client.on("debug", console.log);
+client.on("debug", console.log);
 
 client.connect();

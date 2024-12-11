@@ -25,10 +25,10 @@ export abstract class Event<T> {
     if (
       message.guild &&
       data.member &&
-      !message.guild?.members?.cache.get(data.author.id)
+      !message.guild?.members?.cache.get(data.author?.id)
     ) {
       const member = new Member(
-        { ...data.member, id: data.author.id },
+        { ...data.member, id: data.author?.id },
         message.guild,
         this.client
       );

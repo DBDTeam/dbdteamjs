@@ -10,6 +10,10 @@ export default class GuildBanRemove extends Event<GatewayGuildBanRemoveDispatchD
       guild = this.client.guilds.cache.get(data.guild_id);
     const user = new User(data.user, this.client);
 
+    if(this.client.cacheOpts?.guild_bans) {
+      guild?.bans.cache.delete(user.id)
+    }
+
     this.client.emit("guildBanRemove", user, guild, shard);
   }
 }

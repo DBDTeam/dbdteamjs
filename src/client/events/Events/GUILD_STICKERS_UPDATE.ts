@@ -11,8 +11,10 @@ export default class GuildStickersUpdate extends Event<GatewayGuildStickersUpdat
 
     const stickers = data.stickers;
 
-    for (var sticker of stickers) {
-      guild.stickers.set(sticker.id, sticker);
+    if(this.client.cacheOpts?.guild_stickers) {
+      for (var sticker of stickers) {
+        guild.stickers.set(sticker.id, sticker);
+      }
     }
 
     this.client.emit(EventNames.GuildStickersUpdate, guild, shard);
