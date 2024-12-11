@@ -191,7 +191,7 @@ class Message extends Base {
     this.channel = this.client.channels.cache.get(
       data.channel_id
     ) as TextBasedChannel;
-    this.guild = (this.client.guilds.cache.get(this.guildId!) ||
+    this.guild = (this.client.guilds.cache.get(this.guildId) ||
       this.client.channels.cache.get(this.channelId)?.guild) as Guild;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.reactions = new MessageReactions(

@@ -7,7 +7,9 @@ export * from "./Member";
 export * from "./Message";
 export * from "./Role";
 export * from "./Sharding";
+export * from "./TextBasedChannel"
 export * from "./TextChannel";
 export * from "./ThreadChannel";
+export * from "./ThreadMember"
 export * from "./User";
 export * from "./VoiceChannel";
