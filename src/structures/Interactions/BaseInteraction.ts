@@ -7,10 +7,17 @@ import { InteractionPayload } from "../Payloads/InteractionPayload";
 import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
-import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
+import {
+  InteractionBodyRequest,
+  MessageBodyRequest,
+  MessageUpdateBodyRequest,
+} from "../../common";
 import { MessagePayload } from "../Payloads/MessagePayload";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
-import { InteractionModalPayload, ModalPayloadData } from "../Payloads/ModalPayload";
+import {
+  InteractionModalPayload,
+  ModalPayloadData,
+} from "../Payloads/ModalPayload";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
@@ -90,7 +97,9 @@ class InteractionBase {
    * @param {ModalPayloadData} body - The ModalPayloadData
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  showModal: (body: ModalPayloadData) => Promise<InteractionResponse | ErrorResponseFromApi>
+  showModal: (
+    body: ModalPayloadData
+  ) => Promise<InteractionResponse | ErrorResponseFromApi>;
 
   /**
    * Makes a reply using the gateway.
@@ -98,7 +107,9 @@ class InteractionBase {
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  reply: (obj: InteractionBodyRequest) => Promise<InteractionResponse | ErrorResponseFromApi>
+  reply: (
+    obj: InteractionBodyRequest
+  ) => Promise<InteractionResponse | ErrorResponseFromApi>;
 
   /**
    * The ID of the interaction.
@@ -206,7 +217,9 @@ class InteractionBase {
    * @param {InteractionPayload} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  private async __makeReply(obj: any): Promise<InteractionResponse | ErrorResponseFromApi> {
+  private async __makeReply(
+    obj: any
+  ): Promise<InteractionResponse | ErrorResponseFromApi> {
     const data = { type: obj.type, data: obj.data };
 
     let response;
@@ -246,7 +259,12 @@ class InteractionBase {
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  public async makeReply(obj: InteractionBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
+  public async makeReply(
+    obj: InteractionBodyRequest | string
+  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+    if(typeof obj === "string" || obj instanceof String) {
+      obj = { content: obj } as InteractionBodyRequest;
+    }
     const payload = new InteractionPayload(obj, obj.files);
     let _d = payload.payload as Record<any, any>,
       files = payload.files;
@@ -267,7 +285,7 @@ class InteractionBase {
    * @param {boolean} ephemeral - If the defer will be sent ephemerally.
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async deferReply(ephemeral: boolean): Promise<any> {
+  public async deferReply(ephemeral?: boolean): Promise<any> {
     ephemeral = !!ephemeral;
     this.__makeReply({
       type: InteractionResponseType.DeferredChannelMessageWithSource,
@@ -278,11 +296,17 @@ class InteractionBase {
   /**
    * Edits the original response. (if any)
    * @async
-   * @param {MessageUpdateBodyRequest} body - The Body of the new Message.
+   * @param {MessageUpdateBodyRequest | string} body - The Body of the new Message.
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
-  public async editReply(body: MessageUpdateBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi> {
-    if (!body) return body;
+  public async editReply(
+    body: MessageUpdateBodyRequest | string
+  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+    if (typeof body === "string" || body instanceof String) {
+      body = { content: body as string };
+    }
+
+    //@ts-ignore
     const MessagePayloadData = new EditMessagePayload(body, body.files);
 
     const [data, files] = [
@@ -299,7 +323,8 @@ class InteractionBase {
       files
     );
 
-    if (!request || request?.error || !request?.data) return request as ErrorResponseFromApi;
+    if (!request || request?.error || !request?.data)
+      return request as ErrorResponseFromApi;
 
     const message = new InteractionResponse(request.data, this.client);
 
@@ -312,8 +337,10 @@ class InteractionBase {
    * @param {MessageBodyRequest} body - The Body of the new Message.
    * @returns {Promise<InteractionResponse>}
    */
-  public async followUp(body: MessageBodyRequest): Promise<any> {
-    if (!body) return;
+  public async followUp(body: MessageBodyRequest | string): Promise<any> {
+    if(typeof body === "string" || body instanceof String) {
+      body = { content: body } as MessageBodyRequest
+    }
     const MessagePayloadData = new MessagePayload(body, body.files);
 
     const [data, files] = [
@@ -343,12 +370,17 @@ class InteractionBase {
    * @param {ModalPayloadData} body - The ModalPayloadData
    * @returns {Promise<InteractionResponse | object>}
    */
-  public async modal(body: ModalPayloadData): Promise<InteractionResponse | ErrorResponseFromApi> {
+  public async modal(
+    body: ModalPayloadData
+  ): Promise<InteractionResponse | ErrorResponseFromApi> {
     const ModalData = new InteractionModalPayload(body);
 
     const payload = ModalData.payload;
 
-    const response = await this.__makeReply({ type: InteractionResponseType.Modal, data: payload });
+    const response = await this.__makeReply({
+      type: InteractionResponseType.Modal,
+      data: payload,
+    });
 
     return response;
   }
