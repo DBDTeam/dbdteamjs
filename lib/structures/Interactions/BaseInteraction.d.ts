@@ -143,28 +143,28 @@ declare class InteractionBase {
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    makeReply(obj: InteractionBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi>;
+    makeReply(obj: InteractionBodyRequest | string): Promise<InteractionResponse | ErrorResponseFromApi>;
     /**
      * Defers the reply.
      * @async
      * @param {boolean} ephemeral - If the defer will be sent ephemerally.
      * @returns {Promise<InteractionResponse | object>}
      */
-    deferReply(ephemeral: boolean): Promise<any>;
+    deferReply(ephemeral?: boolean): Promise<any>;
     /**
      * Edits the original response. (if any)
      * @async
-     * @param {MessageUpdateBodyRequest} body - The Body of the new Message.
+     * @param {MessageUpdateBodyRequest | string} body - The Body of the new Message.
      * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    editReply(body: MessageUpdateBodyRequest): Promise<InteractionResponse | ErrorResponseFromApi>;
+    editReply(body: MessageUpdateBodyRequest | string): Promise<InteractionResponse | ErrorResponseFromApi>;
     /**
      * Follows up the Interaction response.
      * @async
      * @param {MessageBodyRequest} body - The Body of the new Message.
      * @returns {Promise<InteractionResponse>}
      */
-    followUp(body: MessageBodyRequest): Promise<any>;
+    followUp(body: MessageBodyRequest | string): Promise<any>;
     /**
      * Sends a modal as the interaction response.
      * @async

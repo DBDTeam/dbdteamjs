@@ -1,4 +1,3 @@
-import { MessageEditPayload } from "../../interfaces/message/EditMessage";
 import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 import { MessageUpdateBodyRequest } from "../../common";
 declare class EditMessagePayload {
@@ -16,10 +15,10 @@ declare class EditMessagePayload {
      */
     private Data;
     readonly d: Record<any, any>;
-    readonly file?: Record<any, any>[];
+    readonly file: Record<string, any>[];
     private f;
-    constructor(data: MessageEditPayload | MessageUpdateBodyRequest | string, files?: MessagePayloadFileData[]);
+    constructor(data: MessageUpdateBodyRequest | string, files?: MessagePayloadFileData[]);
     get payload(): Record<string, any>;
-    get files(): MessagePayloadFileData[];
+    get files(): Record<string, any>[];
 }
 export { EditMessagePayload };

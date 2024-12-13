@@ -41,7 +41,7 @@ declare class MessagePayload {
      * @param {MessageBodyRequest} data
      * @param {Files} files
      */
-    constructor(data: MessageBodyRequest, files?: MessagePayloadFileData[]);
+    constructor(data: MessageBodyRequest | string, files?: MessagePayloadFileData[]);
     get payload(): MessagePayloadData;
     get files(): MessagePayloadFileData[];
 }

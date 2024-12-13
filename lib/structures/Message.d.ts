@@ -1,13 +1,12 @@
 import { APIChannelMention, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { MessageBodyRequest, Nullable } from "../common";
+import { MessageBodyRequest, MessageUpdateBodyRequest, Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
 import { Guild } from "./Guild";
 import { MessageReactions } from "./Managers/ReactionMessage";
 import { Member } from "./Member";
-import { EditMessagePayload } from "./Payloads/EditMessagePayload";
 import { User } from "./User";
 import { TextBasedChannel } from "./TextBasedChannel";
 /**
@@ -161,10 +160,10 @@ declare class Message extends Base {
     reply(body: MessageBodyRequest): Promise<Message | null>;
     /**
      * Edits the message.
-     * @param {EditMessagePayload | string} obj - The edit message payload or content.
+     * @param {MessageUpdateBodyRequest | string} obj - The edit message payload or content.
      * @returns {Promise<Message | undefined>} A promise that resolves to the edited message, or undefined if failed.
      */
-    edit(obj: EditMessagePayload | string): Promise<Message | undefined>;
+    edit(obj: MessageUpdateBodyRequest | string): Promise<Message | undefined>;
     /**
      * Removes all embeds from the message.
      * @returns {Promise<Message | undefined>} A promise that resolves to the updated message, or undefined if failed.

@@ -38,7 +38,7 @@ export declare class InteractionPayload {
      * @param {any} [data={}] - Interaction payload data.
      * @param {any[]} [files=[]] - Files associated with the payload.
      */
-    constructor(data: InteractionBodyRequest, files?: any[]);
+    constructor(data: InteractionBodyRequest | string, files?: any[]);
     /**
      * Returns the interaction payload data.
      * @returns {unknown} The interaction payload data.
