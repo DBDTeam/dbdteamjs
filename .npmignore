@@ -7,4 +7,4 @@ tsconfig.json
 .vscode
 tsconfig.json
 theme/
-tests/
+test/

@@ -4,4 +4,4 @@ package-lock.json
 .env
 .vscode
 theme/
-tests/
+test/
