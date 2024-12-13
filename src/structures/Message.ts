@@ -4,7 +4,7 @@ import {
   GatewayMessageCreateDispatchData,
 } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { MessageBodyRequest, Nullable } from "../common";
+import { MessageBodyRequest, MessageUpdateBodyRequest, Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
@@ -307,16 +307,16 @@ class Message extends Base {
 
   /**
    * Edits the message.
-   * @param {EditMessagePayload | string} obj - The edit message payload or content.
+   * @param {MessageUpdateBodyRequest | string} obj - The edit message payload or content.
    * @returns {Promise<Message | undefined>} A promise that resolves to the edited message, or undefined if failed.
    */
-  async edit(obj: EditMessagePayload | string): Promise<Message | undefined> {
-    let message: EditMessagePayload;
+  async edit(obj: MessageUpdateBodyRequest | string): Promise<Message | undefined> {
+    var message: EditMessagePayload;
     if (typeof obj === "string") {
-      message = new EditMessagePayload(obj);
-    } else {
-      message = new EditMessagePayload(obj);
+      message = new EditMessagePayload({ content: obj as string });
     }
+
+    message = new EditMessagePayload(obj as MessageUpdateBodyRequest)
 
     const result = await this.client.rest.request(
       "PATCH",

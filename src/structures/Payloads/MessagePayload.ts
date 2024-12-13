@@ -70,13 +70,13 @@ class MessagePayload {
    * @param {Files} files
    */
   constructor(
-    data: MessageBodyRequest,
+    data: MessageBodyRequest | string,
     files: MessagePayloadFileData[] = ([] = [])
   ) {
     this.d =
       typeof data === "string"
-        ? { content: data }
-        : setObj(this.Data, data, { sticker_ids: "stickers" });
+        ? { content: data } as MessageBodyRequest
+        : setObj(this.Data, data, { sticker_ids: "stickers" }) as MessageBodyRequest;
     this.file = [];
     this.f = files;
 

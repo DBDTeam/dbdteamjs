@@ -55,7 +55,7 @@ export class InteractionPayload {
    * @param {any} [data={}] - Interaction payload data.
    * @param {any[]} [files=[]] - Files associated with the payload.
    */
-  constructor(data: InteractionBodyRequest, files: any[] = []) {
+  constructor(data: InteractionBodyRequest | string, files: any[] = []) {
     this.d =
       typeof data === "string" ? { content: data } : setObj(this.Data, data);
 

@@ -3,7 +3,7 @@ import { MessageEditPayload } from "../../interfaces/message/EditMessage";
 import { MessageMentionParse } from "../../interfaces/message/Mentions";
 import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
 import { setObj } from "../../utils/utils";
-import { MessageUpdateBodyRequest } from "../../common";
+import { MessageUpdateBodyRequest, Nullable } from "../../common";
 
 class EditMessagePayload {
   private MENTIONS = [AllowedMentionsTypes.User, AllowedMentionsTypes.Role, AllowedMentionsTypes.Everyone];
@@ -29,10 +29,10 @@ class EditMessagePayload {
     files: [],
   };
   readonly d: Record<any, any>;
-  readonly file?: Record<any, any>[];
+  readonly file: Record<string, any>[];
   private f;
   constructor(
-    data: MessageEditPayload | MessageUpdateBodyRequest | string,
+    data: MessageUpdateBodyRequest | string,
     files: MessagePayloadFileData[] = []
   ) {
     this.d =
@@ -94,8 +94,8 @@ class EditMessagePayload {
     return this.d;
   }
 
-  get files(): MessagePayloadFileData[] {
-    return this.files;
+  get files(): Record<string, any>[] {
+    return this.file;
   }
 }
 
