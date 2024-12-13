@@ -1,4 +1,4 @@
-import { PresenceUpdateStatus } from "discord-api-types/v10";
+import { APIEmoji, PresenceUpdateStatus } from "discord-api-types/v10";
 import { Nullable } from "../../../lib/interfaces/other";
 import { ClientUser } from "../../client/ClientUser";
 import { Channel, GuildRole, Member, ThreadChannel } from "../../structures";
@@ -14,23 +14,89 @@ import { UserInteraction } from "../../structures/Interactions/UserInteraction";
 import { PresenceData } from "./utils";
 import { Collection } from "../../utils/Collection";
 import { ThreadMember } from "../../structures/ThreadMember";
+/**
+ * Represents the options for configuring a Discord client.
+ */
 export interface ClientOptions {
+    /**
+     * The Discord bot token used for authentication.
+     */
     token: string;
+    /**
+     * A number representing the combined intents for the client.
+     */
     intents: number;
+    /**
+     * Configuration options for the gateway connection.
+     */
     gateway: GatewayConfig;
+    /**
+     * Optional cache configuration settings.
+     */
+    cache?: CacheOptions;
 }
+/**
+ * Represents the cache options for the client.
+ */
+export interface CacheOptions {
+    /**
+     * Whether to cache guild bans.
+     */
+    guild_bans?: boolean;
+    /**
+     * Whether to cache guild emojis.
+     */
+    guild_emojis?: boolean;
+    /**
+     * Whether to cache guild stickers.
+     */
+    guild_stickers?: boolean;
+}
+/**
+ * Represents the gateway configuration options.
+ */
 export interface GatewayConfig {
+    /**
+     * Whether to use mobile platform for the gateway connection.
+     */
     mobilePlatform?: boolean;
+    /**
+     * The total number of shards to use.
+     */
     totalShards?: number;
 }
+/**
+ * Represents the payload for updating the client's presence.
+ */
 export interface ClientPresencePayload {
+    /**
+     * An array of activities for the client.
+     */
     activities?: GatewayActivityPayload[];
+    /**
+     * The status of the client.
+     */
     status: PresenceStatus | PresenceUpdateStatus;
+    /**
+     * Whether the client is AFK.
+     */
     afk?: boolean;
+    /**
+     * The timestamp since when the client has been idle.
+     */
     since?: number;
 }
+/**
+ * Represents the payload for editing the client user's profile.
+ */
 export interface EditClientUserPayload {
+    /**
+     * The new username for the client user.
+     */
     username?: string;
+    /**
+     * The new avatar for the client user.
+     */
     avatar?: string;
 }
 export declare enum EventNames {
@@ -84,7 +150,7 @@ export interface ClientEvents {
     guildBanAdd: (user: User, guild: Nullable<Guild>, shard: Shard) => unknown;
     guildUnavailable: (data: any, shard: Shard) => unknown;
     guildDelete: (oldGuild: Guild, shard: Shard) => unknown;
-    guildEmojiUpdate: (guild: Guild, shard: Shard) => unknown;
+    guildEmojiUpdate: (emoji: APIEmoji[], guild: Guild, shard: Shard) => unknown;
     guildMemberAdd: (member: Member, shard: Shard) => unknown;
     guildMemberChunk: (guild: Guild, members: Member[], chunkData: Record<string, number>, shard: Shard) => unknown;
     guildMemberLeave: (member: Member, shard: Shard) => unknown;
@@ -103,24 +169,85 @@ export interface ClientEvents {
     threadMemberUpdate: (threadChannel: ThreadChannel, threadMember: ThreadMember, shard: Shard) => unknown;
     presenceUpdate: (member: Member, oldPresence: Nullable<PresenceData>, newPresence: PresenceData, shard: Shard) => unknown;
 }
+/**
+ * Enum representing the different intents that can be used when initializing a Discord client.
+ * Each intent is represented by a bitfield value.
+ */
 export declare enum Intents {
+    /**
+     * Enables events related to guilds.
+     */
     Guilds = 1,
+    /**
+     * Enables events related to guild members.
+     */
     GuildMembers = 2,
+    /**
+     * Enables events related to guild moderation.
+     */
     GuildModeration = 4,
+    /**
+     * Enables events related to guild emojis and stickers.
+     */
     GuildEmojisAndStickers = 8,
+    /**
+     * Enables events related to guild integrations.
+     */
     GuildIntegrations = 16,
+    /**
+     * Enables events related to guild webhooks.
+     */
     GuildWebhooks = 32,
+    /**
+     * Enables events related to guild invites.
+     */
     GuildInvites = 64,
+    /**
+     * Enables events related to guild voice states.
+     */
     GuildVoiceStates = 128,
+    /**
+     * Enables events related to guild presences.
+     */
     GuildPresences = 256,
+    /**
+     * Enables events related to guild messages.
+     */
     GuildMessages = 512,
+    /**
+     * Enables events related to guild message reactions.
+     */
     GuildMessageReactions = 1024,
+    /**
+     * Enables events related to guild message typing.
+     */
     GuildMessageTyping = 2048,
+    /**
+     * Enables events related to direct messages.
+     */
     DirectMessages = 4096,
+    /**
+     * Enables events related to direct message reactions.
+     */
     DirectMessagesReactions = 8192,
+    /**
+     * Enables events related to direct message typing.
+     */
     DirectMessageTyping = 16384,
+    /**
+     * Enables access to message content.
+     */
     MessageContent = 32768,
+    /**
+     * Enables events related to guild scheduled events.
+     */
     GuildScheduledEvents = 65536,
+    /**
+     * Enables events related to auto-moderation configuration.
+     */
     AutoModerationConfiguration = 1048576,
+    /**
+     * Enables events related to auto-moderation execution.
+     */
     AutoModerationExecution = 2097152
 }

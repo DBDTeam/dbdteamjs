@@ -4,7 +4,8 @@ import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/req
 import { Collection } from "../../utils/Collection";
 import { Guild } from "../Guild";
 import { type Member } from "../Member";
-import { GuildRole } from "../Role";
+import { EditRolePayload, GuildRole } from "../Role";
+import { Nullable } from "../../common";
 /**
  * Manages the roles of a member in a guild.
  */
@@ -64,6 +65,15 @@ export declare class GuildRolesManager {
      * @returns A collection of guild roles, a single guild role, or an error response.
      */
     fetch(roleId: string | null | undefined): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi>;
+    /**
+     * Edits a role in the guild.
+     *
+     * @param {string} id - The ID of the role to edit.
+     * @param {EditRolePayload} editOptions - An object containing the properties to edit and optionally a reason for the edit.
+     *
+     * @returns {Nullable<ErrorResponseFromApi | GuildRole | Collection<string, GuildRole[]>>} Returns the edited role if the request was successful, otherwise returns an error.
+     */
+    edit(id: string, editOptions: EditRolePayload): Promise<Nullable<ErrorResponseFromApi | GuildRole>>;
     /**
      * Deletes roles from the guild.
      * @param deleteObject - An object containing roles to delete and a reason.
