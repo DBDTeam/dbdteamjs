@@ -7,6 +7,7 @@ import {
 } from "../interfaces/rest/requestHandler";
 import { resolveImage } from "../utils/ImageResolver";
 import * as Endpoints from "./Endpoints";
+import { Nullable } from "../common";
 
 export class RequestHandler {
   private lastRequestTime: number;
@@ -37,7 +38,7 @@ export class RequestHandler {
     auth: boolean = true,
     body?: Record<string, any>,
     reason?: string | null | undefined,
-    files?: Array<Record<string, any>>
+    files?: Nullable<Array<Record<string, any>>>
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const finalURL = `https://discord.com${this.options.baseURL}${url}`;
 
@@ -91,7 +92,7 @@ export class RequestHandler {
     method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     headers: Record<string, any>,
     body?: Record<string, any>,
-    files?: Array<Record<string, any>>
+    files?: Nullable<Array<Record<string, any>>>
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const a = Date.now();
     return new Promise(async (resolve: any, reject: any) => {
