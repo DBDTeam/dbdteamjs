@@ -37,7 +37,7 @@ export interface ClientOptions {
   /**
    * Optional cache configuration settings.
    */
-  cache?: CacheOptions
+  cache?: CacheOptions;
 }
 
 /**

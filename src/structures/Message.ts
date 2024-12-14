@@ -273,7 +273,11 @@ class Message extends Base {
    * @param {MessagePayloadData | string} obj - The message payload or content.
    * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
    */
-  async reply(body: MessageBodyRequest): Promise<Message | null> {
+  async reply(body: MessageBodyRequest | string): Promise<Message | null> {
+    if(typeof body === "string" || body instanceof String) {
+      body = { content: body as string} as MessageBodyRequest
+    }
+    
     if (!body.message_reference) {
       body.message_reference = { message_id: this.id };
     }

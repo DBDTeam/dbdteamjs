@@ -2,6 +2,7 @@ import { RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { Base } from "./Base";
+import { Nullable } from "../common";
 
 /**
  * Represents a User
@@ -30,36 +31,36 @@ export class User extends Base {
   /**
    * The User global name
    */
-  globalName!: string;
+  globalName!: Nullable<string>;
   /**
    * The User discriminator (if has)
    */
-  discriminator?: string;
+  discriminator?: Nullable<string>;
   /**
    * The User avatar hash
    */
-  avatar?: string;
+  avatar?: Nullable<string>;
   /**
    * The User banner hash
    */
-  banner?: string;
+  banner?: Nullable<string>;
   /**
    * The User accentColor
    */
-  accentColor?: string;
+  accentColor?: Nullable<number>;
   /**
    * The User avatar decoration hash
    */
-  avatarDecoration?: string;
+  avatarDecoration?: Nullable<string>;
 
   /**
    * Display's the User avatar URL.
    */
-  readonly displayAvatarUrl: (opts: any) => any;
+  readonly displayAvatarUrl: (opts?: any) => any;
   /**
    * Display's the User banner URL.
    */
-  readonly displayBannerUrl: (opts: any) => any;
+  readonly displayBannerUrl: (opts?: any) => any;
   /**
    * Display's the User default avatar URL.
    */
@@ -77,7 +78,7 @@ export class User extends Base {
 
     this.id = data.id;
     this.#client = client;
-    this.bot = false;
+    this.bot = !!data.bot;
     this.system = false;
     this.flags = 0;
 
@@ -88,7 +89,7 @@ export class User extends Base {
     this._patch(data);
   }
 
-  _patch(data: any) {
+  _patch(data: RESTGetAPIUserResult) {
     if ("username" in data) {
       this.username = data.username;
     }
@@ -116,6 +117,8 @@ export class User extends Base {
     if ("avatar_decoration" in data) {
       this.avatarDecoration = data.avatar_decoration;
     }
+
+    this.#client.users.cache.set(this.id, this)
   }
 
   /**
