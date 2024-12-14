@@ -16,25 +16,21 @@ export abstract class Event<T> {
 
   async getMessage(data: any) {
     const message = new Message(data, this.client);
-    await message.___patch()
+    await message.___patch();
 
     if (message.channel && "messages" in message.channel) {
       message?.channel?.messages?.cache?.set(data.id, message);
     }
 
-    if (
-      message.guild &&
-      data.member &&
-      !message.guild?.members?.cache.get(data.author?.id)
-    ) {
+    if (message.guild && data.member) {
       const member = new Member(
         { ...data.member, id: data.author?.id },
         message.guild,
         this.client
       );
-      message?.guild?.members?.cache.set(data.author.id, member);
 
-      this.client.users.cache.set(data.author.id, member.user);
+      if (!message.guild.members?.cache.get(data.author.id))
+        message?.guild?.members?.cache.set(data.author.id, member);
     }
 
     return message;
@@ -83,13 +79,13 @@ export abstract class Event<T> {
   }
 
   getRole(data: any, guildId: string) {
-    const guild = this.client.guilds.cache.get(guildId)
+    const guild = this.client.guilds.cache.get(guildId);
 
-    if(!guild) return;
+    if (!guild) return;
 
-    const role = new GuildRole(data, guild, this.client)
+    const role = new GuildRole(data, guild, this.client);
 
-    guild.roles?.cache.set(role.id, role)
+    guild.roles?.cache.set(role.id, role);
 
     return role;
   }
