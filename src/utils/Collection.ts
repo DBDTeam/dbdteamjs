@@ -97,11 +97,14 @@ class Collection<K, V> extends Map<K, V> {
   set(key: K, value: V): this {
     if (this.size >= (this.limit || Infinity)) {
       const firstKey = this.keys().next().value;
-      this.delete(firstKey);
+      if (firstKey !== undefined) {
+        this.delete(firstKey);
+      }
     }
     super.set(key, value);
     return this;
   }
+  
 
   /**
    * Finds a value in the Collection that matches the expression.

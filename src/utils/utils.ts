@@ -18,6 +18,7 @@ import { TextChannel } from "../structures/TextChannel";
 import { ThreadChannel } from "../structures/ThreadChannel";
 import { VoiceChannel } from "../structures/VoiceChannel";
 import { Nullable } from "../common";
+import { DMChannel } from "../structures/DMChannel";
 
 export const getId = (t: string) => {
   return t
@@ -33,6 +34,8 @@ export function typeChannel(
   switch (channelData.type) {
     case ChannelType.GuildText:
       return new TextChannel(channelData, client);
+    case ChannelType.DM:
+      return new DMChannel(channelData, client)
     case ChannelType.GuildVoice:
       return new VoiceChannel(channelData, client);
     case ChannelType.GuildCategory:
@@ -136,7 +139,7 @@ export interface SnowflakeInformation {
 export function getAllStamps(c: Base | Date): Nullable<SnowflakeInformation> {
   if (!c) return null;
 
-  const stamp: Date = c instanceof Base ? new Date(Number(c.getEpoch) + Number(c.getBinary)) : new Date(c);
+  const stamp: Date = c instanceof Base ? new Date(Number(c.___getEpoch) + Number(c.___getBinary)) : new Date(c);
 
   return {
     stamp: stamp.getTime(),
