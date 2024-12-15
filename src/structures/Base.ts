@@ -14,11 +14,11 @@ abstract class Base {
     return data;
   }
 
-  get getBinary() {
+  get ___getBinary() {
     return BigInt(this.id || 0 ) >> 22n;
   }
 
-  get getEpoch() {
+  get ___getEpoch() {
     return 1420070400000n;
   }
 }

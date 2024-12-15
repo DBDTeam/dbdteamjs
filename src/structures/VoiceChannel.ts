@@ -44,7 +44,7 @@ class VoiceChannel extends TextBasedChannel {
    * @readonly
    * @function
    */
-  readonly send = (body: MessageBodyRequest) => this.createMessage(body);
+  readonly send = (body: MessageBodyRequest | string) => this.createMessage(body);
   readonly client: Client;
   /**
    * Represents a Voice Channel
@@ -62,7 +62,7 @@ class VoiceChannel extends TextBasedChannel {
     this.video_quality = data.video_quality_mode;
     this.session_id = data.session_id;
     this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
-    this.send = (body: MessageBodyRequest) => this.createMessage(body);
+    this.send = (body: MessageBodyRequest | string) => this.createMessage(body);
   }
 
   /**

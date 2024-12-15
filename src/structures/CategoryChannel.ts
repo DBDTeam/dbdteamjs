@@ -1,6 +1,6 @@
+import { Channel } from "./BaseChannel";
 import { type Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
-import { Channel } from "./BaseChannel";
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel
  * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
@@ -11,7 +11,7 @@ import { Channel } from "./BaseChannel";
 /** Represents a CategoryChannel
  * @extends {Channel}
  */
-class CategoryChannel extends Channel {
+export class CategoryChannel extends Channel {
   constructor(data: any, client: Client) {
     super(data, client);
   }
@@ -31,5 +31,3 @@ class CategoryChannel extends Channel {
     return categoryChannels;
   }
 }
-
-export { CategoryChannel };

@@ -18,7 +18,6 @@ import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { ChannelTypes } from "../types/ChannelTypes";
-
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -26,7 +25,7 @@ import { ChannelTypes } from "../types/ChannelTypes";
  *
  * @extends {Base}
  */
-class Channel extends Base {
+export class Channel extends Base {
   /**
    * The client associated with the channel.
    * @type {Client}
@@ -439,5 +438,3 @@ class Channel extends Base {
     return [ChannelTypes.Text, ChannelTypes.Voice, ChannelTypes.PublicThread, ChannelTypes.PrivateThread].includes(this.type)
   }
 }
-
-export { Channel };

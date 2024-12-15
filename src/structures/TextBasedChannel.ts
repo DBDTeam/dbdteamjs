@@ -1,4 +1,3 @@
-import { Channel } from "./BaseChannel";
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { SnowflakeInformation, getAllStamps } from "../utils/utils";
@@ -9,6 +8,7 @@ import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { MessageBodyRequest } from "../common";
+import { Channel } from "./BaseChannel"
 
 export class TextBasedChannel extends Channel {
   #client: Client;
@@ -42,7 +42,7 @@ export class TextBasedChannel extends Channel {
    * @readonly
    * @function
    */
-  readonly send = (body: MessageBodyRequest) => this.createMessage(body);
+  readonly send = (body: MessageBodyRequest | string) => this.createMessage(body);
   /**
      * The Text Channel last pin time information
      */
@@ -69,7 +69,7 @@ export class TextBasedChannel extends Channel {
      */
     this.cooldown = this.rate_limit_per_user;
     this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
-    this.send = (body: MessageBodyRequest) => this.createMessage(body);
+    this.send = (body: MessageBodyRequest | string) => this.createMessage(body);
   }
 
   /**
@@ -88,7 +88,10 @@ export class TextBasedChannel extends Channel {
    * @returns {Promise<Message | object>}
    */
 
-  async createMessage(body: MessageBodyRequest) {
+  async createMessage(body: MessageBodyRequest | string) {
+    if(typeof body === "string" || body instanceof String) {
+      body = { content: body as string }
+    }
     const message = new MessagePayload(body, body?.files);
 
     var result = await this.#client.rest.request(
