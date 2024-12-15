@@ -1,8 +1,13 @@
-import { RESTGetAPIUserResult } from "discord-api-types/v10";
+import { ChannelType, RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../interfaces/rest/cdn";
+import * as Endpoints from "../rest/Endpoints";
 import { Base } from "./Base";
-import { Nullable } from "../common";
+import { MessageBodyRequest, Nullable } from "../common";
+import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import { TextChannel } from ".";
+import { typeChannel } from "../utils/utils";
+import { DMChannel } from "./DMChannel";
 export type Badge =
   | "Discord Employee"
   | "Discord Partner"
@@ -43,7 +48,7 @@ const badgesMapping: Record<number, Badge> = {
 /**
  * Represents a User
  */
-export class User extends Base {
+class User extends Base {
   /**
    * The User ID
    */
@@ -93,6 +98,11 @@ export class User extends Base {
    * The user badges.
    */
   badges?: Badge[];
+
+  /**
+   * The user dm channel to send messages.
+   */
+  dmChannel?: DMChannel;
 
   /**
    * Display's the User avatar URL.
@@ -229,6 +239,31 @@ export class User extends Base {
     return this.#client.rest.cdn.banner(this.id, this.banner as string, opts);
   }
 
+  async createDM() {
+    if (this.dmChannel) return this.dmChannel;
+    const result = await this.#client.rest.request(
+      "POST",
+      Endpoints.UserDM(),
+      true,
+      { data: { recipient_id: this.id } }
+    );
+
+    if (result?.error || !result?.data) return result as ErrorResponseFromApi;
+
+    const dm = typeChannel(result.data, this.#client) as DMChannel; // idk why, but it works, if
+    // i use new TextChannel(...) makes a circular dependency error lmfao
+
+    this.dmChannel = dm;
+
+    return dm;
+  }
+
+  async send(body: MessageBodyRequest | string) {
+    if(!this.dmChannel) await this.createDM();
+
+    return this.dmChannel?.send(body)
+  }
+
   /**
    * Returns the User mention
    */
@@ -236,3 +271,5 @@ export class User extends Base {
     return `<@${this.id}>`;
   }
 }
+
+export { User };
