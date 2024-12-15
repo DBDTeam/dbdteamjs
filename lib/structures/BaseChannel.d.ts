@@ -15,7 +15,7 @@ import { type VoiceChannel } from "./VoiceChannel";
  *
  * @extends {Base}
  */
-declare class Channel extends Base {
+export declare class Channel extends Base {
     readonly data: APIChannel;
     /**
      * The client associated with the channel.
@@ -191,4 +191,3 @@ declare class Channel extends Base {
     toString(): string;
     isTextBased(): boolean;
 }
-export { Channel };

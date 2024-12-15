@@ -1,4 +1,3 @@
-import { Channel } from "./BaseChannel";
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { SnowflakeInformation } from "../utils/utils";
@@ -7,6 +6,7 @@ import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { MessageBodyRequest } from "../common";
+import { Channel } from "./BaseChannel";
 export declare class TextBasedChannel extends Channel {
     #private;
     /**
@@ -37,7 +37,7 @@ export declare class TextBasedChannel extends Channel {
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
     /**
        * The Text Channel last pin time information
        */
@@ -58,5 +58,5 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    createMessage(body: MessageBodyRequest | string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
 }

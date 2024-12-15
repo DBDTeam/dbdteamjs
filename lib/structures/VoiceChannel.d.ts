@@ -41,7 +41,7 @@ declare class VoiceChannel extends TextBasedChannel {
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
     readonly client: Client;
     /**
      * Represents a Voice Channel

@@ -1,10 +1,10 @@
-import { Nullable } from "../../../lib/interfaces/other";
 import { type Client } from "../../client/Client";
 import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
 import { Member } from "../Member";
 import { User } from "../User";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { Nullable } from "../../common";
 /**
  * Manages user-related operations such as fetching user data.
  */

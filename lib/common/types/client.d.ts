@@ -1,5 +1,4 @@
 import { APIEmoji, PresenceUpdateStatus } from "discord-api-types/v10";
-import { Nullable } from "../../../lib/interfaces/other";
 import { ClientUser } from "../../client/ClientUser";
 import { Channel, GuildRole, Member, ThreadChannel } from "../../structures";
 import { Guild } from "../../structures/Guild";
@@ -11,7 +10,7 @@ import { SlashInteraction } from "../../structures/Interactions/SlashInteraction
 import { MessageInteraction } from "../../structures/Interactions/MessageInteraction";
 import { ComponentInteraction } from "../../structures/Interactions/ComponentInteraction";
 import { UserInteraction } from "../../structures/Interactions/UserInteraction";
-import { PresenceData } from "./utils";
+import { Nullable, PresenceData } from "./utils";
 import { Collection } from "../../utils/Collection";
 import { ThreadMember } from "../../structures/ThreadMember";
 /**

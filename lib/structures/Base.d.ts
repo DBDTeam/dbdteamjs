@@ -6,7 +6,7 @@ declare abstract class Base {
      */
     constructor(id: string | Record<any, any>);
     _patch(data: unknown): unknown;
-    get getBinary(): bigint;
-    get getEpoch(): bigint;
+    get ___getBinary(): bigint;
+    get ___getEpoch(): bigint;
 }
 export { Base };

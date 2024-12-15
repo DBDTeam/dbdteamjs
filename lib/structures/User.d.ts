@@ -2,12 +2,14 @@ import { RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { Base } from "./Base";
-import { Nullable } from "../common";
+import { MessageBodyRequest, Nullable } from "../common";
+import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import { DMChannel } from "./DMChannel";
 export type Badge = "Discord Employee" | "Discord Partner" | "HypeSquad Events" | "Bug Hunter Level 1" | "HypeSquad Bravery" | "HypeSquad Brilliance" | "HypeSquad Balance" | "Early Nitro Supporter" | "Team User" | "Bug Hunter Level 2" | "Verified Bot" | "Early Verified Bot Developer" | "Moderator Programs Alumni" | "Bot with HTTP Interactions" | "Active Developer" | "Nitro Basic" | "Nitro" | "Pomelo";
 /**
  * Represents a User
  */
-export declare class User extends Base {
+declare class User extends Base {
     #private;
     /**
      * The User ID
@@ -57,6 +59,10 @@ export declare class User extends Base {
      * The user badges.
      */
     badges?: Badge[];
+    /**
+     * The user dm channel to send messages.
+     */
+    dmChannel?: DMChannel;
     /**
      * Display's the User avatar URL.
      */
@@ -109,8 +115,11 @@ export declare class User extends Base {
      * user.bannerUrl() // https://cdn.discordapp.com/banners/640685917467705344/0510a7bd372082644a05c92ffbbe7b2b.webp
      */
     bannerUrl(opts: CDNOptions): string | undefined;
+    createDM(): Promise<DMChannel | ErrorResponseFromApi>;
+    send(body: MessageBodyRequest | string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("./Message").Message | null | undefined>;
     /**
      * Returns the User mention
      */
     toString(): string;
 }
+export { User };

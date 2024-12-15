@@ -10,7 +10,7 @@ import { UserInteraction } from "../structures/Interactions/UserInteraction";
 import { Nullable } from "../common";
 export declare const getId: (t: string) => string;
 export declare function typeChannel(channelData: any, client: Client): Channel;
-export declare function interactionType(data: any, client: any): Promise<SlashInteraction | UserInteraction | ButtonInteraction | InteractionModal | MessageInteraction | SelectMenuInteraction | undefined>;
+export declare function interactionType(data: any, client: any): Promise<UserInteraction | SlashInteraction | MessageInteraction | ButtonInteraction | InteractionModal | SelectMenuInteraction | undefined>;
 export declare function setObj<T>(baseObj: Record<any, any>, actualObj: T, mappings?: {}, includeUndefined?: boolean): T;
 export declare function getKeyByValue(object: object, value: any): string | null;
 export interface SnowflakeInformation {
