@@ -157,7 +157,7 @@ declare class Message extends Base {
      * @param {MessagePayloadData | string} obj - The message payload or content.
      * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
      */
-    reply(body: MessageBodyRequest): Promise<Message | null>;
+    reply(body: MessageBodyRequest | string): Promise<Message | null>;
     /**
      * Edits the message.
      * @param {MessageUpdateBodyRequest | string} obj - The edit message payload or content.
