@@ -64,7 +64,9 @@ export class GuildBanManager {
 
     if (!response || response?.error || !response.data) return response as ErrorResponseFromApi;
 
-    return response.data;
+    const user = new User(response.data?.user, this.client)
+
+    return { user, reason: response.data?.reason };
   }
 
   /**

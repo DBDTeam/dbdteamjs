@@ -1,5 +1,4 @@
 import { APIUser } from "discord-api-types/v10";
-import { Nullable } from "../../../lib/interfaces/other";
 import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
@@ -8,6 +7,7 @@ import { Member } from "../Member";
 import { User } from "../User";
 import { FetchWithLimitAndAfter } from "./GuildMemberManager";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { Nullable } from "../../common";
 
 /**
  * Manages user-related operations such as fetching user data.
@@ -41,7 +41,6 @@ class UserManager {
       return result as ErrorResponseFromApi;
     } else {
       var x = new User(result.data as APIUser, this.#client);
-      this.cache.set(result.data.id, x);
       return x;
     }
   }
