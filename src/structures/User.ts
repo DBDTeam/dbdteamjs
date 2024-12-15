@@ -3,7 +3,43 @@ import { Client } from "../client/Client";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { Base } from "./Base";
 import { Nullable } from "../common";
+export type Badge =
+  | "Discord Employee"
+  | "Discord Partner"
+  | "HypeSquad Events"
+  | "Bug Hunter Level 1"
+  | "HypeSquad Bravery"
+  | "HypeSquad Brilliance"
+  | "HypeSquad Balance"
+  | "Early Nitro Supporter"
+  | "Team User"
+  | "Bug Hunter Level 2"
+  | "Verified Bot"
+  | "Early Verified Bot Developer"
+  | "Moderator Programs Alumni"
+  | "Bot with HTTP Interactions"
+  | "Active Developer"
+  | "Nitro Basic"
+  | "Nitro"
+  | "Pomelo";
 
+const badgesMapping: Record<number, Badge> = {
+  1: "Discord Employee",
+  2: "Discord Partner",
+  4: "HypeSquad Events",
+  8: "Bug Hunter Level 1",
+  64: "HypeSquad Bravery",
+  128: "HypeSquad Brilliance",
+  256: "HypeSquad Balance",
+  512: "Early Nitro Supporter",
+  1024: "Team User",
+  16384: "Bug Hunter Level 2",
+  65536: "Verified Bot",
+  131072: "Early Verified Bot Developer",
+  262144: "Moderator Programs Alumni",
+  524288: "Bot with HTTP Interactions",
+  4194304: "Active Developer",
+};
 /**
  * Represents a User
  */
@@ -54,6 +90,11 @@ export class User extends Base {
   avatarDecoration?: Nullable<string>;
 
   /**
+   * The user badges.
+   */
+  badges?: Badge[];
+
+  /**
    * Display's the User avatar URL.
    */
   readonly displayAvatarUrl: (opts?: any) => any;
@@ -68,6 +109,7 @@ export class User extends Base {
 
   #client: Client;
 
+  #oldUser: Nullable<User>;
   /**
    * @constructor
    * @param data - The data payload
@@ -81,6 +123,7 @@ export class User extends Base {
     this.bot = !!data.bot;
     this.system = false;
     this.flags = 0;
+    this.#oldUser = this.#client.users.cache.get(data.id);
 
     this.displayAvatarUrl = this.avatarUrl;
     this.displayDefaultAvatarUrl = this.defaultAvatarUrl;
@@ -106,19 +149,36 @@ export class User extends Base {
       this.avatar = data.avatar;
     }
 
-    if ("banner" in data) {
-      this.banner = data.banner;
+    this.banner =
+      "banner" in data && data.banner != null
+        ? data.banner
+        : this.#oldUser?.banner ?? null;
+
+    this.accentColor =
+      "accent_color" in data && data.accent_color != null
+        ? data.accent_color
+        : this.#oldUser?.accentColor ?? null;
+
+    this.avatarDecoration =
+      "avatar_decoration" in data && data.avatar_decoration != null
+        ? data.avatar_decoration
+        : this.#oldUser?.avatarDecoration ?? null;
+    this.badges = Object.entries(badgesMapping)
+      .filter(([flag]) => (this.flags & Number(flag)) !== 0)
+      .map(([, badge]) => badge);
+
+    if (data.premium_type === 3 || data.premium_type === 1) {
+      this.badges.push("Nitro Basic");
+    }
+    if (data.premium_type === 2) {
+      this.badges.push("Nitro");
     }
 
-    if ("accent_color" in data) {
-      this.accentColor = data.accent_color;
+    if (this.discriminator === "0" || this.discriminator === "") {
+      this.badges.push("Pomelo");
     }
 
-    if ("avatar_decoration" in data) {
-      this.avatarDecoration = data.avatar_decoration;
-    }
-
-    this.#client.users.cache.set(this.id, this)
+    this.#client.users.cache.set(this.id, this);
   }
 
   /**
