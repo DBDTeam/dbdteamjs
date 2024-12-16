@@ -224,7 +224,7 @@ class ShardManager extends EventEmitter {
    * @param {import('../client/Client').Client} client
    * @param {Shard} gateway
    */
-  constructor(client: Client, gateway: GatewayConfig) {
+  constructor(client: Client, gateway?: GatewayConfig) {
     super();
     this.client = client;
     this.token = client?.token;
@@ -232,7 +232,7 @@ class ShardManager extends EventEmitter {
     this.totalShards = gateway?.totalShards || 0;
     this.url = "wss://gateway.discord.gg/?v=10&encoding=json";
     this.shards = new Collection<number, Shard>();
-    this.gateway = gateway;
+    this.gateway = gateway || {};
     this.checkInfo();
   }
 

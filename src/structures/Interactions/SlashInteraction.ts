@@ -1,18 +1,25 @@
-import { Collection } from "../..";
+import { InteractionOptionValue } from "../../common/types/interactions";
 import { Client } from "../../client";
 import { InteractionBase } from "./BaseInteraction";
+import { Collection } from "../../utils/Collection";
 
 export class SlashInteraction extends InteractionBase {
+  /**
+   * The name of the slash
+   */
   name: string;
-  options: Collection<string, unknown>;
+  /**
+   * The values of the slash.
+   */
+  values: Collection<string, InteractionOptionValue>;
 
   constructor(data: any, client: Client) {
     super(data, client);
     this.name = data.data.name;
-    this.options = new Collection();
+    this.values = new Collection();
 
     for (var i of data.data?.options || []) {
-      this.options.set(i.name, i);
+      this.values.set(i.name, i);
     }
   }
 }

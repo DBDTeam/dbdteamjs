@@ -122,15 +122,10 @@ class GuildMemberManager {
    * Gets the client user as a member of the guild.
    * @returns {Nullable<Member | unknown>} - The member instance or null if not found, or an error if an error occurred.
    */
-  get me(): Nullable<Member | unknown> {
-    try {
-      if (!this.#client.user) return null;
-      var member = this.cache.get(this.#client.user.id);
+  get me(): Member {
+      var member = this.cache.get(this.#client.user.id) as Member;
 
       return member;
-    } catch (err) {
-      return err;
-    }
   }
 }
 

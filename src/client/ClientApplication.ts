@@ -9,7 +9,7 @@ import { ApplicationCommandManager } from "../structures/Managers/ApplicationCom
  */
 class ClientApplication {
   readonly client;
-  public commands;
+  public commands: ApplicationCommandManager;
   constructor(client: Client) {
     /**
      * The client

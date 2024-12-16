@@ -81,7 +81,7 @@ declare class InteractionBase {
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    reply: (obj: InteractionBodyRequest) => Promise<InteractionResponse | ErrorResponseFromApi>;
+    reply: (obj: InteractionBodyRequest | string) => Promise<InteractionResponse | ErrorResponseFromApi>;
     /**
      * The ID of the interaction.
      * @type {any}

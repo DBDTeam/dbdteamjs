@@ -1,4 +1,4 @@
-import { Intents } from "../../common";
+import { Intents } from "../../types/Intents";
 export declare class IntentsBitFields {
     #private;
     /**
@@ -15,13 +15,13 @@ export declare class IntentsBitFields {
      * @param {...Intents} intents - The intents bitwise values.
      * @returns {IntentsBitFields}
      */
-    add(...intents: Intents[]): this | undefined;
+    add(...intents: Intents[]): IntentsBitFields;
     /**
      * Remove intents to the property 'intents' of the class.
      * @param {...Intents} intents - The intents bitwise values.
      * @returns {IntentsBitFields}
      */
-    remove(...intents: Intents[]): this | undefined;
+    remove(...intents: Intents[]): IntentsBitFields;
     /**
      * Check if any of the bitwise values exists in the property 'intents'.
      * @param {...Intents} intents - The intents bitwise values.
@@ -38,5 +38,5 @@ export declare class IntentsBitFields {
      * Freezes the current class, so, you can't add or remove any intent.
      * @returns {IntentsBitFields}
      */
-    freeze(): this;
+    freeze(): IntentsBitFields;
 }

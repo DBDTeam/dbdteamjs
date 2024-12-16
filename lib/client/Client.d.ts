@@ -25,7 +25,7 @@ declare class Client extends TypedEmitter<ClientEvents> {
     /**
      * The Gateway Configuration of the client
      */
-    readonly configGateway: GatewayConfig;
+    readonly configGateway?: GatewayConfig;
     /**
      * The Cache options of the client.
      */

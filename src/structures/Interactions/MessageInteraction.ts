@@ -1,10 +1,15 @@
 import { Client } from "../../client";
 import { Nullable } from "../../common";
+import { Guild } from "../Guild";
 import { Message } from "../Message";
 import { InteractionBase } from "./BaseInteraction";
 
 export class MessageInteraction extends InteractionBase {
   #data;
+  /**
+   * The message of the interaction
+   * @type { Nullable<Message> }
+   */
   message: Nullable<Message>;
 
   constructor(data: any, client: Client) {
@@ -17,7 +22,7 @@ export class MessageInteraction extends InteractionBase {
     this.message = new Message(
       {
         ...(Object.values(this.#data.data.resolved.messages)[0] as object), //@ts-ignore
-        guild: this.guild,
+        guild_id: this.guild,
       },
       this.client
     );

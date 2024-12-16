@@ -1,49 +1,100 @@
 /**
- * Permissions for accessing different parts of the system.
- * @typedef {Object} DiscordIntents
- * @property {number} Guilds - Permissions related to guilds.
- * @property {number} GuildMembers - Permissions related to guild members.
- * @property {number} GuildModeration - Permissions related to guild moderation.
- * @property {number} GuildEmojisAndStickers - Permissions related to guild emojis and stickers.
- * @property {number} GuildIntegrations - Permissions related to guild integrations.
- * @property {number} GuildWebhooks - Permissions related to guild webhooks.
- * @property {number} GuildInvites - Permissions related to guild invites.
- * @property {number} GuildVoiceStates - Permissions related to guild voice states.
- * @property {number} GuildPresences - Permissions related to guild presences.
- * @property {number} GuildMessages - Permissions related to guild messages.
- * @property {number} GuildMessageReactions - Permissions related to guild message reactions.
- * @property {number} GuildMessageTyping - Permissions related to guild message typing.
- * @property {number} DirectMessages - Permissions related to direct messages.
- * @property {number} DirectMessagesReactions - Permissions related to direct message reactions.
- * @property {number} DirectMessageTyping - Permissions related to direct message typing.
- * @property {number} MessageContent - Permissions related to message content.
- * @property {number} GuildScheduledEvents - Permissions related to guild scheduled events.
- * @property {number} AutoModerationConfiguration - Permissions related to auto-moderation configuration.
- * @property {number} AutoModerationExecution - Permissions related to auto-moderation execution.
+ * Enum representing the different intents that can be used when initializing a Discord client.
+ * Each intent is represented by a bitfield value.
  */
-
-/**
- * Definition of Discord intents.
- * @type {DiscordIntents}
- */
-export const Intents = {
-    "Guilds": 1 << 0,
-    "GuildMembers": 1 << 1,
-    "GuildModeration": 1 << 2,
-    "GuildEmojisAndStickers": 1 << 3,
-    "GuildIntegrations": 1 << 4,
-    "GuildWebhooks": 1 << 5,
-    "GuildInvites": 1 << 6,
-    "GuildVoiceStates": 1 << 7,
-    "GuildPresences": 1 << 8,
-    "GuildMessages": 1 << 9,
-    "GuildMessageReactions": 1 << 10,
-    "GuildMessageTyping": 1 << 11,
-    "DirectMessages": 1 << 12,
-    "DirectMessagesReactions": 1 << 13,
-    "DirectMessageTyping": 1 << 14,
-    "MessageContent": 1 << 15,
-    "GuildScheduledEvents": 1 << 16,
-    "AutoModerationConfiguration": 1 << 20,
-    "AutoModerationExecution": 1 << 21,
-};
+export enum Intents {
+    /**
+     * Enables events related to guilds.
+     */
+    Guilds = 1 << 0,
+  
+    /**
+     * Enables events related to guild members.
+     */
+    GuildMembers = 1 << 1,
+  
+    /**
+     * Enables events related to guild moderation.
+     */
+    GuildModeration = 1 << 2,
+  
+    /**
+     * Enables events related to guild emojis and stickers.
+     */
+    GuildEmojisAndStickers = 1 << 3,
+  
+    /**
+     * Enables events related to guild integrations.
+     */
+    GuildIntegrations = 1 << 4,
+  
+    /**
+     * Enables events related to guild webhooks.
+     */
+    GuildWebhooks = 1 << 5,
+  
+    /**
+     * Enables events related to guild invites.
+     */
+    GuildInvites = 1 << 6,
+  
+    /**
+     * Enables events related to guild voice states.
+     */
+    GuildVoiceStates = 1 << 7,
+  
+    /**
+     * Enables events related to guild presences.
+     */
+    GuildPresences = 1 << 8,
+  
+    /**
+     * Enables events related to guild messages.
+     */
+    GuildMessages = 1 << 9,
+  
+    /**
+     * Enables events related to guild message reactions.
+     */
+    GuildMessageReactions = 1 << 10,
+  
+    /**
+     * Enables events related to guild message typing.
+     */
+    GuildMessageTyping = 1 << 11,
+  
+    /**
+     * Enables events related to direct messages.
+     */
+    DirectMessages = 1 << 12,
+  
+    /**
+     * Enables events related to direct message reactions.
+     */
+    DirectMessagesReactions = 1 << 13,
+  
+    /**
+     * Enables events related to direct message typing.
+     */
+    DirectMessageTyping = 1 << 14,
+  
+    /**
+     * Enables access to message content.
+     */
+    MessageContent = 1 << 15,
+  
+    /**
+     * Enables events related to guild scheduled events.
+     */
+    GuildScheduledEvents = 1 << 16,
+  
+    /**
+     * Enables events related to auto-moderation configuration.
+     */
+    AutoModerationConfiguration = 1 << 20,
+  
+    /**
+     * Enables events related to auto-moderation execution.
+     */
+    AutoModerationExecution = 1 << 21,
+  }

@@ -10,6 +10,7 @@ import { MemberRolesManager } from "./Managers/RolesManager";
 import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { User } from "./User";
 import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
+import { GuildRole } from "./Role";
 
 /**
  * Represents a guild member and provides methods to manage and interact with it.
@@ -218,19 +219,19 @@ class Member extends Base {
 
   /**
    * Checks if the member is kickable.
-   * @returns True if the member can be kicked, false otherwise.
+   * @returns {boolean} True if the member can be kicked, false otherwise.
    */
   get kickable() {
     var _p = 0;
     var _h =
       this.roles.cache
         .toJSON()
-        .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]?.position || 0;
     const c = this.guild.members?.me;
     var _h1 =
       c?.roles.cache
         .toJSON()
-        .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]?.position || 0;
     for (var perms of c?.roles?.cache.toJSON() || []) {
       _p |= perms.permissions;
     }

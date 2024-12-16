@@ -1,6 +1,6 @@
 import { APIInteractionResponseCallbackData, APIMessageComponentInteraction, ComponentType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
-import { ComponentInteractionMessageUpdate, Nullable } from "../../common";
+import { ComponentInteractionMessageUpdate } from "../../common";
 import { Message } from "../Message";
 import { User } from "../User";
 import { InteractionBase } from "./BaseInteraction";
@@ -12,10 +12,30 @@ import { InteractionResponse } from "./InteractionResponse";
 declare class ComponentInteraction extends InteractionBase {
     private data;
     client: Client;
+    /**
+     * The custom id of the interaction
+     * @type {string}
+     */
     customId: string;
+    /**
+     * The component type of the interaction
+     * @type {ComponentType}
+     */
     componentType: ComponentType;
-    readonly update: (obj: APIInteractionResponseCallbackData) => Promise<Nullable<InteractionResponse>>;
+    /**
+     * Updates the reply
+     * @param { APIInteractionResponseCallbackData } obj - The object to update the reply.
+     * @returns { Promise<InteractionResponse | boolean> }
+     */
+    readonly update: (obj: APIInteractionResponseCallbackData) => Promise<InteractionResponse | boolean>;
+    /**
+     * The message of the component interaction.
+     * @type { Message }
+     */
     message: Message;
+    /**
+     * The user of the component interaction.
+     */
     user: User;
     /**
      * Creates an instance of ComponentInteraction.
@@ -38,7 +58,7 @@ declare class ComponentInteraction extends InteractionBase {
      * @param {InteractionPayloadData} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse>}
      */
-    updateReply(obj: ComponentInteractionMessageUpdate): Promise<Nullable<InteractionResponse>>;
+    updateReply(obj: ComponentInteractionMessageUpdate): Promise<InteractionResponse | boolean>;
     /**
      * Patch method for initializing data properties.
      * @private

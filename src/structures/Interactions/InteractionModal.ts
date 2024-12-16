@@ -7,6 +7,10 @@ import { ComponentInteraction } from "./ComponentInteraction";
  * @extends ComponentInteraction
  */
 export class InteractionModal extends ComponentInteraction {
+  /**
+   * The inputs when the modal is answered
+   * @type { Collection<string, > }
+   */
   inputs: Collection<string, any>
   /**
    * Creates an instance of InteractionModal.
@@ -32,6 +36,7 @@ export class InteractionModal extends ComponentInteraction {
     for (let i of data.data.components) {
       for (let x of i.components) {
         if (x.type === 4) {
+          console.log(x)
           this.inputs.set(x.custom_id, x.value);
         }
       }

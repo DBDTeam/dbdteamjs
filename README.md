@@ -14,7 +14,7 @@ npm i dbdteamjs
 ``` 
 or (this is better)
 ```
-npm i github:DBDTeam/dbdteamjs#0.0.6
+npm i github:DBDTeam/dbdteamjs#0.0.8
 ```
 **YARN**
 ```
@@ -35,112 +35,144 @@ Once you have that done, it's time to start creating the robot using the package
 
 # Example using MessageContent Intent
 ```typescript
-const {
-  Client,
-  Intents,
-  IntentsBitFields,
-  PresenceStatus,
-  PresenceTypes,
-} = require("dbdteamjs");
-const $Intents = new IntentsBitFields(
-  Intents.Guilds,
-  Intents.GuildMembers,
-  Intents.GuildMessages,
-  Intents.MessageContent
-);
+// Import necessary classes from the dbdteamjs library
+import { Client, IntegrationTypes, Intents, IntentsBitFields, PresenceStatus, PresenceTypes } from "../src";
 
+// Create an instance of IntentsBitFields to specify which intents the bot should listen for
+const Ints = new IntentsBitFields()
+    .add(Intents.Guilds)
+    .add(Intents.GuildMessages)
+    .add(Intents.MessageContent);
+
+// Create a Client instance with the authentication token and specified intents
 const client = new Client({
-  token:
-    "Here your bot token",
-  intents: $Intents.intents,
-  gateway: {
-    mobilePlatform: false,
-  },
+    token: "",
+    intents: Ints.intents,
 });
 
-client.on("ready", ({ username }) => {
-  console.log(`I have successfully logged on to ${username}`);
-
-  client.presence.update({
-    activities: [
-        {
-          name: `Hello world!`,
-          type: PresenceTypes.Competing
-        }
-      ],
-    since: 0,
-    status: PresenceStatus.DND,
-  });
+// Event handler for when the client is ready and connected to Discord.
+client.on("ready", () => {
+    console.log(`Logged in as ${client.user.username}!`); // Log the bot's username in the console
+    client.presence.update({ // Update the bot's presence
+        status: PresenceStatus.Online, // Set the presence status to "Online"
+        activities: [{ // Add an activity to the bot's list of activities
+            name: "dbdteamjs is beautiful!", // The activity's name
+            type: PresenceTypes.Game, // The activity's type (Game)
+        }]
+    });
 });
 
-client.on("messageCreate", async(msg) => {
-  if(msg.content?.toLowerCase() === "!hi") {
-    msg.reply({
-      content: `Hi!`
-    })
-  }
-})
+// Event handler for when a message is created in the server
+client.on("messageCreate", async(message) => {
+    if(message.author.bot) return; // Ignore messages from other bots
+    if(message.content === "!hi") { // If the message contains "!hi"
+        message.reply(`Hello, ${message.author.username}! How are you?`); // Reply with a personalized message
+    }
+    if(message.content === "!embed") { // If the message contains "!embed"
+        message.reply({ // Reply with an embedded message
+            embeds: [
+                {
+                    title: "This is an Embed!", // The embedded message's title
+                    description: "An embedded message.", // The embedded message's description
+                    color: 0x0099ff, // The embedded message's color
+                    fields: [
+                        {
+                            name: "Field 1", // The name of the first field
+                            value: "Some value", // The value of the first field
+                            inline: true // Indicates if the field should be displayed inline
+                        },
+                        {
+                            name: "Field 2", // The name of the second field
+                            value: "Another value", // The value of the second field
+                            inline: true // Indicates if the field should be displayed inline
+                        }
+                    ],
+                    timestamp: (new Date()).toISOString(), // Add the current timestamp to the embedded message
+                    footer: {
+                        text: " My Cool Guild" // The footer text of the embedded message
+                    }
+                }
+            ]
+        });
+    }
 });
 
-client.connect() // Will establish the connection between the robot and the WS.
+// Connect the bot to the Discord server
+client.connect();
 ```
 # Example using Interactions
 ```typescript
-import {
-  Client,
-  IntegrationTypes,
-  Intents,
-  IntentsBitFields,
-  InteractionContexts,
-  PresenceStatus,
-  PresenceTypes,
-} from "dbdteamjs";
+// Import necessary classes from the dbdteamjs library
+import { Client, CommandsBody, Intents, IntentsBitFields, InteractionOptionValue, PresenceStatus, PresenceTypes } from "dbdteamjs";
 
-const Intents = new IntentsBitFields()
+// Create an instance of IntentsBitFields to specify which intents the bot should listen for
+const Ints = new IntentsBitFields()
+    .add(Intents.Guilds)
 
-Intents.add("Guilds")
-Intents.add("GuildMembers")
-
+// Create a Client instance with the authentication token and specified intents
 const client = new Client({
-   token: `Here your bot token`,
-   intents: Intents.intents,
-   gateway: {
-     mobilePlatform: false // Only this if you want the robot to have the online icon on a mobile device.
-   }
-})
+    token: "",
+    intents: Ints.intents,
+});
 
+// Define an array of commands for the bot
+const commands: CommandsBody[] = [{
+    name: "ping",
+    description: "Replies with 'Pong!'",
+    options: []
+}, {
+    name: "options",
+    description: "Has options!",
+    options: [{
+        name: "color",
+        description: "Choose your favorite color!",
+        type: 3,
+        required: true,
+        choices: [{
+            name: "Red",
+            value: "RED"
+        }, {
+            name: "Blue",
+            value: "BLUE"
+        }, {
+            name: "Green",
+            value: "GREEN"
+        }]
+    }]
+}]
+
+// Event handler for when the client is ready and connected to Discord.
 client.on("ready", () => {
-   console.log(`I have successfully logged on to ${client.user.username}`)
-   client.presence.update({
-     activities: [
-        {
-          name: `Hello world!`,
-          type: PresenceTypes.Competing
+    console.log(`Logged in as ${client.user.username}!`); // Log the bot's username in the console
+    client.presence.update({ // Update the bot's presence
+        status: PresenceStatus.Online, // Set the presence status to "Online"
+        activities: [{ // Add an activity to the bot's list of activities
+            name: "dbdteamjs is beautiful!", // The activity's name
+            type: PresenceTypes.Game, // The activity's type (Game)
+        }]
+    });
+
+    // Set the bot's commands
+    client.application.commands.set(commands)
+});
+
+// Event handler for when an interaction (command) is created
+client.on("interactionCreate", async(int) => {
+    // Check if the interaction is a slash command
+    if(int.isSlash()) {
+        // Handle different slash command names
+        if(int.name === "ping") {
+            // Reply with "Pong!"
+            int.makeReply("Pong!")
+        } else if(int.name === "options") {
+            // Get the selected color option value
+            const choice = int.values.get("color") as InteractionOptionValue
+            // Reply with the selected color
+            int.makeReply(`Options: ${choice.value}`)
         }
-      ], 
-     since: 0,
-     status: PresenceStatus.DND // This means Do not Disturb
-   })
-
-   client.application.commands.set(
-    [
-      {
-        name: "ping",
-        description: "Pong!",
-        options: [],
-        type: InteractionTypes.Slash
-      }, //You can add more application commands adding it in the array.
-    ]
-   )
-})
-
-client.on("interactionCreate", async(interaction) => {
-   if(interaction.isSlash){
-    if(interaction.name === "ping"){
-      interaction.makeReply({ content: `Pong!\nLatency: ${client.ping}` })
     }
-   }
 })
 
-client.connect() // Will establish the connection between the robot and the WS.
+// Connect the bot to Discord
+client.connect();
 ```

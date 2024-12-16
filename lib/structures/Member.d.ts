@@ -104,7 +104,7 @@ declare class Member extends Base {
     leave(): void;
     /**
      * Checks if the member is kickable.
-     * @returns True if the member can be kicked, false otherwise.
+     * @returns {boolean} True if the member can be kicked, false otherwise.
      */
     get kickable(): boolean;
     /**

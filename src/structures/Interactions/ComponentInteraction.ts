@@ -3,10 +3,9 @@ import {
   APIMessageComponentInteraction,
   APIUser,
   ComponentType,
-  InteractionType,
 } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
-import { ComponentInteractionMessageUpdate, Nullable } from "../../common";
+import { ComponentInteractionMessageUpdate } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Member } from "../Member";
 import { Message } from "../Message";
@@ -20,12 +19,32 @@ import { InteractionResponse } from "./InteractionResponse";
  * @extends InteractionBase
  */
 class ComponentInteraction extends InteractionBase {
+  /**
+   * The custom id of the interaction
+   * @type {string}
+   */
   customId: string;
+  /**
+   * The component type of the interaction
+   * @type {ComponentType}
+   */
   componentType: ComponentType;
+  /**
+   * Updates the reply
+   * @param { APIInteractionResponseCallbackData } obj - The object to update the reply.
+   * @returns { Promise<InteractionResponse | boolean> }
+   */
   readonly update: (
     obj: APIInteractionResponseCallbackData
-  ) => Promise<Nullable<InteractionResponse>>;
+  ) => Promise<InteractionResponse | boolean>;
+  /**
+   * The message of the component interaction.
+   * @type { Message }
+   */
   declare message: Message;
+  /**
+   * The user of the component interaction.
+   */
   declare user: User;
 
   /**
@@ -74,7 +93,7 @@ class ComponentInteraction extends InteractionBase {
    */
   async updateReply(
     obj: ComponentInteractionMessageUpdate
-  ): Promise<Nullable<InteractionResponse>> {
+  ): Promise<InteractionResponse | boolean> {
     const payload = new InteractionPayload(obj, obj.files);
     let { payload: _d, files } = payload;
 
@@ -91,15 +110,14 @@ class ComponentInteraction extends InteractionBase {
 
     if (obj.fetchResponse) {
       response = await this.client.rest.request(
-        "GET", // @ts-ignore
+        "GET",
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
         true
       );
 
-      if (!response) return null;
+      if (!response) return false;
 
-      // @ts-ignore
-      response = new InteractionResponse(
+      const result = new InteractionResponse(
         {
           ...response.data,
           guild_id: this.guildId,
@@ -108,17 +126,17 @@ class ComponentInteraction extends InteractionBase {
         },
         this.client
       );
+      return result;
     }
 
-    // @ts-ignore
-    return response;
+    return true
   }
 
   /**
    * Patch method for initializing data properties.
    * @private
    */
-  private async _patch(): Promise<void> {
+  private _patch(): void {
     this.message = new Message(this.data.message, this.client);
     const userData = this.data.member?.user as APIUser;
     if (this.guild)

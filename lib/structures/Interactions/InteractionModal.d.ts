@@ -6,6 +6,10 @@ import { ComponentInteraction } from "./ComponentInteraction";
  * @extends ComponentInteraction
  */
 export declare class InteractionModal extends ComponentInteraction {
+    /**
+     * The inputs when the modal is answered
+     * @type { Collection<string, > }
+     */
     inputs: Collection<string, any>;
     /**
      * Creates an instance of InteractionModal.

@@ -25,17 +25,64 @@ export interface EditRolePayload {
  * Represents a Discord Guild Role
  */
 export class GuildRole extends Base {
-  guildId: any;
-  name: any;
+  /**
+   * The ID of the guild to which the role belongs.
+   */
+  guildId: string;
+  
+  /**
+   * The name of the role.
+   */
+  name: string;
+  
+  /**
+   * Whether the role is displayed separately in the member list.
+   */
   hoist: boolean;
+  
+  /**
+   * The role's icon hash, if it has one.
+   */
   icon: string | null;
+  
+  /**
+   * The role's position in the hierarchy.
+   */
   position: number;
-  permissions: any;
+  
+  /**
+   * The permissions the role has.
+   */
+  permissions: number;
+  
+  /**
+   * Whether the role is managed by an integration.
+   */
   managed: boolean;
+  
+  /**
+   * Whether the role is mentionable.
+   */
   mentionable: boolean;
+  
+  /**
+   * The role's tags.
+   */
   tags: APIRoleTags;
-  flags: any;
+  
+  /**
+   * The role's flags.
+   */
+  flags: number;
+  
+  /**
+   * The guild to which the role belongs.
+   */
   readonly guild?: Guild;
+  
+  /**
+   * A reference to the client.
+   */
   #client: Client;
 
   constructor(public data: APIRole, guild: Guild, client: Client) {
@@ -51,7 +98,7 @@ export class GuildRole extends Base {
     this.hoist = !!data.hoist;
     this.icon = null;
     this.position = data.position;
-    this.permissions = data.permissions;
+    this.permissions = Number(data.permissions);
     this.managed = !!data.managed;
     this.mentionable = !!data.mentionable;
     this.tags = {};
@@ -96,7 +143,7 @@ export class GuildRole extends Base {
     if (!response) {
       return response;
     } else {
-      return new GuildRole(response.data as APIRole, this.guildId, this.#client);
+      return new GuildRole(response.data as APIRole, this.guild as Guild, this.#client);
     }
   }
 

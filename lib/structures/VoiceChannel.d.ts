@@ -35,13 +35,13 @@ declare class VoiceChannel extends TextBasedChannel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    readonly sendMessage: (body: MessageBodyRequest) => Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
     readonly client: Client;
     /**
      * Represents a Voice Channel
@@ -64,6 +64,6 @@ declare class VoiceChannel extends TextBasedChannel {
      * })
      * @returns {Promise<Message | Object>}
      */
-    createMessage(obj: any): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
+    createMessage(obj: any): Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
 }
 export { VoiceChannel };

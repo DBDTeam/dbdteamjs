@@ -1,48 +1,82 @@
 /**
- * Permissions for accessing different parts of the system.
- * @typedef {Object} DiscordIntents
- * @property {number} Guilds - Permissions related to guilds.
- * @property {number} GuildMembers - Permissions related to guild members.
- * @property {number} GuildModeration - Permissions related to guild moderation.
- * @property {number} GuildEmojisAndStickers - Permissions related to guild emojis and stickers.
- * @property {number} GuildIntegrations - Permissions related to guild integrations.
- * @property {number} GuildWebhooks - Permissions related to guild webhooks.
- * @property {number} GuildInvites - Permissions related to guild invites.
- * @property {number} GuildVoiceStates - Permissions related to guild voice states.
- * @property {number} GuildPresences - Permissions related to guild presences.
- * @property {number} GuildMessages - Permissions related to guild messages.
- * @property {number} GuildMessageReactions - Permissions related to guild message reactions.
- * @property {number} GuildMessageTyping - Permissions related to guild message typing.
- * @property {number} DirectMessages - Permissions related to direct messages.
- * @property {number} DirectMessagesReactions - Permissions related to direct message reactions.
- * @property {number} DirectMessageTyping - Permissions related to direct message typing.
- * @property {number} MessageContent - Permissions related to message content.
- * @property {number} GuildScheduledEvents - Permissions related to guild scheduled events.
- * @property {number} AutoModerationConfiguration - Permissions related to auto-moderation configuration.
- * @property {number} AutoModerationExecution - Permissions related to auto-moderation execution.
+ * Enum representing the different intents that can be used when initializing a Discord client.
+ * Each intent is represented by a bitfield value.
  */
-/**
- * Definition of Discord intents.
- * @type {DiscordIntents}
- */
-export declare const Intents: {
-    Guilds: number;
-    GuildMembers: number;
-    GuildModeration: number;
-    GuildEmojisAndStickers: number;
-    GuildIntegrations: number;
-    GuildWebhooks: number;
-    GuildInvites: number;
-    GuildVoiceStates: number;
-    GuildPresences: number;
-    GuildMessages: number;
-    GuildMessageReactions: number;
-    GuildMessageTyping: number;
-    DirectMessages: number;
-    DirectMessagesReactions: number;
-    DirectMessageTyping: number;
-    MessageContent: number;
-    GuildScheduledEvents: number;
-    AutoModerationConfiguration: number;
-    AutoModerationExecution: number;
-};
+export declare enum Intents {
+    /**
+     * Enables events related to guilds.
+     */
+    Guilds = 1,
+    /**
+     * Enables events related to guild members.
+     */
+    GuildMembers = 2,
+    /**
+     * Enables events related to guild moderation.
+     */
+    GuildModeration = 4,
+    /**
+     * Enables events related to guild emojis and stickers.
+     */
+    GuildEmojisAndStickers = 8,
+    /**
+     * Enables events related to guild integrations.
+     */
+    GuildIntegrations = 16,
+    /**
+     * Enables events related to guild webhooks.
+     */
+    GuildWebhooks = 32,
+    /**
+     * Enables events related to guild invites.
+     */
+    GuildInvites = 64,
+    /**
+     * Enables events related to guild voice states.
+     */
+    GuildVoiceStates = 128,
+    /**
+     * Enables events related to guild presences.
+     */
+    GuildPresences = 256,
+    /**
+     * Enables events related to guild messages.
+     */
+    GuildMessages = 512,
+    /**
+     * Enables events related to guild message reactions.
+     */
+    GuildMessageReactions = 1024,
+    /**
+     * Enables events related to guild message typing.
+     */
+    GuildMessageTyping = 2048,
+    /**
+     * Enables events related to direct messages.
+     */
+    DirectMessages = 4096,
+    /**
+     * Enables events related to direct message reactions.
+     */
+    DirectMessagesReactions = 8192,
+    /**
+     * Enables events related to direct message typing.
+     */
+    DirectMessageTyping = 16384,
+    /**
+     * Enables access to message content.
+     */
+    MessageContent = 32768,
+    /**
+     * Enables events related to guild scheduled events.
+     */
+    GuildScheduledEvents = 65536,
+    /**
+     * Enables events related to auto-moderation configuration.
+     */
+    AutoModerationConfiguration = 1048576,
+    /**
+     * Enables events related to auto-moderation execution.
+     */
+    AutoModerationExecution = 2097152
+}

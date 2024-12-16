@@ -1,16 +1,28 @@
+import { User } from "..";
 import { type Client } from "../../client/Client";
-import { MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
+import { MessageBodyRequest } from "../../common";
+import { InteractionResponseData } from "../../common/types/interactions"
 import * as Endpoints from "../../rest/Endpoints";
 import { Message } from "../Message";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
-
 export class InteractionResponse extends Message {
-  /** @type {string} @readonly */
+  /** 
+   * The token of the interaction response
+   * @type {string}
+   * @readonly
+   */
   readonly token;
-  /** @type {string} @readonly */
+  /** 
+   * The id of the interaction response
+   * @type {string} 
+   * @readonly 
+   */
   readonly interaction_id;
-  /** @type {object} */
-  interaction_data;
+  /** 
+   * The interaction data
+   * @type {object}
+   */
+  interaction_data: InteractionResponseData;
 
   constructor(data: any, readonly client: Client) {
     super(data, client);
@@ -23,7 +35,7 @@ export class InteractionResponse extends Message {
       type: interaction?.type,
       user: client.users.cache.get(
         interaction?.user?.id || interaction?.user_id
-      ),
+      ) as User,
       userId: interaction?.user?.id || interaction?.user_id,
     };
   }

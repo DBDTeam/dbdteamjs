@@ -1,11 +1,15 @@
+import { RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import { GuildMemberRoleOptions, GuildRoleCreatePayload } from "../../interfaces/member/role";
 import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { Collection } from "../../utils/Collection";
 import { Guild } from "../Guild";
 import { type Member } from "../Member";
 import { EditRolePayload, GuildRole } from "../Role";
 import { Nullable } from "../../common";
+type RoleOptions = {
+    roles: string[];
+    reason?: string | undefined | null;
+};
 /**
  * Manages the roles of a member in a guild.
  */
@@ -26,7 +30,7 @@ export declare class MemberRolesManager {
      * @param addObject - An object containing roles to add and a reason.
      * @returns An object containing errors and success responses.
      */
-    add(addObject: GuildMemberRoleOptions): Promise<{
+    add(addObject: RoleOptions): Promise<{
         error: ErrorResponseFromApi[];
         success: ResponseFromApi[];
     } | null>;
@@ -35,7 +39,7 @@ export declare class MemberRolesManager {
      * @param removeObject - An object containing roles to remove and a reason.
      * @returns An object containing errors and success responses.
      */
-    remove(removeObject: GuildMemberRoleOptions): Promise<{
+    remove(removeObject: RoleOptions): Promise<{
         error: ErrorResponseFromApi[];
         success: ResponseFromApi[];
     } | null>;
@@ -79,7 +83,7 @@ export declare class GuildRolesManager {
      * @param deleteObject - An object containing roles to delete and a reason.
      * @returns An object containing errors and success responses or the current cache.
      */
-    delete(deleteObject: GuildMemberRoleOptions): Promise<{
+    delete(deleteObject: RoleOptions): Promise<{
         error: ErrorResponseFromApi[];
         success: ResponseFromApi[];
     } | Collection<string, GuildRole>>;
@@ -88,5 +92,8 @@ export declare class GuildRolesManager {
      * @param createObject - An object containing the role creation data.
      * @returns The created role data or an error response.
      */
-    create(createObject: GuildRoleCreatePayload): Promise<ResponseFromApi | Record<any, any> | null>;
+    create(createObject: RESTPostAPIGuildRoleJSONBody & {
+        reason?: string;
+    }): Promise<Record<any, any> | ResponseFromApi | null>;
 }
+export {};

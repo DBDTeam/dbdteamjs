@@ -17,11 +17,10 @@ export class ForumChannel extends Channel {
   #data: APIGuildForumChannel;
   last_message_id: Nullable<string>;
   declare available_tags: APIGuildForumTag[];
-  constructor(data: APIChannel, client: Client) {
+  constructor(data: APIGuildForumChannel, client: Client) {
     super(data, client);
-    this.#data = data as APIGuildForumChannel;
+    this.#data = data;
     this.topic = this.#data.topic;
-    this.last_message_id = this.#data.last_message_id;
     this.available_tags = this.#data.available_tags;
     this.default_auto_archive_duration =
       this.#data.default_auto_archive_duration;
@@ -32,6 +31,13 @@ export class ForumChannel extends Channel {
       this.#data.default_thread_rate_limit_per_user;
     this.rate_limit_per_user = this.#data.rate_limit_per_user;
   }
+  /**
+   * Creates a new thread in the forum channel.
+   *
+   * @param {RESTPostAPIGuildForumThreadsJSONBody} object - The data required to create a new forum thread, including optional files and a reason.
+   * @param {string} [reason] - Optional reason.
+   * @returns {Promise<ErrorResponseFromApi | ForumThreadChannel>} A promise that resolves to either an `ErrorResponseFromApi` if an error occurs, or a `ForumThreadChannel` representing the newly created thread.
+   */
   async createThread(
     object: RESTPostAPIGuildForumThreadsJSONBody & {
       files?: MessagePayloadFileData[];

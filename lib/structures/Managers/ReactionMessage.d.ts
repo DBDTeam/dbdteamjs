@@ -10,16 +10,36 @@ interface RemoveEmojiPayload {
  * Represents a manager for handling message reactions.
  */
 declare class MessageReactions {
+    /**
+     * The client
+     * @type {Client}
+     */
     readonly client: Client;
+    /**
+     * The current message id
+     * @type {string}
+     */
     readonly messageId: string;
+    /**
+     * The current channel id where the message was sent
+     * @type {string}
+     */
     readonly channelId: string;
+    /**
+     * The guild id
+     * @type { string }
+     */
     readonly guildId?: string;
-    reactions: Array<any>;
+    /**
+     * The reactions that the message has.
+     * * @type {Array<string>}
+    */
+    reactions: Array<string>;
     /**
      * Constructs a new instance of the MessageReactions class.
      * @param {Client} client - The client instance to interact with the Discord API.
      * @param {Message} msgObj - The message object associated with these reactions.
-     * @param {Array<any>} reacts - The reactions associated with the message.
+     * @param {Array<string>} reacts - The reactions associated with the message.
      */
     constructor(client: Client, msgObj: Message, reacts: Array<any>);
     /**

@@ -1,11 +1,20 @@
 import { Client } from "../../client";
-
+import { SelectMenuResolvedValues } from "../../common";
+import { Collection } from "../../utils/Collection";
 import { ComponentInteraction } from "./ComponentInteraction";
 
 export class SelectMenuInteraction extends ComponentInteraction {
   #data;
+  /**
+   * The values of the select menu option
+   * @type { string[] }
+   */
   declare values: string[];
-  declare resolved: any[];
+  /**
+   * The values of the resolved menu options.
+   * @type { Collection<string, SelectMenuResolvedValues> }
+   */
+  declare resolved: Collection<string, SelectMenuResolvedValues>;
 
   constructor(data: any, client: Client) {
     super(data, client);
@@ -18,7 +27,7 @@ export class SelectMenuInteraction extends ComponentInteraction {
     this.values = [...this.#data.data.values];
     const resolvedData = this.#data.data.resolved;
     if (resolvedData) {
-      this.resolved = [];
+      this.resolved = new Collection();
       const resolveTypes = {
         channels: this.guild?.channels,
         roles: this.guild?.roles,
@@ -34,7 +43,7 @@ export class SelectMenuInteraction extends ComponentInteraction {
               if (!x) {
                 x = await cache?.fetch(_item.id);
               }
-              this.resolved.push(x);
+              this.resolved.set(x.id, x);
             }
           }
         }

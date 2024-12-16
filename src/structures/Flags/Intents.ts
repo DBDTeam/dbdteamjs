@@ -1,4 +1,4 @@
-import { Intents } from "../../common";
+import { Intents } from "../../types/Intents";
 
 export class IntentsBitFields {
   /**
@@ -28,10 +28,10 @@ export class IntentsBitFields {
    * @returns {IntentsBitFields}
    */
 
-  add(...intents: Intents[]) {
-    if (this.#iced) return;
+  add(...intents: Intents[]): IntentsBitFields {
+    if (this.#iced) return this;
     for(var intent of intents) {
-      if ((this.intents & intent) === intent) return;
+      if ((this.intents & intent) === intent) return this;
 
       this.intents |= intent;
     }
@@ -45,10 +45,10 @@ export class IntentsBitFields {
    * @returns {IntentsBitFields}
    */
 
-  remove(...intents: Intents[]) {
-    if (this.#iced) return;
+  remove(...intents: Intents[]): IntentsBitFields {
+    if (this.#iced) return this;
     for(var intent of intents) {
-      if ((this.intents & intent) === intent) return;
+      if ((this.intents & intent) === intent) return this;
 
       this.intents =~ intent;
     }
@@ -87,7 +87,7 @@ export class IntentsBitFields {
    * @returns {IntentsBitFields}
    */
 
-  freeze() {
+  freeze():  IntentsBitFields {
     this.#iced = true;
     return this;
   }

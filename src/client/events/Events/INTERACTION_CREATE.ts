@@ -13,6 +13,9 @@ export default class InteractionCreate extends Event<GatewayIntegrationCreateDis
         //@ts-ignore
         await Interaction.patch();
       }
+
+      //console.log(Interaction)
+
       this.client.emit(EventNames.InteractionCreate, Interaction, shard);
     }
   }

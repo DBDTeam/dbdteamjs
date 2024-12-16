@@ -44,7 +44,7 @@ declare class ShardManager extends EventEmitter {
      * @param {import('../client/Client').Client} client
      * @param {Shard} gateway
      */
-    constructor(client: Client, gateway: GatewayConfig);
+    constructor(client: Client, gateway?: GatewayConfig);
     private checkInfo;
     private getGatewayConfig;
     connect(): Promise<void>;

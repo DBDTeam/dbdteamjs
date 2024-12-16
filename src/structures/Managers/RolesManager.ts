@@ -1,9 +1,5 @@
-import { APIRole } from "discord-api-types/v10";
+import { APIRole, RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import {
-  GuildMemberRoleOptions,
-  GuildRoleCreatePayload,
-} from "../../interfaces/member/role";
 import {
   ErrorResponseFromApi,
   ResponseFromApi,
@@ -15,6 +11,11 @@ import { Guild } from "../Guild";
 import { type Member } from "../Member";
 import { EditRolePayload, GuildRole } from "../Role";
 import { Nullable } from "../../common";
+
+type RoleOptions = {
+  roles: string[];
+  reason?: string | undefined | null;
+}
 
 /**
  * Manages the roles of a member in a guild.
@@ -58,7 +59,7 @@ export class MemberRolesManager {
    * @param addObject - An object containing roles to add and a reason.
    * @returns An object containing errors and success responses.
    */
-  async add(addObject: GuildMemberRoleOptions): Promise<{
+  async add(addObject: RoleOptions): Promise<{
     error: ErrorResponseFromApi[];
     success: ResponseFromApi[];
   } | null> {
@@ -98,7 +99,7 @@ export class MemberRolesManager {
    * @param removeObject - An object containing roles to remove and a reason.
    * @returns An object containing errors and success responses.
    */
-  async remove(removeObject: GuildMemberRoleOptions): Promise<{
+  async remove(removeObject: RoleOptions): Promise<{
     error: ErrorResponseFromApi[];
     success: ResponseFromApi[];
   } | null> {
@@ -254,7 +255,7 @@ export class GuildRolesManager {
    * @returns An object containing errors and success responses or the current cache.
    */
   async delete(
-    deleteObject: GuildMemberRoleOptions
+    deleteObject: RoleOptions
   ): Promise<
     | { error: ErrorResponseFromApi[]; success: ResponseFromApi[] }
     | Collection<string, GuildRole>
@@ -292,7 +293,7 @@ export class GuildRolesManager {
    * @param createObject - An object containing the role creation data.
    * @returns The created role data or an error response.
    */
-  async create(createObject: GuildRoleCreatePayload) {
+  async create(createObject: RESTPostAPIGuildRoleJSONBody & { reason?: string }) {
     const base = {
       name: "New Role",
       permissions: "0",

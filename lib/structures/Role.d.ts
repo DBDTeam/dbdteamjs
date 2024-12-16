@@ -18,16 +18,49 @@ export interface EditRolePayload {
 export declare class GuildRole extends Base {
     #private;
     data: APIRole;
-    guildId: any;
-    name: any;
+    /**
+     * The ID of the guild to which the role belongs.
+     */
+    guildId: string;
+    /**
+     * The name of the role.
+     */
+    name: string;
+    /**
+     * Whether the role is displayed separately in the member list.
+     */
     hoist: boolean;
+    /**
+     * The role's icon hash, if it has one.
+     */
     icon: string | null;
+    /**
+     * The role's position in the hierarchy.
+     */
     position: number;
-    permissions: any;
+    /**
+     * The permissions the role has.
+     */
+    permissions: number;
+    /**
+     * Whether the role is managed by an integration.
+     */
     managed: boolean;
+    /**
+     * Whether the role is mentionable.
+     */
     mentionable: boolean;
+    /**
+     * The role's tags.
+     */
     tags: APIRoleTags;
-    flags: any;
+    /**
+     * The role's flags.
+     */
+    flags: number;
+    /**
+     * The guild to which the role belongs.
+     */
     readonly guild?: Guild;
     constructor(data: APIRole, guild: Guild, client: Client);
     _patch(): void;

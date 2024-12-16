@@ -1,20 +1,26 @@
 import { type Client } from "../../client/Client";
 import { MessageBodyRequest } from "../../common";
+import { InteractionResponseData } from "../../common/types/interactions";
 import { Message } from "../Message";
 export declare class InteractionResponse extends Message {
     readonly client: Client;
-    /** @type {string} @readonly */
+    /**
+     * The token of the interaction response
+     * @type {string}
+     * @readonly
+     */
     readonly token: any;
-    /** @type {string} @readonly */
+    /**
+     * The id of the interaction response
+     * @type {string}
+     * @readonly
+     */
     readonly interaction_id: any;
-    /** @type {object} */
-    interaction_data: {
-        name: any;
-        id: any;
-        type: any;
-        user: import("..").User | undefined;
-        userId: any;
-    };
+    /**
+     * The interaction data
+     * @type {object}
+     */
+    interaction_data: InteractionResponseData;
     constructor(data: any, client: Client);
     /**
      * Edits the Interaction Response.

@@ -1,4 +1,4 @@
-import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel } from "discord-api-types/v10";
+import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel, RESTPatchAPIGuildJSONBody } from "discord-api-types/v10";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
@@ -6,9 +6,8 @@ import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
-import { GuildMemberManager } from "./Managers/UserManager";
+import { GuildMemberManager } from "./Managers/GuildMemberManager";
 import { VoiceChannel } from "./VoiceChannel";
-import { GuildEditData } from "../interfaces/guild/Guild";
 import { GuildBanManager } from "./Managers/BanManager";
 declare class Guild extends Base {
     #private;
@@ -88,6 +87,6 @@ declare class Guild extends Base {
      * @async
      */
     leave(): Promise<boolean | null>;
-    edit(body: GuildEditData): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Guild | null>;
+    edit(body: RESTPatchAPIGuildJSONBody): Promise<Guild | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
 }
 export { Guild };

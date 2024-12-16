@@ -4,6 +4,7 @@ import {
   GuildMFALevel,
   GuildNSFWLevel,
   GuildVerificationLevel,
+  RESTPatchAPIGuildJSONBody,
 } from "discord-api-types/v10";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { type Client } from "../client/Client";
@@ -13,12 +14,12 @@ import { getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
-import { GuildMemberManager } from "./Managers/UserManager";
+import { GuildMemberManager } from "./Managers/GuildMemberManager";
 import { GuildRole } from "./Role";
 import { VoiceChannel } from "./VoiceChannel";
 import * as Endpoints from "../rest/Endpoints";
-import { GuildEditData } from "../interfaces/guild/Guild";
 import { GuildBanManager } from "./Managers/BanManager";
+import { Member } from "./Member";
 
 class Guild extends Base {
   #exists: any;
@@ -409,7 +410,7 @@ class Guild extends Base {
     return !response?.error ? true : false;
   }
 
-  public async edit(body: GuildEditData) {
+  public async edit(body: RESTPatchAPIGuildJSONBody) {
     if (!body || typeof body !== "object") return null;
 
     const response = await this.client.rest.request(

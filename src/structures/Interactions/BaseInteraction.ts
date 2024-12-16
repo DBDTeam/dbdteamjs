@@ -108,7 +108,7 @@ class InteractionBase {
    * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
    */
   reply: (
-    obj: InteractionBodyRequest
+    obj: InteractionBodyRequest | string
   ) => Promise<InteractionResponse | ErrorResponseFromApi>;
 
   /**

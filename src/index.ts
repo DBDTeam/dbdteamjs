@@ -4,13 +4,8 @@
  * @category Client
  */
 export * from "./client";
-
-export * as Structures from "./structures";
-
-export * from "./structures/Flags/Intents";
-export * from "./types/ChannelTypes";
-export * from "./types/Interactions";
-export * from "./types/Presences";
+export * from "./structures/index";
+export * from "./types"
 
 // Utils
 export * from "./utils/Collection";
