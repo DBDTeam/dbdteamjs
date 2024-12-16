@@ -38,7 +38,8 @@ export class RequestHandler {
     auth: boolean = true,
     body?: Record<string, any>,
     reason?: string | null | undefined,
-    files?: Nullable<Array<Record<string, any>>>
+    files?: Nullable<Array<Record<string, any>>>,
+    force?: boolean
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const finalURL = `https://discord.com${this.options.baseURL}${url}`;
 
@@ -62,7 +63,7 @@ export class RequestHandler {
       if (reason && typeof reason === "string") {
         headers["X-Audit-Log-Reason"] = reason;
       }
-      if (files && files?.[0]) {
+      if ((files && files?.[0]) || force) {
         headers["Content-Type"] = "multipart/form-data; boundary=boundary";
       }
       const options = {
@@ -76,7 +77,8 @@ export class RequestHandler {
         method,
         headers,
         body,
-        files
+        files,
+        force
       );
 
       return response;
@@ -92,7 +94,8 @@ export class RequestHandler {
     method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     headers: Record<string, any>,
     body?: Record<string, any>,
-    files?: Nullable<Array<Record<string, any>>>
+    files?: Nullable<Array<Record<string, any>>>,
+    force?: boolean
   ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
     const a = Date.now();
     return new Promise(async (resolve: any, reject: any) => {
@@ -134,9 +137,9 @@ export class RequestHandler {
       });
 
       if (["PATCH", "POST", "PUT"].includes(options.method)) {
-        if (body?.data && !files?.[0]) {
+        if (body?.data && !files?.[0] && !force) {
           req.write(JSON.stringify(body?.data));
-        } else if (files?.[0]) {
+        } else if (force) {
           if (body?.data) {
             req.write(`--boundary\r\n`);
             req.write(
@@ -146,20 +149,22 @@ export class RequestHandler {
             req.write(JSON.stringify(body.data || {}));
             req.write("\r\n");
           }
-          for (var f in files) {
-            var file = files[f];
-            var x = await resolveImage(file.url);
-            var b = typeof x === "string" ? x : x?.buffer;
-            var i = b instanceof ArrayBuffer ? x : b;
-            req.write(`--boundary\r\n`);
-            req.write(
-              `Content-Disposition: form-data; name="files[${f}]"; filename="${file.name}"\r\n\r\n`
-            );
-            req.write(i);
-            req.write("\r\n");
+          if(files?.[0]) {
+            for (var f in files) {
+              var file = files[f];
+              var x = await resolveImage(file.url);
+              var b = typeof x === "string" ? x : x?.buffer;
+              var i = b instanceof ArrayBuffer ? x : b;
+              req.write(`--boundary\r\n`);
+              req.write(
+                `Content-Disposition: form-data; name="files[${f}]"; filename="${file.name}"\r\n\r\n`
+              );
+              req.write(i);
+              req.write("\r\n");
+            }
+  
+            req.write(`--boundary--\r\n`);
           }
-
-          req.write(`--boundary--\r\n`);
         }
       }
 
