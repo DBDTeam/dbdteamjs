@@ -75,7 +75,7 @@ class GuildChannelManager {
   async fetch(
     id: string
   ): Promise<Nullable<Channel | Collection<string, any>>> {
-    if (!id || id?.length >= 17 || id?.length <= 18) {
+    if (!id || id?.length < 18 || id?.length > 19) {
       var res = await this._fetchAllChannels();
 
       return res;
