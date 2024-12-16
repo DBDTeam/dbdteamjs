@@ -47,7 +47,7 @@ class ThreadMember {
      * The thread user ID
      * @type {string}
      */
-    this.id = data.user_id;
+    this.id = data?.user_id;
     /**
      * The Guild this member is from
      * @type {Guild}
@@ -57,7 +57,7 @@ class ThreadMember {
      * The flags of the Thread Member
      * @type {number}
      */
-    this.flags = data.flags || 0;
+    this.flags = data?.flags || 0;
     /**
      * The Member of the Thread User.
      * @type {Member}
@@ -67,18 +67,18 @@ class ThreadMember {
      * The ID of the Thread
      * @type {string}
      */
-    this.threadId = data.id;
-    if (this.#client.channels.cache.get(data.id)) {
+    this.threadId = data?.id;
+    if (this.#client.channels.cache.get(data?.id)) {
       /**
        * The Thread Channel (if it can be finded in the cache)
        * @type {ThreadChannel}
        */
-      this.thread = this.#client.channels.cache.get(data.id) as ThreadChannel;
+      this.thread = this.#client.channels.cache.get(data?.id) as ThreadChannel;
     }
     /**
      * The time information when the user joined to the Thread
      */
-    this.joined = getAllStamps(data.joined_timestamp);
+    this.joined = getAllStamps(data?.joined_timestamp);
     /**
      * Removes the user (alias of {@link ThreadMember.kick})
      * @async

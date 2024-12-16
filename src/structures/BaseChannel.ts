@@ -3,7 +3,9 @@ import {
   APIGuildCreatePartialChannel,
   APIOverwrite,
   ChannelType,
+  RESTPatchAPIChannelJSONBody,
   Snowflake,
+  ThreadAutoArchiveDuration,
   VideoQualityMode,
 } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
@@ -48,7 +50,7 @@ export class Channel extends Base {
    * The name of the channel.
    * @type {Nullable<string>}
    */
-  name: Nullable<string>;
+  name: string | undefined;
 
   /**
    * The topic of the channel.
@@ -112,9 +114,9 @@ export class Channel extends Base {
 
   /**
    * The default auto archive duration of the channel.
-   * @type {Nullable<number>}
+   * @type {Nullable<ThreadAutoArchiveDuration>}
    */
-  default_auto_archive_duration: Nullable<number>;
+  default_auto_archive_duration: ThreadAutoArchiveDuration | undefined;
 
   /**
    * The ID of the guild where the channel is located.
@@ -174,19 +176,14 @@ export class Channel extends Base {
 
     this.data = data;
     this.client = client;
-
     this.id = data.id;
     this.type = data.type;
-    this.name = data.name;
+    this.name = data.name as string | undefined;
 
     this.patch(data);
   }
 
   private patch(data: APIChannel) {
-    this.id = data.id;
-    this.type = data.type;
-    this.name = data.name;
-
     if ("position" in data) {
       this.position = data.position;
     }
@@ -347,7 +344,7 @@ export class Channel extends Base {
    */
 
   async edit(
-    obj: APIGuildCreatePartialChannel,
+    obj: RESTPatchAPIChannelJSONBody,
     reason?: string
   ): Promise<
     Nullable<
@@ -359,7 +356,7 @@ export class Channel extends Base {
       | ErrorResponseFromApi
     >
   > {
-    const channelObj = {
+    const channelObj: RESTPatchAPIChannelJSONBody  = {
       name: this.name,
       topic: this.topic,
       bitrate: this.bitrate,

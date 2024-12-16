@@ -128,41 +128,6 @@ class ThreadChannel extends TextBasedChannel {
 
     return response?.error ? response : true;
   }
-
-  async archivedThreads(config: any) {
-    config = setObj({ before: null, limit: 5, type: "public" }, config);
-
-    // let endpoint = Endpoints.ChannelThreadsArchived(this.id, config.type);
-
-    // if (config.before) {
-    //   // @ts-ignore
-    //   endpoint = +`?before=${config.before}`;
-    // }
-    // if (config.limit) {
-    //   endpoint = +config.before
-    //     ? `&limit=${config.limit}`
-    //     : `?limit=${config.limit}`;
-    // }
-  }
-
-  async setTags(tagsIds: string[], reason?: string) {
-    let tags = this.available_tags;
-    if(!tagsIds || !tagsIds.some((id) => typeof id !== "string")) return;
-
-    let combinedTags = Array.from(new Set([...tags, tagsIds]))
-
-    let tagsAsUnion: Record<any, any>[]= []
-
-    for(var id in combinedTags) {
-        tagsAsUnion.push({ id: id })
-    }
-
-    const result = await this.edit({ //@ts-ignore
-        available_tags: tagsAsUnion
-    }, reason)
-
-    return result
-}
 }
 
 export { ThreadChannel };

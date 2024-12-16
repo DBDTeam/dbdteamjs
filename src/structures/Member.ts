@@ -124,18 +124,18 @@ class Member extends Base {
 
     this.guild = guild as Guild;
 
-    this.#DATE = new Date(data.joined_at);
-    this.#PREMIUM = new Date(data.premium_since);
-    this.#TIMEOUTED = new Date(data.communication_disabled_until);
+    this.#DATE = new Date(data?.joined_at || data?.join_timestamp);
+    this.#PREMIUM = new Date(data?.premium_since);
+    this.#TIMEOUTED = new Date(data?.communication_disabled_until);
 
     this.joined = getAllStamps(this) as SnowflakeInformation;
     this.user = this.author;
 
-    this.muted = data.mute;
-    this.deafened = data.deaf;
-    this.flags = data.flags;
-    this.permissions = data.permissions;
-    this.role_ids = data.roles;
+    this.muted = data?.mute;
+    this.deafened = data?.deaf;
+    this.flags = data?.flags;
+    this.permissions = data?.permissions;
+    this.role_ids = data?.roles;
 
     this.roles = new MemberRolesManager(this.guild, this, this.#client);
     this.presence = null;
