@@ -19,6 +19,8 @@ import { ThreadChannel } from "../structures/ThreadChannel";
 import { VoiceChannel } from "../structures/VoiceChannel";
 import { Nullable } from "../common";
 import { DMChannel } from "../structures/DMChannel";
+import { ForumChannel } from "../structures";
+import { ForumThreadChannel } from "../structures/ThreadForumChannel";
 
 export const getId = (t: string) => {
   return t
@@ -27,22 +29,37 @@ export const getId = (t: string) => {
     .replace("_", "");
 };
 
-export function typeChannel(
-  channelData: any,
-  client: Client
-): Channel {
+export function typeChannel(channelData: any, client: Client): Channel {
+  var parent;
   switch (channelData.type) {
     case ChannelType.GuildText:
       return new TextChannel(channelData, client);
     case ChannelType.DM:
-      return new DMChannel(channelData, client)
+      return new DMChannel(channelData, client);
     case ChannelType.GuildVoice:
       return new VoiceChannel(channelData, client);
     case ChannelType.GuildCategory:
       return new CategoryChannel(channelData, client);
-    case ChannelType.PublicThread:
     case ChannelType.PrivateThread:
-      return new ThreadChannel(channelData, client);
+      parent = client.channels.cache.get(channelData?.parent_id);
+
+      console.log(parent?.id)
+
+      if (parent?.type === ChannelType.GuildForum) {
+        return new ForumThreadChannel(channelData, client);
+      } else {
+        return new ThreadChannel(channelData, client);
+      }
+    case ChannelType.PublicThread:
+      parent = client.channels.cache.get(channelData?.parent_id);
+
+      if (parent?.type === ChannelType.GuildForum) {
+        return new ForumThreadChannel(channelData, client);
+      } else {
+        return new ThreadChannel(channelData, client);
+      }
+    case ChannelType.GuildForum:
+      return new ForumChannel(channelData, client);
     default:
       return new Channel(channelData, client);
   }
@@ -139,7 +156,10 @@ export interface SnowflakeInformation {
 export function getAllStamps(c: Base | Date): Nullable<SnowflakeInformation> {
   if (!c) return null;
 
-  const stamp: Date = c instanceof Base ? new Date(Number(c.___getEpoch) + Number(c.___getBinary)) : new Date(c);
+  const stamp: Date =
+    c instanceof Base
+      ? new Date(Number(c.___getEpoch) + Number(c.___getBinary))
+      : new Date(c);
 
   return {
     stamp: stamp.getTime(),

@@ -1,4 +1,4 @@
-import { APIChannel, APIGuildCreatePartialChannel, APIOverwrite, ChannelType, Snowflake, VideoQualityMode } from "discord-api-types/v10";
+import { APIChannel, APIGuildCreatePartialChannel, APIOverwrite, ChannelType, RESTPatchAPIChannelJSONBody, Snowflake, ThreadAutoArchiveDuration, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
@@ -36,7 +36,7 @@ export declare class Channel extends Base {
      * The name of the channel.
      * @type {Nullable<string>}
      */
-    name: Nullable<string>;
+    name: string | undefined;
     /**
      * The topic of the channel.
      * @type {Nullable<string>}
@@ -89,9 +89,9 @@ export declare class Channel extends Base {
     video_quality_mode: Nullable<VideoQualityMode>;
     /**
      * The default auto archive duration of the channel.
-     * @type {Nullable<number>}
+     * @type {Nullable<ThreadAutoArchiveDuration>}
      */
-    default_auto_archive_duration: Nullable<number>;
+    default_auto_archive_duration: ThreadAutoArchiveDuration | undefined;
     /**
      * The ID of the guild where the channel is located.
      * @type {Snowflake}
@@ -174,7 +174,7 @@ export declare class Channel extends Base {
      * })
      * @async
      */
-    edit(obj: APIGuildCreatePartialChannel, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
+    edit(obj: RESTPatchAPIChannelJSONBody, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
     /**
      * Deletes the Channel
      * @param {string} reason - The reason

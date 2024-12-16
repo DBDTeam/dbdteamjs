@@ -88,5 +88,5 @@ export declare class GuildRolesManager {
      * @param createObject - An object containing the role creation data.
      * @returns The created role data or an error response.
      */
-    create(createObject: GuildRoleCreatePayload): Promise<Record<any, any> | ResponseFromApi | null>;
+    create(createObject: GuildRoleCreatePayload): Promise<ResponseFromApi | Record<any, any> | null>;
 }

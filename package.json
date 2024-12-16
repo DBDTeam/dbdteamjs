@@ -4,7 +4,7 @@
   "description": "A Discord api wrapper to create your bot!",
   "main": "./lib/index.js",
   "scripts": {
-    "test": "ts-node ./tests/index.ts"
+    "dev": "concurrently \"tsc --watch\" \"ts-node-dev --respawn test/index.ts\""
   },
   "keywords": [
     "discord",
