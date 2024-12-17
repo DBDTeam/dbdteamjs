@@ -1,4 +1,4 @@
-import { InteractionResponseType } from "discord-api-types/v10";
+import { APIUser, InteractionResponseType, InteractionType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Guild } from "../Guild";
@@ -43,9 +43,9 @@ class InteractionBase {
 
   /**
    * The type of Interaction.
-   * @type {number | undefined}
+   * @type {InteractionType | undefined}
    */
-  public type?: number;
+  public type?: InteractionType;
 
   /**
    * The Guild ID.
@@ -55,9 +55,9 @@ class InteractionBase {
 
   /**
    * The Guild.
-   * @type {Guild | undefined}
+   * @type {Guild}
    */
-  public guild: Guild | undefined;
+  public guild: Guild;
 
   /**
    * The Channel where the Interaction was triggered.
@@ -134,14 +134,18 @@ class InteractionBase {
     this.interactionId = data.id;
     this.type = data.type;
     this.guildId = data.guild_id;
-    this.guild = this.client.guilds.cache.get(this.guildId);
+    this.guild = this.client.guilds.cache.get(this.guildId) as Guild;
 
-    this.member = this._member;
+    this.member = new Member(
+      { ...data.member, id: data.member.user.id },
+      this.guild,
+      this.client
+    );;
 
     this.channel = this.guild?.channels.cache.get(
       data.channel_id
     ) as TextBasedChannel;
-    this.user = this.author;
+    this.user = new User(data.member.user, this.client);
     this.permissions = data.app_permissions;
     this.guildLocale = data.guild_locale;
     this.rawData = data.data;
@@ -153,23 +157,6 @@ class InteractionBase {
     this.reply = this.makeReply;
     this.showModal = this.modal;
   }
-
-  /**
-   * Gets the member associated with the interaction.
-   * @private
-   * @type {Member | null}
-   */
-  get _member() {
-    if (this.guild && this.#d && this.#d.member) {
-      return new Member(
-        { ...this.#d.member, id: this.#d.member.user.id },
-        this.guild,
-        this.client
-      );
-    }
-    return null;
-  }
-
   /**
    * Returns whether the Interaction is a ComponentInteraction.
    * @returns {boolean}
@@ -207,7 +194,7 @@ class InteractionBase {
    * @type {User | undefined}
    */
   public get author(): User | undefined {
-    return this.member?.user;
+    return this.user
   }
 
   /**

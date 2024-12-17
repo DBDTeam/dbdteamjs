@@ -131,7 +131,9 @@ class ApplicationCommandManager {
    * @returns {}
    */
 
-  async add(body: ApplicationCommand): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
+  async add(
+    body: ApplicationCommand
+  ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
     var data = setObj(Data, body, Mapping);
     if (!this.#client.user) return;
     if (this.target !== "global") {
@@ -166,12 +168,18 @@ class ApplicationCommandManager {
    * @returns {Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>>}
    */
 
-  async fetch(id: string): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
+  async fetch(
+    id: string
+  ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
     if (!this.#client.user) return;
     if (this.target !== "global") {
       var response = await this.#client.rest.request(
         "GET",
-        Endpoints.ApplicationGuildCommand(this.#client.user.id, this.target, id),
+        Endpoints.ApplicationGuildCommand(
+          this.#client.user.id,
+          this.target,
+          id
+        ),
         true
       );
     } else {
@@ -191,51 +199,48 @@ class ApplicationCommandManager {
       return this.cache.get(response.data?.id) as APIApplicationCommand;
     }
   }
-  async set(commands: CommandsBody[] | CommandsBody): Promise<Nullable<ErrorResponseFromApi | Collection<string, APIApplicationCommand>>> {
+  async set(
+    commands: CommandsBody[] | CommandsBody
+  ): Promise<
+    Nullable<ErrorResponseFromApi | Collection<string, APIApplicationCommand>>
+  > {
     // Reference: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
-    if (commands instanceof Array) {
-      var data = [];
-      for (var i of commands) {
-        data.push(setObj(Data, i, Mapping));
-      }
+    var data = commands;
 
-      if (!this.#client.user) return;
+    if (!this.#client.user) return;
 
-      if (this.target !== "global") {
-        var response = await this.#client.rest.request(
-          "PUT",
-          Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
-          true,
-          { data }
-        );
-      } else {
-        var response = await this.#client.rest.request(
-          "PUT",
-          Endpoints.ApplicationCommands(this.#client.user.id),
-          true,
-          { data }
-        );
-      }
-
-      if (!response) return null;
-
-      if (response.error) {
-        return response as ErrorResponseFromApi;
-      } else {
-        for (const i of response.data as ApplicationCommand[]) {
-          if (!i || typeof i !== "object") continue;
-          this.cache.set(i.id, i);
-        }
-      }
-      return this.cache;
+    if (this.target !== "global") {
+      var response = await this.#client.rest.request(
+        "PUT",
+        Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
+        true,
+        { data }
+      );
     } else {
-      return null;
+      var response = await this.#client.rest.request(
+        "PUT",
+        Endpoints.ApplicationCommands(this.#client.user.id),
+        true,
+        { data }
+      );
     }
+
+    if (!response) return null;
+
+    if (response.error) {
+      return response as ErrorResponseFromApi;
+    } else {
+      for (const i of response.data as ApplicationCommand[]) {
+        if (!i || typeof i !== "object") continue;
+        this.cache.set(i.id, i);
+      }
+    }
+    return this.cache;
   }
 
   /**
    * Removes a application command with their ID.
-   * @param {string} id - The application command id to remove. 
+   * @param {string} id - The application command id to remove.
    * @returns {Promise<Nullable<ErrorResponseFromApi | boolean>>}
    */
 
@@ -244,7 +249,11 @@ class ApplicationCommandManager {
     if (this.target !== "global") {
       var response = await this.#client.rest.request(
         "DELETE",
-        Endpoints.ApplicationGuildCommand(this.#client.user.id, this.target, id),
+        Endpoints.ApplicationGuildCommand(
+          this.#client.user.id,
+          this.target,
+          id
+        ),
         true
       );
     } else {
@@ -255,9 +264,9 @@ class ApplicationCommandManager {
       );
     }
 
-    if(!response) return null;
+    if (!response) return null;
 
-    if(!response?.error) {
+    if (!response?.error) {
       return response as ErrorResponseFromApi;
     }
 
