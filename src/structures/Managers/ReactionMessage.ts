@@ -1,5 +1,6 @@
 import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
+import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../interfaces/message/Reactions";
 import {
   ErrorResponseFromApi,
   ResponseFromApi,
@@ -7,11 +8,6 @@ import {
 import * as Endpoints from "../../rest/Endpoints";
 import { getId } from "../../utils/utils";
 import { type Message } from "../Message";
-
-interface RemoveEmojiPayload {
-  emojis: Array<string>;
-  user?: string | null | undefined | "@me";
-}
 
 /**
  * Represents a manager for handling message reactions.
@@ -69,13 +65,13 @@ class MessageReactions {
   /**
    * Removes specific reactions from the message.
    * @param {RemoveEmojiPayload} removeData - The data containing emojis and optional user to remove.
-   * @returns {Promise<Nullable<ResponseFromApi[] | ErrorResponseFromApi[]>>} - The result of the removal operation.
+   * @returns {Promise<Nullable<EmojisEmptyAnswer[]>>} - The result of the removal operation.
    */
-  async remove(removeData: RemoveEmojiPayload): Promise<Nullable<ResponseFromApi[] | ErrorResponseFromApi[]>> {
+  async remove(removeData: RemoveEmojiPayload): Promise<Nullable<EmojisEmptyAnswer[]>> {
     var emojis = removeData.emojis;
     var user = removeData.user || "@me";
 
-    var results: Array<ResponseFromApi | ErrorResponseFromApi> = [];
+    var results: EmojisEmptyAnswer[] = [];
 
     if (typeof emojis === "object" && Array.isArray(emojis)) {
       for (var i of emojis) {
@@ -94,14 +90,18 @@ class MessageReactions {
 
         if (!result) continue;
 
-        if (result?.error) {
-          results.push(result as ErrorResponseFromApi);
-        } else {
-          results.push(result as ResponseFromApi);
-        }
+        results.push({ success: result.error, emoji })
       }
 
       if (!results?.[0]) return null;
+
+      for (var index in results) {
+        const result = results[index];
+        
+        if ("success" in result && !result.success) {
+          this.reactions.splice(Number(index), 1);
+        }
+      }
 
       return results;
     }
@@ -110,12 +110,12 @@ class MessageReactions {
   /**
    * Adds reactions to the message.
    * @param {...string} emojis - The emojis to add as reactions.
-   * @returns {Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>>} - The result of the add operation.
+   * @returns {Promise<Nullable<EmojisEmptyAnswer[]>>} - The result of the add emoji operation.
    */
   async add(
     ...emojis: string[]
-  ): Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>> {
-    var results = [];
+  ): Promise<Nullable<EmojisEmptyAnswer[]>>  {
+    var results: EmojisEmptyAnswer[] = [];
     for (var i of emojis) {
       var emoji = encodeURIComponent(getId(i));
 
@@ -130,7 +130,16 @@ class MessageReactions {
         true
       );
 
-      results.push(result);
+      if(!result) continue;
+
+      results.push({ success: result.error, emoji });
+    }
+    for (var index in results) {
+      const result = results[index];
+      
+      if ("success" in result && !result.success) {
+        this.reactions.push(decodeURIComponent(result.emoji));
+      }
     }
 
     return results;
@@ -146,6 +155,8 @@ class MessageReactions {
       Endpoints.ChannelMessageReactions(this.channelId, this.messageId),
       true
     );
+
+    this.reactions = []
 
     return result;
   }
