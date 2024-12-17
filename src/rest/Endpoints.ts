@@ -85,9 +85,9 @@ export const ChannelMessageReaction = (
   chId: string,
   msgId: string,
   emoji: string
-): string => `/channels/${chId}/messages/${msgId}/reactions/${emoji}/`;
+): string => `/channels/${chId}/messages/${msgId}/reactions/${emoji}`;
 export const ChannelMessageReactions = (chId: string, msgId: string): string =>
-  `/channels/${chId}/messages/${msgId}/reactions/`;
+  `/channels/${chId}/messages/${msgId}/reactions`;
 export const ChannelMessagesBulk = (chId: string): string =>
   `/channels/${chId}/messages/bulk-delete`;
 export const ChannelPermissions = (chId: string, overId: string): string =>
@@ -108,7 +108,7 @@ export const ChannelThreads = (chId: string): string =>
 export const ChannelThreadMember = (chId: string, userId: string): string =>
   `/channels/${chId}/thread-members/${userId}`;
 export const ChannelThreadMembers = (chId: string): string =>
-  `/channels/${chId}/thread-members/`;
+  `/channels/${chId}/thread-members`;
 export const ChannelThreadsArchived = (chId: string, type: string): string =>
   `/channels/${chId}/threads/archived/${type}`;
 export const ChannelThreadsArchivedPrivate = (chId: string): string =>
