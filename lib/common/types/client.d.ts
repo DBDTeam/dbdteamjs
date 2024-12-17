@@ -137,7 +137,7 @@ export interface ClientEvents {
     shardDisconnect: (id: string) => unknown;
     shardError: (error: unknown) => unknown;
     debug: (...args: unknown[]) => unknown;
-    error: (error: unknown) => unknown;
+    error: (error: any) => unknown;
     ready: (user: ClientUser, shard: Shard) => unknown;
     messageCreate: (message: Message, shard: Shard) => unknown;
     messageDelete: (oldMessage: Message, shard: Shard) => unknown;

@@ -1,3 +1,4 @@
+import { InteractionType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
@@ -30,9 +31,9 @@ declare class InteractionBase {
     readonly token: string;
     /**
      * The type of Interaction.
-     * @type {number | undefined}
+     * @type {InteractionType | undefined}
      */
-    type?: number;
+    type?: InteractionType;
     /**
      * The Guild ID.
      * @type {string}
@@ -40,9 +41,9 @@ declare class InteractionBase {
     guildId: string;
     /**
      * The Guild.
-     * @type {Guild | undefined}
+     * @type {Guild}
      */
-    guild: Guild | undefined;
+    guild: Guild;
     /**
      * The Channel where the Interaction was triggered.
      * @type {TextBasedChannel}
@@ -98,12 +99,6 @@ declare class InteractionBase {
      * @param {Client} client - The Client.
      */
     constructor(data: any, client: Client);
-    /**
-     * Gets the member associated with the interaction.
-     * @private
-     * @type {Member | null}
-     */
-    get _member(): Member | null;
     /**
      * Returns whether the Interaction is a ComponentInteraction.
      * @returns {boolean}

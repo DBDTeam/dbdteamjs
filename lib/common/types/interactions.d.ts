@@ -1,5 +1,6 @@
-import { ApplicationCommandOptionType, InteractionType, RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v10";
+import { ApplicationCommandOptionType, InteractionType, RESTPostAPIChatInputApplicationCommandsJSONBody } from "discord-api-types/v10";
 import { Channel, ForumChannel, ForumThreadChannel, GuildRole, TextChannel, ThreadChannel, User, VoiceChannel } from "../../structures";
+import { Collection } from "../../utils/Collection";
 /**
  * Represents the types of integrations for Discord commands.
  */
@@ -18,16 +19,7 @@ export declare enum InteractionContexts {
 /**
  * Represents the body of a Discord command, including integrations and contexts.
  */
-export type CommandsBody = RESTPostAPIApplicationCommandsJSONBody & {
-    /**
-     * The integrations types of the command.
-     */
-    integrations_types?: IntegrationTypes[];
-    /**
-     * The contexts of the command.
-     */
-    contexts?: InteractionContexts[];
-};
+export type CommandsBody = RESTPostAPIChatInputApplicationCommandsJSONBody;
 /**
  * Represents a value for a Discord interaction option.
  */
@@ -39,12 +31,16 @@ export type InteractionOptionValue = {
     /**
      * The value of the option
      */
-    value: string;
+    value?: string;
     /**
      * The type of the option
      * @type { ApplicationCommandOptionType }
      */
     type: ApplicationCommandOptionType;
+    /**
+     * The options of the option (only if type is SubCommand or SubCommandGroup)
+     */
+    options?: Collection<string, InteractionOptionValue>;
 };
 export type InteractionResponseData = {
     name: string;

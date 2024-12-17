@@ -31,13 +31,13 @@ export declare class TextBasedChannel extends Channel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest) => Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
+    readonly sendMessage: (body: MessageBodyRequest) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
     /**
        * The Text Channel last pin time information
        */
@@ -58,5 +58,5 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest | string): Promise<Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
+    createMessage(body: MessageBodyRequest | string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Message | null>;
 }

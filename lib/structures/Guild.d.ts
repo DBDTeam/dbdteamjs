@@ -87,6 +87,6 @@ declare class Guild extends Base {
      * @async
      */
     leave(): Promise<boolean | null>;
-    edit(body: RESTPatchAPIGuildJSONBody): Promise<Guild | import("../interfaces/rest/requestHandler").ResponseFromApi | null>;
+    edit(body: RESTPatchAPIGuildJSONBody): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Guild | null>;
 }
 export { Guild };

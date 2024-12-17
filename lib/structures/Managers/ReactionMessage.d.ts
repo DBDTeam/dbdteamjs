@@ -1,11 +1,8 @@
 import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
+import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../interfaces/message/Reactions";
 import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { type Message } from "../Message";
-interface RemoveEmojiPayload {
-    emojis: Array<string>;
-    user?: string | null | undefined | "@me";
-}
 /**
  * Represents a manager for handling message reactions.
  */
@@ -50,15 +47,15 @@ declare class MessageReactions {
     /**
      * Removes specific reactions from the message.
      * @param {RemoveEmojiPayload} removeData - The data containing emojis and optional user to remove.
-     * @returns {Promise<Nullable<ResponseFromApi[] | ErrorResponseFromApi[]>>} - The result of the removal operation.
+     * @returns {Promise<Nullable<EmojisEmptyAnswer[]>>} - The result of the removal operation.
      */
-    remove(removeData: RemoveEmojiPayload): Promise<Nullable<ResponseFromApi[] | ErrorResponseFromApi[]>>;
+    remove(removeData: RemoveEmojiPayload): Promise<Nullable<EmojisEmptyAnswer[]>>;
     /**
      * Adds reactions to the message.
      * @param {...string} emojis - The emojis to add as reactions.
-     * @returns {Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>>} - The result of the add operation.
+     * @returns {Promise<Nullable<EmojisEmptyAnswer[]>>} - The result of the add emoji operation.
      */
-    add(...emojis: string[]): Promise<Array<ResponseFromApi | ErrorResponseFromApi | null>>;
+    add(...emojis: string[]): Promise<Nullable<EmojisEmptyAnswer[]>>;
     /**
      * Removes all reactions from the message.
      * @returns {Promise<ResponseFromApi | ErrorResponseFromApi | null>} - The result of the removal operation.
