@@ -13,7 +13,7 @@ import { TextBasedChannel } from "./TextBasedChannel";
  * Represents a Discord message.
  */
 declare class Message extends Base {
-    data: GatewayMessageCreateDispatchData;
+    private data;
     /**
      * The client associated with the message.
      * @type {Client}

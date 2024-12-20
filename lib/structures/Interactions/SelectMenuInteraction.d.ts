@@ -15,5 +15,5 @@ export declare class SelectMenuInteraction extends ComponentInteraction {
      */
     resolved: Collection<string, SelectMenuResolvedValues>;
     constructor(data: any, client: Client);
-    private patch;
+    _____patch(): Promise<void>;
 }

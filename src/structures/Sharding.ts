@@ -64,6 +64,13 @@ class Shard extends EventEmitter {
       this.ws.on("close", (code: number, reason: string) =>
         this.closeEvent(code, reason)
       );
+      this.ws.on('error', (error: any) => {
+        if (error.code === 'ECONNRESET') {
+          return;
+        }
+
+        this.emit("shardError", error)
+      });
     } catch (error) {
       this.client.emit("shardError", error);
     }

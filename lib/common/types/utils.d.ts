@@ -16,6 +16,7 @@ export type MessageBodyRequest = RESTPostAPIChannelMessageJSONBody & ResolverPro
 export type MessageUpdateBodyRequest = Omit<RESTPostAPIChannelMessageJSONBody, "nonce" | "enforce_nonce" | "allowed_mentions" | "message_reference"> & ResolverProps;
 export type InteractionBodyRequest = ComponentInteractionMessageUpdate & {
     type?: InteractionResponseType;
+    ephemeral?: boolean;
 };
 export interface PresenceData {
     status?: PresenceStatus;

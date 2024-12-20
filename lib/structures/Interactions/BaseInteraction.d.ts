@@ -7,7 +7,7 @@ import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
 import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
 import { ModalPayloadData } from "../Payloads/ModalPayload";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
@@ -73,16 +73,16 @@ declare class InteractionBase {
      * Sends a modal as the interaction response.
      * @async
      * @param {ModalPayloadData} body - The ModalPayloadData
-     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+     * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    showModal: (body: ModalPayloadData) => Promise<InteractionResponse | ErrorResponseFromApi>;
+    showModal: (body: ModalPayloadData) => Promise<InteractionResponse | ResponseFromApi>;
     /**
      * Makes a reply using the gateway.
      * @async
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+     * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    reply: (obj: InteractionBodyRequest | string) => Promise<InteractionResponse | ErrorResponseFromApi>;
+    reply: (obj: InteractionBodyRequest | string) => Promise<InteractionResponse | ResponseFromApi>;
     /**
      * The ID of the interaction.
      * @type {any}
@@ -129,16 +129,16 @@ declare class InteractionBase {
      * @private
      * @async
      * @param {InteractionPayload} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+     * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
     private __makeReply;
     /**
      * Makes a reply using the gateway.
      * @async
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+     * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    makeReply(obj: InteractionBodyRequest | string): Promise<InteractionResponse | ErrorResponseFromApi>;
+    makeReply(obj: InteractionBodyRequest | string): Promise<InteractionResponse | ResponseFromApi>;
     /**
      * Defers the reply.
      * @async
@@ -164,8 +164,8 @@ declare class InteractionBase {
      * Sends a modal as the interaction response.
      * @async
      * @param {ModalPayloadData} body - The ModalPayloadData
-     * @returns {Promise<InteractionResponse | object>}
+     * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    modal(body: ModalPayloadData): Promise<InteractionResponse | ErrorResponseFromApi>;
+    modal(body: ModalPayloadData): Promise<InteractionResponse | ResponseFromApi>;
 }
 export { InteractionBase };

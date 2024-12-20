@@ -49,7 +49,6 @@ declare class Guild extends Base {
     public_channel_id: Nullable<string>;
     welcome_screen: Record<any, any>;
     nsfw_level: GuildNSFWLevel;
-    guild: any;
     bans: GuildBanManager;
     /**
      * Represents a Guild

@@ -27,3 +27,7 @@ pnpm i dbdteamjs
 
 # Examples
 [Client initialization](./examples/client.md)
+[Messages with Buttons](./examples/button.md)
+[Messages with SelectMenus](./examples/selectmenu.md)
+[Messages with reactions](./examples/reactions.md)
+[Slashs interactions](./examples/slashs.md)

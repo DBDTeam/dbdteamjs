@@ -11,7 +11,6 @@ import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/reques
  */
 declare class Member extends Base {
     #private;
-    readonly guild: Guild;
     /**
      * The date the member joined the guild.
      */
@@ -81,12 +80,16 @@ declare class Member extends Base {
      */
     timeouted: boolean;
     /**
+     * The guild where the member is located.
+     */
+    guild: Guild;
+    /**
      * Creates a new Member instance.
      * @param data - The data for the member.
      * @param guild - The guild the member belongs to.
      * @param client - The client instance.
      */
-    constructor(data: Record<any, any>, guild: Guild, client: Client);
+    constructor(data: Record<any, any>, guild: Guild | string, client: Client);
     /**
      * Gets the user associated with this member.
      * @returns The User instance of the member.

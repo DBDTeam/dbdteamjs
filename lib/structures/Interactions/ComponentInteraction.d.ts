@@ -5,6 +5,8 @@ import { Message } from "../Message";
 import { User } from "../User";
 import { InteractionBase } from "./BaseInteraction";
 import { InteractionResponse } from "./InteractionResponse";
+import { ButtonInteraction } from "./ButtonInteraction";
+import { SelectMenuInteraction } from "./SelectMenuInteraction";
 /**
  * Represents a ComponentInteraction.
  * @extends InteractionBase
@@ -47,12 +49,12 @@ declare class ComponentInteraction extends InteractionBase {
      * Checks if the ComponentInteraction is a Button.
      * @type {boolean}
      */
-    get isButton(): boolean;
+    isButton(): this is ButtonInteraction;
     /**
      * Checks if the ComponentInteraction is a SelectMenu.
      * @type {boolean}
      */
-    get isSelectMenu(): boolean;
+    isSelectMenu(): this is SelectMenuInteraction;
     /**
      * Updates the original reply.
      * @param {InteractionPayloadData} obj - The InteractionPayloadData

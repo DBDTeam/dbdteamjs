@@ -1,8 +1,5 @@
 abstract class Base {
   id!: any;
-  /* The base data. */
-  data: unknown;
-
   /**
    * @param string - The snowflake
    */

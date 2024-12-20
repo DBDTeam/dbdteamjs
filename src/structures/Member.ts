@@ -106,6 +106,11 @@ class Member extends Base {
    */
   timeouted!: boolean;
 
+  /**
+   * The guild where the member is located.
+   */
+  guild: Guild
+
   #client: Client;
 
   /**
@@ -114,8 +119,8 @@ class Member extends Base {
    * @param guild - The guild the member belongs to.
    * @param client - The client instance.
    */
-  constructor(data: Record<any, any>, readonly guild: Guild, client: Client) {
-    super(client);
+  constructor(data: Record<any, any>, guild: Guild | string, client: Client) {
+    super(data);
     this.#client = client;
     this.#d = data;
 
@@ -156,7 +161,7 @@ class Member extends Base {
     let user:any = this.#client.users.cache.get(this.id);
     
     if (!user) {
-      user = this.#d.user as APIUser || this.#d.author as APIUser;
+      user = this.#d.user ?? this.#d.author;
       this.#client.users.cache.set(this.id, new User(user, this.#client));
     }
     

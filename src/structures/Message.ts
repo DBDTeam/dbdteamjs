@@ -172,10 +172,8 @@ class Message extends Base {
    * @param {APIMessage} data - The data of the message.
    * @param {Client} client - The client.
    */
-  constructor(public data: GatewayMessageCreateDispatchData, client: Client) {
+  constructor(private data: GatewayMessageCreateDispatchData, client: Client) {
     super(client);
-
-    this.data = data;
     this.client = client;
     this.id = data.id;
     this.type = data.type || 0;
@@ -214,55 +212,50 @@ class Message extends Base {
    * @param {APIMessage} data - The data of the message.
    */
   async ___patch(): Promise<void> {
-    const data = this.data;
     if (!this.channel) {
       this.channel = (await this.client.channels.fetch(
         this.channelId
       )) as TextBasedChannel;
     }
-    if ("member" in data && data.member) {
-      this.member = new Member(
-        { ...data.member, id: this.user.id },
-        this.guild!,
-        this.client
-      );
+    if(!this.member) {
+      this.member = (await this.guild.members?.fetch(this.data.author.id)) as Member
     }
 
-    if ("guild_id" in data) {
+    if ("guild_id" in this.data) {
       this.guildId =
-        data.guild_id ||
+        this.data.guild_id ||
         (this.guild && this.guild.id) ||
         this.client.channels.cache.get(this.channelId)?.guild?.id;
     }
 
-    if ("webhook_id" in data) {
-      this.webhookId = data.webhook_id;
+    if ("webhook_id" in this.data) {
+      this.webhookId = this.data.webhook_id;
     }
 
-    for (const i of data?.mentions || []) {
+    for (const i of this.data?.mentions || []) {
       if ("member" in i) {
-        if (!i.member) continue;
+        if(!i.member) continue;
         this.mentions.users.set(
           i.id,
-          new Member(i.member, this.guild as Guild, this.client)
+          new Member({...i, user: i}, this.guild as Guild, this.client)
         );
       } else {
         this.mentions.users.set(i.id, new User(i, this.client));
       }
     }
 
-    for (const i of (data as APIMessage)?.mention_roles || []) {
+    for (const i of (this.data as APIMessage)?.mention_roles || []) {
       this.mentions.roles.set(i, i);
     }
 
-    if (data?.mention_channels) {
-      for (const i of data.mention_channels) {
+    if (this.data?.mention_channels) {
+      for (const i of this.data.mention_channels) {
         this.mentions.channels.set(i.id, i);
       }
     }
 
-    if (data?.sticker_items) {
-      for (const i of data.sticker_items) {
+    if (this.data?.sticker_items) {
+      for (const i of this.data.sticker_items) {
         this.stickers.set(i.id, i);
       }
     }

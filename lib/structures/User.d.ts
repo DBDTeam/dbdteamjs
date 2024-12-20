@@ -115,7 +115,7 @@ declare class User extends Base {
      * user.bannerUrl() // https://cdn.discordapp.com/banners/640685917467705344/0510a7bd372082644a05c92ffbbe7b2b.webp
      */
     bannerUrl(opts: CDNOptions): string | undefined;
-    createDM(): Promise<ErrorResponseFromApi | DMChannel>;
+    createDM(): Promise<DMChannel | ErrorResponseFromApi>;
     send(body: MessageBodyRequest | string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("./Message").Message | null | undefined>;
     /**
      * Returns the User mention
