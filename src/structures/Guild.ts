@@ -19,7 +19,6 @@ import { GuildRole } from "./Role";
 import { VoiceChannel } from "./VoiceChannel";
 import * as Endpoints from "../rest/Endpoints";
 import { GuildBanManager } from "./Managers/BanManager";
-import { Member } from "./Member";
 
 class Guild extends Base {
   #exists: any;
@@ -61,7 +60,6 @@ class Guild extends Base {
   public_channel_id: Nullable<string>;
   welcome_screen: Record<any, any>;
   nsfw_level: GuildNSFWLevel;
-  guild: any;
   bans: GuildBanManager;
   /**
    * Represents a Guild

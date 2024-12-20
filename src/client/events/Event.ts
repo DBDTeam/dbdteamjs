@@ -22,17 +22,6 @@ export abstract class Event<T> {
       message?.channel?.messages?.cache?.set(data.id, message);
     }
 
-    if (message.guild && data.member) {
-      const member = new Member(
-        { ...data.member, id: data.author?.id },
-        message.guild,
-        this.client
-      );
-
-      if (!message.guild.members?.cache.get(data.author.id))
-        message?.guild?.members?.cache.set(data.author.id, member);
-    }
-
     return message;
   }
 

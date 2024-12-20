@@ -9,12 +9,10 @@ export default class InteractionCreate extends Event<GatewayIntegrationCreateDis
     const Interaction = await interactionType(data, this.client);
 
     if (Interaction) {
-      if ("patch" in Interaction) {
+      if ("_____patch" in Interaction) {
         //@ts-ignore
-        await Interaction.patch();
+        await Interaction._____patch();
       }
-
-      //console.log(Interaction)
 
       this.client.emit(EventNames.InteractionCreate, Interaction, shard);
     }

@@ -21,7 +21,6 @@ export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchDat
       );
       this.client.guilds.cache.forEach((x) => {
         if (x.id === data.guild_id) {
-          guild = x.guild;
           x.channels.cache.set(data.id, typeChannel(data, this.client));
         }
       });
