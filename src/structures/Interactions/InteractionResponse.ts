@@ -26,6 +26,7 @@ export class InteractionResponse extends Message {
 
   constructor(data: any, readonly client: Client) {
     super(data, client);
+    this.guildId = data.guild_id
     this.token = data.token;
     this.interaction_id = data.interaction_id;
     const interaction = data.interaction || data.interaction_metadata;

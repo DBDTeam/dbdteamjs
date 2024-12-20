@@ -42,6 +42,7 @@ export type MessageUpdateBodyRequest = Omit<
 
 export type InteractionBodyRequest = ComponentInteractionMessageUpdate & {
   type?: InteractionResponseType;
+  ephemeral?: boolean
 };
 
 export interface PresenceData {

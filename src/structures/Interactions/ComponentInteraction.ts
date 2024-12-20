@@ -13,6 +13,8 @@ import { InteractionPayload } from "../Payloads/InteractionPayload";
 import { User } from "../User";
 import { InteractionBase } from "./BaseInteraction";
 import { InteractionResponse } from "./InteractionResponse";
+import { ButtonInteraction } from "./ButtonInteraction";
+import { SelectMenuInteraction } from "./SelectMenuInteraction";
 
 /**
  * Represents a ComponentInteraction.
@@ -68,7 +70,7 @@ class ComponentInteraction extends InteractionBase {
    * Checks if the ComponentInteraction is a Button.
    * @type {boolean}
    */
-  get isButton(): boolean {
+  isButton(): this is ButtonInteraction {
     return this.data.data?.component_type === ComponentType.Button;
   }
 
@@ -76,7 +78,7 @@ class ComponentInteraction extends InteractionBase {
    * Checks if the ComponentInteraction is a SelectMenu.
    * @type {boolean}
    */
-  get isSelectMenu(): boolean {
+  isSelectMenu(): this is SelectMenuInteraction {
     return [
       ComponentType.StringSelect,
       ComponentType.UserSelect,

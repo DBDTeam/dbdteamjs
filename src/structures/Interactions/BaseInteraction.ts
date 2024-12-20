@@ -18,7 +18,7 @@ import {
   InteractionModalPayload,
   ModalPayloadData,
 } from "../Payloads/ModalPayload";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
@@ -95,21 +95,21 @@ class InteractionBase {
    * Sends a modal as the interaction response.
    * @async
    * @param {ModalPayloadData} body - The ModalPayloadData
-   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   * @returns {Promise<InteractionResponse | ResponseFromApi>}
    */
   showModal: (
     body: ModalPayloadData
-  ) => Promise<InteractionResponse | ErrorResponseFromApi>;
+  ) => Promise<InteractionResponse | ResponseFromApi>;
 
   /**
    * Makes a reply using the gateway.
    * @async
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   * @returns {Promise<InteractionResponse | ResponseFromApi>}
    */
   reply: (
     obj: InteractionBodyRequest | string
-  ) => Promise<InteractionResponse | ErrorResponseFromApi>;
+  ) => Promise<InteractionResponse | ResponseFromApi>;
 
   /**
    * The ID of the interaction.
@@ -202,15 +202,15 @@ class InteractionBase {
    * @private
    * @async
    * @param {InteractionPayload} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   * @returns {Promise<InteractionResponse | ResponseFromApi>}
    */
   private async __makeReply(
     obj: any
-  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+  ): Promise<InteractionResponse | ResponseFromApi> {
     const data = { type: obj.type, data: obj.data };
 
-    let response;
-    let res = await this.client.rest.request(
+    var response;
+    var res = await this.client.rest.request(
       "POST",
       Endpoints.Interaction(this.interactionId, this.token),
       true,
@@ -237,18 +237,18 @@ class InteractionBase {
       );
     }
 
-    return response ?? (res as ErrorResponseFromApi);
+    return response ?? (res as ResponseFromApi);
   }
 
   /**
    * Makes a reply using the gateway.
    * @async
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
+   * @returns {Promise<InteractionResponse | ResponseFromApi>}
    */
   public async makeReply(
     obj: InteractionBodyRequest | string
-  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+  ): Promise<InteractionResponse | ResponseFromApi> {
     if(typeof obj === "string" || obj instanceof String) {
       obj = { content: obj } as InteractionBodyRequest;
     }
@@ -259,6 +259,7 @@ class InteractionBase {
     const data = {
       type: InteractionResponseType.ChannelMessageWithSource,
       data: { ..._d, files },
+      fetchResponse: obj.fetchResponse,
     };
 
     const response = this.__makeReply(data);
@@ -355,11 +356,11 @@ class InteractionBase {
    * Sends a modal as the interaction response.
    * @async
    * @param {ModalPayloadData} body - The ModalPayloadData
-   * @returns {Promise<InteractionResponse | object>}
+   * @returns {Promise<InteractionResponse | ResponseFromApi>}
    */
   public async modal(
     body: ModalPayloadData
-  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+  ): Promise<InteractionResponse | ResponseFromApi> {
     const ModalData = new InteractionModalPayload(body);
 
     const payload = ModalData.payload;
