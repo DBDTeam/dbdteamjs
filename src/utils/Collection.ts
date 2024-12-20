@@ -67,7 +67,7 @@ class Collection<K, V> extends Map<K, V> {
         break;
       }
     }
-    return result.length > 1 ? result : result[0];
+    return result.length === 1 ? result : result[0];
   }
 
   /**

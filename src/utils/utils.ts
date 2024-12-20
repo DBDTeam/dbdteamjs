@@ -2,6 +2,7 @@ import {
   ApplicationCommandType,
   ChannelType,
   ComponentType,
+  InteractionType,
 } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import { Base } from "../structures/Base";
@@ -43,7 +44,7 @@ export function typeChannel(channelData: any, client: Client): Channel {
     case ChannelType.PrivateThread:
       parent = client.channels.cache.get(channelData?.parent_id);
 
-      console.log(parent?.id)
+      console.log(parent?.id);
 
       if (parent?.type === ChannelType.GuildForum) {
         return new ForumThreadChannel(channelData, client);
@@ -81,22 +82,20 @@ export async function interactionType(data: any, client: any) {
     !data.data.component_type
   ) {
     return await new UserInteraction(data, client);
-  } else if (data.type === 5) {
+  } else if (data.type === InteractionType.ModalSubmit) {
     return await new InteractionModal(data, client);
-  } else if (data.data.custom_id) {
-    if (data.data.component_type === ComponentType.Button) {
-      return await new ButtonInteraction(data, client);
-    } else if (
-      [
-        ComponentType.TextInput,
-        ComponentType.UserSelect,
-        ComponentType.RoleSelect,
-        ComponentType.MentionableSelect,
-        ComponentType.ChannelSelect,
-      ].includes(data.data?.component_type)
-    ) {
-      return await new SelectMenuInteraction(data, client);
-    }
+  } else if (data.data.component_type === ComponentType.Button) {
+    return await new ButtonInteraction(data, client);
+  } else if (
+    [
+      ComponentType.StringSelect,
+      ComponentType.UserSelect,
+      ComponentType.RoleSelect,
+      ComponentType.MentionableSelect,
+      ComponentType.ChannelSelect,
+    ].includes(data.data?.component_type)
+  ) {
+    return await new SelectMenuInteraction(data, client);
   }
 }
 
