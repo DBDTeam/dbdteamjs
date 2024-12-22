@@ -1,4 +1,4 @@
-import { GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildVerificationLevel, RESTPatchAPIGuildJSONBody } from "discord-api-types/v10";
+import { APIGuild, APIGuildWelcomeScreen, GatewayGuildCreateDispatchData, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, RESTPatchAPIGuildJSONBody } from "discord-api-types/v10";
 import { CDNOptions } from "../interfaces/rest/cdn";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
@@ -11,31 +11,32 @@ import { VoiceChannel } from "./VoiceChannel";
 import { GuildBanManager } from "./Managers/BanManager";
 declare class Guild extends Base {
     #private;
+    private data;
     readonly client: Client;
     name: string;
     icon: Nullable<string>;
-    permissions: number;
+    permissions: Nullable<string>;
     features: Nullable<string[]>;
     approximate_members: Nullable<number>;
     approximate_presences: Nullable<number>;
-    roles?: GuildRolesManager;
+    roles: GuildRolesManager;
     emojis: Collection<any, any>;
     stickers: Collection<any, any>;
     channels: GuildChannelManager;
     voice_states: Collection<string, VoiceChannel>;
-    members?: GuildMemberManager;
+    members: GuildMemberManager;
     created: any;
     splash: Nullable<string>;
-    discovery_splash: Nullable<string>;
+    discovery_splash: Nullable<unknown>;
     owner_id: Nullable<string>;
     afk_channel: Nullable<string>;
     afk_timeout: Nullable<number>;
-    widget: boolean;
+    widget_enabled: Nullable<unknown>;
     widget_channel_id: Nullable<string>;
-    verification_level: GuildVerificationLevel;
-    default_message_notifications: GuildDefaultMessageNotifications;
-    explicit_level: GuildExplicitContentFilter;
-    mfa_level: GuildMFALevel;
+    verification_level?: GuildVerificationLevel;
+    default_message_notifications?: GuildDefaultMessageNotifications;
+    explicit_level?: GuildExplicitContentFilter;
+    mfa_level?: GuildMFALevel;
     system_channel: Nullable<string>;
     system_channel_flags: Nullable<number>;
     rules_channel: Nullable<string>;
@@ -43,11 +44,11 @@ declare class Guild extends Base {
     vanity_invite: Nullable<string>;
     description: Nullable<string>;
     banner: Nullable<string>;
-    boost_tier: Nullable<string>;
-    boost_count: Nullable<string>;
+    boost_tier: Nullable<GuildPremiumTier>;
+    boost_count: Nullable<number>;
     preferred_locale: Nullable<string>;
     public_channel_id: Nullable<string>;
-    welcome_screen: Record<any, any>;
+    welcome_screen: Nullable<APIGuildWelcomeScreen>;
     nsfw_level: GuildNSFWLevel;
     bans: GuildBanManager;
     /**
@@ -55,8 +56,7 @@ declare class Guild extends Base {
      * @param {object} data - Guild payload
      * @param {?} client - The Client
      */
-    constructor(data: Record<any, any>, client: Client);
-    _patch(data: any): Promise<void>;
+    constructor(data: APIGuild | GatewayGuildCreateDispatchData, client: Client);
     /**
      * Returns the icon url of the guild (if has)
      * @param {CDNOptions} config - The config of the request.
@@ -86,6 +86,6 @@ declare class Guild extends Base {
      * @async
      */
     leave(): Promise<boolean | null>;
-    edit(body: RESTPatchAPIGuildJSONBody): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | Guild | null>;
+    edit(body: RESTPatchAPIGuildJSONBody): Promise<import("..").ResponseFromApi | Guild | null>;
 }
 export { Guild };

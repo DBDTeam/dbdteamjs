@@ -16,10 +16,7 @@ export class RequestHandler {
   public client: Client;
   public options: Record<string, any>;
   public ping: number;
-  /**
-   *
-   * @param client
-   */
+  
   constructor(client: Client) {
     this.client = client;
     this.options = {
@@ -83,7 +80,10 @@ export class RequestHandler {
 
       return response;
     } catch (error) {
-      this.client.emit("error", error);
+      // Verificar si hay listeners antes de emitir el evento
+      if (this.client.listenerCount("error") > 0) {
+        this.client.emit("error", error);
+      }
       return null;
     }
   }
@@ -106,13 +106,13 @@ export class RequestHandler {
         });
         headers.Authorization = `Bot <censored>`;
         res.on("end", () => {
-          this.client.emit("debug", "An API Request was responsed correctly.");
+          this.client.emit("debug", "An API Request was responded correctly.");
           data?.includes("{") ? (data = JSON.parse(data)) : "";
           if (
             !(res.statusCode && res.statusCode >= 200 && res.statusCode < 300)
           ) {
             const errMsg = {
-              type: "Request Handler Errror",
+              type: "Request Handler Error",
               d: {
                 status: res.statusCode,
                 error: data,
@@ -123,7 +123,9 @@ export class RequestHandler {
               shard: "Unknown",
               error: true,
             };
-            this.client.emit("error", errMsg);
+            if (this.client.listenerCount("error") > 0) {
+              this.client.emit("error", errMsg);
+            }
             resolve(errMsg);
           }
           this.ping = Date.now() - a;
@@ -132,7 +134,9 @@ export class RequestHandler {
       });
 
       req.on("error", (error: any) => {
-        this.client.emit("error", error);
+        if (this.client.listenerCount("error") > 0) {
+          this.client.emit("error", error);
+        }
         return reject(null);
       });
 
@@ -149,7 +153,7 @@ export class RequestHandler {
             req.write(JSON.stringify(body.data || {}));
             req.write("\r\n");
           }
-          if(files?.[0]) {
+          if (files?.[0]) {
             for (var f in files) {
               var file = files[f];
               var x = await resolveImage(file.url);
@@ -162,7 +166,7 @@ export class RequestHandler {
               req.write(i);
               req.write("\r\n");
             }
-  
+
             req.write(`--boundary--\r\n`);
           }
         }

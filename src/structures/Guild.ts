@@ -1,8 +1,12 @@
 import {
+  APIGuild,
+  APIGuildWelcomeScreen,
+  GatewayGuildCreateDispatchData,
   GuildDefaultMessageNotifications,
   GuildExplicitContentFilter,
   GuildMFALevel,
   GuildNSFWLevel,
+  GuildPremiumTier,
   GuildVerificationLevel,
   RESTPatchAPIGuildJSONBody,
 } from "discord-api-types/v10";
@@ -25,28 +29,28 @@ class Guild extends Base {
   readonly client: Client;
   name: string;
   icon: Nullable<string>;
-  permissions: number;
+  permissions: Nullable<string>;
   features: Nullable<string[]>;
   approximate_members: Nullable<number>;
   approximate_presences: Nullable<number>;
-  roles?: GuildRolesManager;
+  roles: GuildRolesManager;
   emojis: Collection<any, any>;
   stickers: Collection<any, any>;
   channels: GuildChannelManager;
   voice_states: Collection<string, VoiceChannel>;
-  members?: GuildMemberManager;
+  members: GuildMemberManager;
   created: any;
   splash: Nullable<string>;
-  discovery_splash: Nullable<string>;
+  discovery_splash: Nullable<unknown>;
   owner_id: Nullable<string>;
   afk_channel: Nullable<string>;
   afk_timeout: Nullable<number>;
-  widget: boolean;
+  widget_enabled: Nullable<unknown>;
   widget_channel_id: Nullable<string>;
-  verification_level: GuildVerificationLevel;
-  default_message_notifications: GuildDefaultMessageNotifications;
-  explicit_level: GuildExplicitContentFilter;
-  mfa_level: GuildMFALevel;
+  verification_level?: GuildVerificationLevel;
+  default_message_notifications?: GuildDefaultMessageNotifications;
+  explicit_level?: GuildExplicitContentFilter;
+  mfa_level?: GuildMFALevel;
   system_channel: Nullable<string>;
   system_channel_flags: Nullable<number>;
   rules_channel: Nullable<string>;
@@ -54,19 +58,19 @@ class Guild extends Base {
   vanity_invite: Nullable<string>;
   description: Nullable<string>;
   banner: Nullable<string>;
-  boost_tier: Nullable<string>;
-  boost_count: Nullable<string>;
+  boost_tier: Nullable<GuildPremiumTier>;
+  boost_count: Nullable<number>;
   preferred_locale: Nullable<string>;
   public_channel_id: Nullable<string>;
-  welcome_screen: Record<any, any>;
-  nsfw_level: GuildNSFWLevel;
+  welcome_screen: Nullable<APIGuildWelcomeScreen>;
+  nsfw_level!: GuildNSFWLevel;
   bans: GuildBanManager;
   /**
    * Represents a Guild
    * @param {object} data - Guild payload
    * @param {?} client - The Client
    */
-  constructor(data: Record<any, any>, client: Client) {
+  constructor(private data: APIGuild | GatewayGuildCreateDispatchData, client: Client) {
     super(data);
     this.client = client;
     this.#exists = client.guilds.cache.get(data.id);
@@ -100,13 +104,13 @@ class Guild extends Base {
      * @type {number | undefined}
      */
     this.approximate_members =
-      data.approximate_member_count || this.#exists?.approximate_members;
+      data.approximate_member_count ?? this.#exists?.approximate_members;
     /**
      * The Guild approximate presence count
      * @type {number | undefined}
      */
     this.approximate_presences =
-      data.approximate_presence_count || this.#exists?.approximate_presences;
+      data.approximate_presence_count ?? this.#exists?.approximate_presences;
     /**
      * The Guild emojis
      * @type {Collection}
@@ -139,216 +143,203 @@ class Guild extends Base {
      * @type {object}
      */
     this.created = getAllStamps(this);
-    this.owner_id = undefined;
-    this.widget = false;
-    this.widget_channel_id = undefined;
-    this.verification_level = 0;
-    this.default_message_notifications = 0;
-    this.explicit_level = 0;
-    this.mfa_level = 0;
-    this.welcome_screen = {};
-    this.nsfw_level = 0;
-    this._patch(data);
-  }
-
-  async _patch(data: any) {
     /**
+     * The owner id of the guild
+     * @type {string}
+     */
+    this.owner_id = data.owner_id;
+     /**
      * The Guild roles
      * @type {GuildRolesManager}
      */
-    this.roles = new GuildRolesManager(data, this.client);
-    /**
+     this.roles = new GuildRolesManager(this, this.client);
+     /**
      * The Guild members in the cache.
      * @type {GuildMemberManager}
      */
-    this.members = new GuildMemberManager(this.client, data);
-    for (var i of data.voice_states || []) {
-      this.voice_states.set(i.channel_id, i);
+    this.members = new GuildMemberManager(this.client, this);
+    if("voice_states" in this.data) {
+      for (var i of this.data.voice_states || []) {
+        if(i.channel_id) this.voice_states.set(i.channel_id, new VoiceChannel(i, this.client));
+      }
     }
-    if (data.splash) {
+    if ("splash" in this.data) {
       /**
        * The Guild splash hash
        * @type {string | undefined}
        */
-      this.splash = data.splash;
+      this.splash = this.data.splash;
     }
-    if (data.discovery_spash) {
+    if ("discovery_spash" in this.data) {
       /**
        * The Guild discovery splash hash
        * @type {string | undefined}
        */
-      this.discovery_splash = data.discovery_spash;
+      this.discovery_splash = this.data.discovery_spash;
     }
-    if (data.owner_id) {
-      /**
-       * The Guild owner ID
-       * @type {string}
-       */
-      this.owner_id = data.owner_id;
-    }
-    if (data.afk_channel_id) {
+    if ("afk_channel_id" in this.data) {
       /**
        * The Guild afk channel ID
        * @type {string | undefined}
        */
-      this.afk_channel = data.afk_channel_id;
+      this.afk_channel = this.data.afk_channel_id;
     }
-    if (data.afk_timeout) {
+    if ("afk_timeout" in this.data) {
       /**
        * The Guild afk timeout in seconds
        * @type {string | undefined}
        */
-      this.afk_timeout = data.afk_timeout;
+      this.afk_timeout = this.data.afk_timeout;
     }
-    if (data.widget_enable) {
+    if ("widget_enable" in this.data) {
       /**
        * If the Guild widget is enabled
        * @type {boolean}
        */
-      this.widget = data.widget_enable;
+      this.widget_enabled = this.data.widget_enable;
     }
-    if (data.widget_channel_id) {
+    if ("widget_channel_id" in this.data) {
       /**
        * The Guild widget channel ID
        * @type {string | undefined}
        * @readonly
        */
-      this.widget_channel_id = data.widget_channel_id;
+      this.widget_channel_id = this.data.widget_channel_id;
     }
-    if (data.verification_level) {
+    if ("verification_level" in this.data) {
       /**
        * The Guild verification level of users that join in the Guild
        * @type {number}
        */
-      this.verification_level = data.verification_level;
+      this.verification_level = this.data.verification_level;
     }
-    if (data.default_message_notifications) {
+    if ("default_message_notifications" in this.data) {
       /**
        * The Guild default message notifactions level
        * @type {number}
        */
-      this.default_message_notifications = data.default_message_notifications;
+      this.default_message_notifications = this.data.default_message_notifications;
     }
-    if (data.explicit_content_filter) {
+    if ("explicit_content_filter" in this.data) {
       /**
        * The Guild explicit content level
        * @type {number}
        */
-      this.explicit_level = data.explicit_content_filter;
+      this.explicit_level = this.data.explicit_content_filter;
     }
-    if (data.roles?.[0]) {
-      for (var i of data.roles) {
-        const role = new GuildRole(i, this, this.client);
-        this.roles.cache.set(i.id, role);
+    if ("roles" in this.data && this.roles) {
+      for (var roleData of this.data.roles) {
+        const role = new GuildRole(roleData, this, this.client);
+        this.roles.cache.set(role.id, role);
       }
     }
-    if (data.emojis?.[0]) {
-      for (var i of data.emojis) {
-        this.emojis.set(i.id, i);
+    if ("emojis" in this.data) {
+      for (var emojiData of this.data.emojis) {
+        this.emojis.set(emojiData.id, emojiData);
       }
     }
-    if (data?.stickers?.[0]) {
-      for (var i of data.stickers) {
-        this.stickers.set(i.id, i);
+    if ("stickers" in this.data) {
+      for (var stickerData of this.data.stickers) {
+        this.stickers.set(stickerData.id, stickerData);
       }
     }
-    if (data.mfa_level) {
+    if ("mfa_level" in this.data) {
       /**
        * The Guild MFA (2FA) level
        * @type {number}
        */
-      this.mfa_level = data.mfa_level;
+      this.mfa_level = this.data.mfa_level;
     }
-    if (data.system_channel_id) {
+    if ("system_channel_id" in this.data) {
       /**
        * The Guild system channel ID
        * @type {string | undefined}
        */
-      this.system_channel = data.system_channel_id;
+      this.system_channel = this.data.system_channel_id;
     }
-    if (this.system_channel && data.system_channel_flags) {
+    if ("system_channel_flags" in this.data) {
       /**
        * The Guild system channel flags
        * @type {number | undefined}
        */
-      this.system_channel_flags = data.system_channel_flags;
+      this.system_channel_flags = this.data.system_channel_flags;
     }
-    if (data.rules_channel_id) {
+    if ("rules_channel_id" in this.data) {
       /**
        * The Guild rules channel id
        * @type {string | undefined}
        */
-      this.rules_channel = data.rules_channel_id;
+      this.rules_channel = this.data.rules_channel_id;
     }
-    if (data.max_members) {
+    if ("max_members" in this.data) {
       /**
        * The Guild max members
        * @type {number}
        */
-      this.max_members = data.max_members;
+      this.max_members = this.data.max_members;
     }
-    if (data.vanity_url_code) {
+    if ("vanity_url_code" in this.data) {
       /**
        * The Guild vanity code (only if the Guild has more than 15 boosts or Boost Tier 3)
        * @type {string}
        */
-      this.vanity_invite = data.vanity_url_code;
+      this.vanity_invite = this.data.vanity_url_code;
     }
-    if (data.description) {
+    if ("description" in this.data) {
       /**
        * The Guild description
        * @type {string | undefined}
        */
-      this.description = data.description;
+      this.description = this.data.description;
     }
-    if (data.banner) {
+    if ("banner" in this.data) {
       /**
        * The Guild banner hash
        * @type {string | undefined}
        */
-      this.banner = data.banner;
+      this.banner = this.data.banner;
     }
-    if (data.premium_tier) {
+    if ("premium_tier" in this.data) {
       /**
        * The Guild Premium Tier (Boost Tier)
        * @type {number}
        */
-      this.boost_tier = data.premium_tier;
+      this.boost_tier = this.data.premium_tier;
     }
-    if (data.premium_subscription_count) {
+    if ("premium_subscription_count" in this.data) {
       /**
        * The Guild Premium Subscription Count (Boost Count)
        * @type {number}
        */
-      this.boost_count = data.premium_subscription_count;
+      this.boost_count = this.data.premium_subscription_count;
     }
-    if (data.preferred_locale) {
+    if ("preferred_locale" in this.data) {
       /**
        * The Guild preferred locale
        * @type {string}
        */
-      this.preferred_locale = data.preferred_locale;
+      this.preferred_locale = this.data.preferred_locale;
     }
-    if (data.public_updates_channel_id) {
+    if ("public_updates_channel_id" in this.data) {
       /**
        * The Guild public channel updates ID
        * @type {string | undefined}
        */
-      this.public_channel_id = data.public_updates_channel_id;
+      this.public_channel_id = this.data.public_updates_channel_id;
     }
-    if (data.welcome_screen) {
+    if ("welcome_screen" in this.data) {
       /**
        * The Guild welcome screen
        * @type {object | null}
        */
-      this.welcome_screen = data.welcome_screen;
+      this.welcome_screen = this.data.welcome_screen;
     }
-    if (data.nsfw_level) {
+    if (this.data.nsfw_level) {
       /**
        * The Guild nsfw level
        * @type {number}
        */
-      this.nsfw_level = data.nsfw_level;
+      this.nsfw_level = this.data.nsfw_level;
     }
   }
 
@@ -389,7 +380,7 @@ class Guild extends Base {
    */
   public discoverySplashUrl(config: CDNOptions): Nullable<string> {
     if(!this.discovery_splash) return null;
-    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash, config)
+    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash as string, config)
   }
 
   /**
@@ -420,7 +411,7 @@ class Guild extends Base {
 
     if(!response || response?.error || !response?.data) return response;
 
-    return new Guild(response.data, this.client)
+    return new Guild(response.data as APIGuild, this.client)
   }
 }
 

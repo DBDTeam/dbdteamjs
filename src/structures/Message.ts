@@ -38,7 +38,7 @@ class Message extends Base {
    * The ID of the guild where the message was sent.
    * @type {string | undefined}
    */
-  guildId!: string;
+  guildId: string | undefined;
 
   /**
    * The author of the message.
@@ -176,6 +176,7 @@ class Message extends Base {
     super(client);
     this.client = client;
     this.id = data.id;
+    this.guildId = data.guild_id;
     this.type = data.type || 0;
     this.channelId = data.channel_id;
     this.author = new User(this.data.author || this.data?.interaction?.user, this.client);
@@ -189,8 +190,7 @@ class Message extends Base {
     this.channel = this.client.channels.cache.get(
       data.channel_id
     ) as TextBasedChannel;
-    this.guild = (this.client.guilds.cache.get(this.guildId) ||
-      this.client.channels.cache.get(this.channelId)?.guild) as Guild;
+    this.guild = this.client.guilds.cache.get(this.guildId as string) as Guild;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.reactions = new MessageReactions(
       this.client,
@@ -219,13 +219,6 @@ class Message extends Base {
     }
     if(!this.member) {
       this.member = (await this.guild.members?.fetch(this.data.author.id)) as Member
-    }
-
-    if ("guild_id" in this.data) {
-      this.guildId =
-        this.data.guild_id ||
-        (this.guild && this.guild.id) ||
-        this.client.channels.cache.get(this.channelId)?.guild?.id;
     }
 
     if ("webhook_id" in this.data) {

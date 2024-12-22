@@ -6,6 +6,7 @@ import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
 import { User } from "./User";
 import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
+import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
 /**
  * Represents a guild member and provides methods to manage and interact with it.
  */
@@ -34,7 +35,7 @@ declare class Member extends Base {
     /**
      * The permissions of the member.
      */
-    permissions: any;
+    permissions: MemberPermissionManager;
     /**
      * The IDs of the roles assigned to the member.
      */
@@ -104,7 +105,7 @@ declare class Member extends Base {
     /**
      * Makes the member leave the guild.
      */
-    leave(): void;
+    leave(): Promise<ResponseFromApi | ErrorResponseFromApi | null>;
     /**
      * Checks if the member is kickable.
      * @returns {boolean} True if the member can be kicked, false otherwise.

@@ -109,9 +109,8 @@ class Client extends TypedEmitter<ClientEvents> {
     this.events = new EventManager(this);
 
     this.shardManager.on("debug", (...args) => this.emit("debug", ...args));
-    this.on("error", console.error);
     this.shardManager.on("eventReceived", async (d, id) => {
-      this.events._handle(d.t, d.d, id);
+      await this.events._handle(d.t, d.d, id);
     });
   }
 

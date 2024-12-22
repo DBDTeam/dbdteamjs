@@ -4,9 +4,9 @@ import { EventNames } from "../../../common";
 import { GatewayGuildUpdateDispatchData } from "discord-api-types/v10";
 
 export default class GuildCreate extends Event<GatewayGuildUpdateDispatchData> {
-  handle(data: any, shard: Shard) {
+  async handle(data: any, shard: Shard) {
     const oldGuild = this.client.guilds.cache.get(data.id);
-    const newGuild = this.getGuild(data);
+    const newGuild = await this.getGuild(data);
 
     if (!newGuild) return;
 

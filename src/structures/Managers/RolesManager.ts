@@ -15,7 +15,7 @@ import { Nullable } from "../../common";
 type RoleOptions = {
   roles: string[];
   reason?: string | undefined | null;
-}
+};
 
 /**
  * Manages the roles of a member in a guild.
@@ -40,17 +40,13 @@ export class MemberRolesManager {
     this.#patch();
   }
 
-  /**
-   * Patches the cache with the member's roles.
-   */
   #patch() {
-    for (var i in this.member.role_ids) {
-      if (!this.guild?.roles) return null;
-      var roleFound = this.guild.roles.cache.get(this.member.role_ids[i]);
+    const roles = this.guild.roles.cache
+      .toJSON()
+      .filter((role) => this.member.role_ids?.includes(role.id));
 
-      if (roleFound instanceof GuildRole) {
-        this.cache.set(roleFound.id, roleFound);
-      }
+    for (var role of roles) {
+      this.cache.set(role.id, role);
     }
   }
 
@@ -220,7 +216,10 @@ export class GuildRolesManager {
    *
    * @returns {Nullable<ErrorResponseFromApi | GuildRole | Collection<string, GuildRole[]>>} Returns the edited role if the request was successful, otherwise returns an error.
    */
-  async edit(id: string, editOptions: EditRolePayload): Promise<Nullable<ErrorResponseFromApi | GuildRole>> {
+  async edit(
+    id: string,
+    editOptions: EditRolePayload
+  ): Promise<Nullable<ErrorResponseFromApi | GuildRole>> {
     let reason = editOptions.reason;
     delete editOptions.reason;
     var response = await this.#client.rest.request(
@@ -293,7 +292,9 @@ export class GuildRolesManager {
    * @param createObject - An object containing the role creation data.
    * @returns The created role data or an error response.
    */
-  async create(createObject: RESTPostAPIGuildRoleJSONBody & { reason?: string }) {
+  async create(
+    createObject: RESTPostAPIGuildRoleJSONBody & { reason?: string }
+  ) {
     const base = {
       name: "New Role",
       permissions: "0",

@@ -6,6 +6,7 @@
 export * from "./client";
 export * from "./structures/index";
 export * from "./types"
+export * from "./interfaces/index"
 
 // Utils
 export * from "./utils/Collection";

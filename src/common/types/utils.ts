@@ -1,6 +1,5 @@
 import {
   APIActionRowComponent,
-  APIAttachment,
   APIEmbed,
   APIInteractionResponseCallbackData,
   APIMessageActionRowComponent,

@@ -14,5 +14,5 @@ export declare abstract class Event<T> {
     getUser(data: any): User;
     getMember(data: any, guildId: any): Member;
     getGuild(data: any): Guild;
-    getRole(data: any, guildId: string): GuildRole | undefined;
+    getRole(data: any, guildId: string): Promise<GuildRole | undefined>;
 }

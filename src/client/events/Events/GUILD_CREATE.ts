@@ -1,13 +1,17 @@
-import { GatewayGuildCreateDispatch } from "discord-api-types/v10";
+import { GatewayGuildCreateDispatchData } from "discord-api-types/v10";
 import { Event } from "../Event";
-import { Shard } from "../../../structures";
+import { Guild, Shard } from "../../../structures";
 import { EventNames } from "../../../common";
 
-export default class GuildCreate extends Event<GatewayGuildCreateDispatch> {
-  handle(data: any, shard: Shard) {
-    const guild = this.getGuild(data);
+export default class GuildCreate extends Event<GatewayGuildCreateDispatchData> {
+  async handle(data: GatewayGuildCreateDispatchData, shard: Shard) {
+    const guild = await this.getGuild(data);
 
     if (!guild) return;
+
+    for (var role of data.roles) {
+      await this.getRole(role, guild.id);
+    }
 
     for (const channel of data.channels) {
       this.getChannel(channel);
@@ -17,12 +21,8 @@ export default class GuildCreate extends Event<GatewayGuildCreateDispatch> {
       this.getChannel(thread);
     }
 
-    for (var role of data.roles) {
-      this.getRole(role, guild.id);
-    }
-
     for (var member of data.members) {
-      this.getMember({ ...member, id: member.user.id }, guild.id);
+      this.getMember({ ...member, id: member.user?.id }, guild.id);
     }
 
     if (guild.members) {
@@ -41,7 +41,7 @@ export default class GuildCreate extends Event<GatewayGuildCreateDispatch> {
 
     const stamp = Date.parse(data.joined_at);
 
-    if (stamp > Date.now() - 200) {
+    if (stamp == Date.now()) {
       this.client.emit(EventNames.GuildCreate, guild, shard);
     }
   }

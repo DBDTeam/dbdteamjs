@@ -5,6 +5,6 @@ export declare class EventManager {
     client: Client;
     events: Collection<string, Event<unknown>>;
     constructor(client: Client);
-    _handle(event: string, d: any, shard: any): void;
+    _handle(event: string, d: any, shard: any): Promise<void>;
     _r(e: string): void;
 }

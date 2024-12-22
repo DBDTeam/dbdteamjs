@@ -28,7 +28,7 @@ declare class Message extends Base {
      * The ID of the guild where the message was sent.
      * @type {string | undefined}
      */
-    guildId: string;
+    guildId: string | undefined;
     /**
      * The author of the message.
      * @type {User}

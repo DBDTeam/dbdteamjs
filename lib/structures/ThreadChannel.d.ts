@@ -39,6 +39,6 @@ declare class ThreadChannel extends TextBasedChannel {
      * @returns {Promise<ThreadChannel>}
      * @async
      */
-    leave(): Promise<true | import("../interfaces/rest/requestHandler").ResponseFromApi>;
+    leave(): Promise<true | import("..").ResponseFromApi>;
 }
 export { ThreadChannel };

@@ -1,4 +1,3 @@
-import { APIUser } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { Nullable, PresenceData } from "../common";
 import * as Endpoints from "../rest/Endpoints";
@@ -9,8 +8,12 @@ import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
 import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { User } from "./User";
-import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
+import {
+  ErrorResponseFromApi,
+  ResponseFromApi,
+} from "../interfaces/rest/requestHandler";
 import { GuildRole } from "./Role";
+import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
 
 /**
  * Represents a guild member and provides methods to manage and interact with it.
@@ -20,7 +23,7 @@ class Member extends Base {
   readonly #PREMIUM: Date;
   readonly #TIMEOUTED: Date;
   readonly #d: any;
-  
+
   /**
    * The date the member joined the guild.
    */
@@ -49,7 +52,7 @@ class Member extends Base {
   /**
    * The permissions of the member.
    */
-  permissions: any;
+  permissions!: MemberPermissionManager;
 
   /**
    * The IDs of the roles assigned to the member.
@@ -59,7 +62,7 @@ class Member extends Base {
   /**
    * The roles manager for the member.
    */
-  roles: MemberRolesManager;
+  roles!: MemberRolesManager;
 
   /**
    * The presence status of the member.
@@ -109,7 +112,7 @@ class Member extends Base {
   /**
    * The guild where the member is located.
    */
-  guild: Guild
+  guild: Guild;
 
   #client: Client;
 
@@ -124,11 +127,10 @@ class Member extends Base {
     this.#client = client;
     this.#d = data;
 
-    if (typeof guild === "string") {
-      this.guild = client.guilds.cache.get(guild) as Guild;
-    }
-
-    this.guild = guild as Guild;
+    this.guild =
+      (typeof guild === "string"
+        ? client.guilds.cache.get(guild)
+        : guild) as Guild;
 
     this.#DATE = new Date(data?.joined_at || data?.join_timestamp);
     this.#PREMIUM = new Date(data?.premium_since);
@@ -140,10 +142,7 @@ class Member extends Base {
     this.muted = data?.mute;
     this.deafened = data?.deaf;
     this.flags = data?.flags;
-    this.permissions = data?.permissions;
     this.role_ids = data?.roles;
-
-    this.roles = new MemberRolesManager(this.guild, this, this.#client);
     this.presence = null;
 
     this._patch(data);
@@ -157,16 +156,16 @@ class Member extends Base {
     if (this.id === this.#client.user.id) {
       return this.#client.user;
     }
-  
-    let user:any = this.#client.users.cache.get(this.id);
-    
+
+    let user: any = this.#client.users.cache.get(this.id);
+
     if (!user) {
       user = this.#d.user ?? this.#d.author;
       this.#client.users.cache.set(this.id, new User(user, this.#client));
     }
-    
+
     return user;
-  }  
+  }
 
   /**
    * Patches the member with new data.
@@ -194,7 +193,9 @@ class Member extends Base {
       this.permissions = data.permissions;
     }
     if ("communication_disabled_until" in data) {
-      this.communicationDisabledUntil = getAllStamps(this.#TIMEOUTED) as SnowflakeInformation;
+      this.communicationDisabledUntil = getAllStamps(
+        this.#TIMEOUTED
+      ) as SnowflakeInformation;
       this.timeoutUntil = this.communicationDisabledUntil;
       this.communicationDisabled = data.communication_disabled_until
         ? true
@@ -202,61 +203,68 @@ class Member extends Base {
       this.timeouted = this.communicationDisabled;
     }
 
+    this.roles = new MemberRolesManager(this.guild, this, this.#client);
+
+    this.permissions = new MemberPermissionManager(
+      this.#client,
+      this,
+      this.guild
+    );
+
     if (this.id === this.#client.user.id) {
       this.edit;
       this.kick;
       this.ban;
-      this.leave = async () => {
-        const response = await this.#client.rest.request(
-          "DELETE",
-          Endpoints.UserGuild(this.guild.id),
-          true
-        );
-        return response;
-      };
+      this.leave;
     }
   }
 
   /**
    * Makes the member leave the guild.
    */
-  leave() {}
+  async leave() {
+    const response = await this.#client.rest.request(
+      "DELETE",
+      Endpoints.UserGuild(this.guild.id),
+      true
+    );
+    return response;
+  }
 
   /**
    * Checks if the member is kickable.
    * @returns {boolean} True if the member can be kicked, false otherwise.
    */
   get kickable() {
-    var _p = 0;
-    var _h =
+    const highestRolePosition =
       this.roles.cache
         .toJSON()
-        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]?.position || 0;
-    const c = this.guild.members?.me;
-    var _h1 =
-      c?.roles.cache
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]
+        ?.position || 0;
+
+    const clientMember = this.guild.members?.me;
+    const clientHighestRolePosition =
+      clientMember?.roles.cache
         .toJSON()
-        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c?.roles?.cache.toJSON() || []) {
-      _p |= perms.permissions;
-    }
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]
+        ?.position || 0;
+
+    const clientPermissions =
+      clientMember?.roles.cache
+        .toJSON()
+        .reduce((permissions, role) => permissions | role.permissions, 0) || 0;
 
     const conditions = {
       kick:
-        _p & PermissionsBitField.Roles.KickMembers ||
-        _p & PermissionsBitField.Roles.Administrator,
+        clientPermissions &
+        (PermissionsBitField.Roles.KickMembers |
+          PermissionsBitField.Roles.Administrator),
       client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
-      highest: _h <= _h1,
+      highest: highestRolePosition <= clientHighestRolePosition,
     };
 
-    var expression =
-      !!conditions.kick &&
-      conditions.client &&
-      conditions.owner &&
-      conditions.highest;
-
-    return expression;
+    return Object.values(conditions).every(Boolean);
   }
 
   /**
@@ -264,36 +272,35 @@ class Member extends Base {
    * @returns True if the member can be banned, false otherwise.
    */
   get bannable() {
-    var _p = 0;
-    var _h =
+    const highestRolePosition =
       this.roles.cache
         .toJSON()
-        .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    const c = this.guild.members?.me;
-    var _h1 =
-      c?.roles.cache
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]
+        ?.position || 0;
+
+    const clientMember = this.guild.members?.me;
+    const clientHighestRolePosition =
+      clientMember?.roles.cache
         .toJSON()
-        .sort((a: any, b: any) => b.position - a.position)?.[0]?.position || 0;
-    for (var perms of c?.roles.cache.toJSON() || []) {
-      _p |= perms.permissions;
-    }
+        .sort((a: GuildRole, b: GuildRole) => b.position - a.position)?.[0]
+        ?.position || 0;
+
+    const clientPermissions =
+      clientMember?.roles.cache
+        .toJSON()
+        .reduce((permissions, role) => permissions | role.permissions, 0) || 0;
 
     const conditions = {
       ban:
-        _p & PermissionsBitField.Roles.BanMembers ||
-        _p & PermissionsBitField.Roles.Administrator,
+        clientPermissions &
+        (PermissionsBitField.Roles.BanMembers |
+          PermissionsBitField.Roles.Administrator),
       client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
-      highest: _h <= _h1,
+      highest: highestRolePosition <= clientHighestRolePosition,
     };
 
-    var expression =
-      !!conditions.ban &&
-      conditions.client &&
-      conditions.owner &&
-      conditions.highest;
-
-    return expression;
+    return Object.values(conditions).every(Boolean);
   }
 
   /**
@@ -329,7 +336,10 @@ class Member extends Base {
    * @param reason - The reason for changing the nickname.
    * @returns The response from the API.
    */
-  async changeNickname(nickname: string, reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  async changeNickname(
+    nickname: string,
+    reason: string
+  ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     reason = reason?.trim();
     var response = await this.#client.rest.request(
       "PATCH",
@@ -347,7 +357,9 @@ class Member extends Base {
    * @param reason - The reason for kicking the member.
    * @returns The response from the API.
    */
-  async kick(reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  async kick(
+    reason: string
+  ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     reason = reason?.trim();
 
     var response = await this.#client.rest.request(
@@ -366,7 +378,10 @@ class Member extends Base {
    * @param obj - The payload for banning the member.
    * @returns The response from the API.
    */
-  async ban(obj: { delete_message_seconds: number, reason: string }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  async ban(obj: {
+    delete_message_seconds: number;
+    reason: string;
+  }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     const banObj = {
       delete_message_seconds: 0,
       reason: null,

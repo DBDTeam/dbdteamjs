@@ -30,7 +30,7 @@ declare class ThreadMemberManager {
      * @param memberId - The ID of the member to fetch or options for fetching members.
      * @returns A thread member, a collection of thread members, or an error response.
      */
-    fetch(memberId: string | FetchWithLimitAfterAndBefore): Promise<import("../../interfaces/rest/requestHandler").ResponseFromApi | ThreadMember | Collection<string, ThreadMember> | null | undefined>;
+    fetch(memberId: string | FetchWithLimitAfterAndBefore): Promise<import("../..").ResponseFromApi | ThreadMember | Collection<string, ThreadMember> | null | undefined>;
     /**
      * Removes a member from a thread.
      * @param memberId - The ID of the member to remove.

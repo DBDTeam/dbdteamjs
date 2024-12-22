@@ -78,7 +78,7 @@ export class GuildRole extends Base {
   /**
    * The guild to which the role belongs.
    */
-  readonly guild?: Guild;
+  private guild?: Guild;
   
   /**
    * A reference to the client.
@@ -108,7 +108,7 @@ export class GuildRole extends Base {
   }
 
   _patch() {
-    if (this.data.icon && this.data.icon) {
+    if (this.data.icon) {
       this.icon = this.data.icon;
     }
     if (this.data.tags) {

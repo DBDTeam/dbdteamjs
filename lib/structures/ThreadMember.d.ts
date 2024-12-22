@@ -25,6 +25,6 @@ declare class ThreadMember {
      * @async
      * @returns {Promise<Object | boolean>}
      */
-    kick(): Promise<true | import("../interfaces/rest/requestHandler").ResponseFromApi>;
+    kick(): Promise<true | import("..").ResponseFromApi>;
 }
 export { ThreadMember };

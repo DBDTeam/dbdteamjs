@@ -62,9 +62,9 @@ export class EventManager {
     this._r("READY");
   }
 
-  _handle(event: string, d: any, shard: any) {
+  async _handle(event: string, d: any, shard: any) {
     if (this.events.get(event)) {
-      this.events.get(event)?.handle(d, shard);
+      await this.events.get(event)?.handle(d, shard);
     }
   }
 

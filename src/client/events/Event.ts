@@ -54,7 +54,7 @@ export abstract class Event<T> {
       this.client.users.cache.set(member.id, member.user);
     }
 
-    member.guild.members?.cache.set(member.id, member);
+    member.guild.members.cache.set(member.id, member);
 
     return member;
   }
@@ -67,14 +67,14 @@ export abstract class Event<T> {
     return guild;
   }
 
-  getRole(data: any, guildId: string) {
+  async getRole(data: any, guildId: string) {
     const guild = this.client.guilds.cache.get(guildId);
 
     if (!guild) return;
 
     const role = new GuildRole(data, guild, this.client);
 
-    guild.roles?.cache.set(role.id, role);
+    guild.roles.cache.set(role.id, role);
 
     return role;
   }

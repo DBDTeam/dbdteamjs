@@ -20,7 +20,7 @@ declare class ClientUser extends User {
      * })
      * @returns {Promise<ClientUser>}
      */
-    edit(object: EditClientUserPayload): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | ClientUser | null>;
+    edit(object: EditClientUserPayload): Promise<import("..").ResponseFromApi | ClientUser | null>;
     /**
      *
      * @param {string} username - The new username of the Client
@@ -33,7 +33,7 @@ declare class ClientUser extends User {
      *
      * @returns {Promise<ClientUser>}
      */
-    editUsername(username: string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | ClientUser | null>;
+    editUsername(username: string): Promise<import("..").ResponseFromApi | ClientUser | null>;
     /**
      *
      * @param {string} url - The new username of the Client
@@ -47,6 +47,6 @@ declare class ClientUser extends User {
      *
      * @returns {Promise<ClientUser>}
      */
-    editAvatar(url: string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | ClientUser | null>;
+    editAvatar(url: string): Promise<import("..").ResponseFromApi | ClientUser | null>;
 }
 export { ClientUser };

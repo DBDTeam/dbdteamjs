@@ -61,7 +61,7 @@ export declare class GuildRole extends Base {
     /**
      * The guild to which the role belongs.
      */
-    readonly guild?: Guild;
+    private guild?;
     constructor(data: APIRole, guild: Guild, client: Client);
     _patch(): void;
     delete(reason?: undefined): Promise<boolean>;
