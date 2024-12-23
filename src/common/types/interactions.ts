@@ -36,8 +36,8 @@ export enum InteractionContexts {
  * Represents the body of a Discord command, including integrations and contexts.
  */
 export type CommandsBody = RESTPostAPIChatInputApplicationCommandsJSONBody & {
-  integrations_types?: IntegrationTypes;
-  integration_contexs?: InteractionContexts
+  integrations_types?: IntegrationTypes[];
+  contexts?: InteractionContexts[]
 }
 
 /**
