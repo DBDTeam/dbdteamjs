@@ -4,7 +4,10 @@ abstract class Base {
    * @param string - The snowflake
    */
   constructor(id: string | Record<any, any>) {
-    this.id = typeof id === "string" ? id : id?.id || id?.user?.id;
+    this.id =
+      typeof id === "string"
+        ? id
+        : id?.id || id?.user?.id || id?.author?.id || id?.member?.user?.id;
   }
 
   _patch(data: unknown) {
@@ -12,7 +15,7 @@ abstract class Base {
   }
 
   get ___getBinary() {
-    return BigInt(this.id || 0 ) >> 22n;
+    return BigInt(this.id || 0) >> 22n;
   }
 
   get ___getEpoch() {

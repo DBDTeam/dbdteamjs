@@ -20,6 +20,7 @@ import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { ChannelTypes } from "../types/ChannelTypes";
+import { type TextBasedChannel } from "./TextBasedChannel";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -344,7 +345,7 @@ export class Channel extends Base {
    */
 
   async edit(
-    obj: RESTPatchAPIChannelJSONBody,
+    data: RESTPatchAPIChannelJSONBody,
     reason?: string
   ): Promise<
     Nullable<
@@ -376,15 +377,6 @@ export class Channel extends Base {
       default_thread_rate_limit_per_user:
         this.default_thread_rate_limit_per_user,
     };
-
-    const data = setObj(channelObj, obj, {
-      parent_id: "parent",
-      permission_overwrites: "permissions",
-      rtc_region: "rtc",
-      video_quality_mode: "videoQuality",
-      default_auto_archive_duration: "defaultAutoArchiveDuration",
-      default_reaction_emoji: "defaultReactionEmoji",
-    });
 
     var result = await this.client.rest.request(
       "PATCH",
@@ -431,7 +423,7 @@ export class Channel extends Base {
     return `<#${this.id}>`;
   }
 
-  isTextBased() {
+  isTextBased(): this is TextBasedChannel {
     return [ChannelTypes.Text, ChannelTypes.Voice, ChannelTypes.PublicThread, ChannelTypes.PrivateThread].includes(this.type)
   }
 }

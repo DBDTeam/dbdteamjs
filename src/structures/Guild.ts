@@ -348,9 +348,9 @@ class Guild extends Base {
    * @param {CDNOptions} config - The config of the request.
    * @returns {Nullable<string>}
    */
-  public iconUrl(config: CDNOptions): Nullable<string> {
+  public iconUrl(config?: CDNOptions): Nullable<string> {
     if(!this.icon) return null;
-    return this.client.rest.cdn.guildIcon(this.id, this.icon, config)
+    return this.client.rest.cdn.guildIcon(this.id, this.icon, config || {})
   }
 
   /**
@@ -358,9 +358,9 @@ class Guild extends Base {
    * @param {CDNOptions} config - The config of the request.
    * @returns {Nullable<string>}
    */
-  public bannerUrl(config: CDNOptions): Nullable<string> {
+  public bannerUrl(config?: CDNOptions): Nullable<string> {
     if(!this.banner) return null;
-    return this.client.rest.cdn.guildBanner(this.id, this.banner, config)
+    return this.client.rest.cdn.guildBanner(this.id, this.banner, config || {})
   }
 
   /**
@@ -368,9 +368,9 @@ class Guild extends Base {
    * @param {CDNOptions} config - The config of the request.
    * @returns {Nullable<string>}
    */
-  public splashUrl(config: CDNOptions): Nullable<string> {
+  public splashUrl(config?: CDNOptions): Nullable<string> {
     if(!this.splash) return null;
-    return this.client.rest.cdn.guildSplash(this.id, this.splash, config)
+    return this.client.rest.cdn.guildSplash(this.id, this.splash, config || {})
   }
 
   /**
@@ -378,9 +378,9 @@ class Guild extends Base {
    * @param {CDNOptions} config - The config of the request.
    * @returns {Nullable<string>}
    */
-  public discoverySplashUrl(config: CDNOptions): Nullable<string> {
+  public discoverySplashUrl(config?: CDNOptions): Nullable<string> {
     if(!this.discovery_splash) return null;
-    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash as string, config)
+    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash as string, config || {})
   }
 
   /**

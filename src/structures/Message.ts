@@ -179,7 +179,10 @@ class Message extends Base {
     this.guildId = data.guild_id;
     this.type = data.type || 0;
     this.channelId = data.channel_id;
-    this.author = new User(this.data.author || this.data?.interaction?.user, this.client);
+    this.author = new User(
+      this.data.author || this.data?.interaction?.user,
+      this.client
+    );
     this.user = this.author;
     this.content = data.content;
     this.mentions = {
@@ -217,8 +220,10 @@ class Message extends Base {
         this.channelId
       )) as TextBasedChannel;
     }
-    if(!this.member) {
-      this.member = (await this.guild.members?.fetch(this.data.author.id)) as Member
+    if (!this.member) {
+      this.member = (await this.guild.members?.fetch(
+        this.data.author.id
+      )) as Member;
     }
 
     if ("webhook_id" in this.data) {
@@ -227,10 +232,10 @@ class Message extends Base {
 
     for (const i of this.data?.mentions || []) {
       if ("member" in i) {
-        if(!i.member) continue;
+        if (!i.member) continue;
         this.mentions.users.set(
           i.id,
-          new Member({...i, user: i}, this.guild as Guild, this.client)
+          new Member({ ...i, user: i }, this.guild as Guild, this.client)
         );
       } else {
         this.mentions.users.set(i.id, new User(i, this.client));
@@ -260,10 +265,10 @@ class Message extends Base {
    * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
    */
   async reply(body: MessageBodyRequest | string): Promise<Message | null> {
-    if(typeof body === "string" || body instanceof String) {
-      body = { content: body as string} as MessageBodyRequest
+    if (typeof body === "string" || body instanceof String) {
+      body = { content: body as string } as MessageBodyRequest;
     }
-    
+
     if (!body.message_reference) {
       body.message_reference = { message_id: this.id };
     }
@@ -301,12 +306,12 @@ class Message extends Base {
    * @returns {Promise<Message | undefined>} A promise that resolves to the edited message, or undefined if failed.
    */
   async edit(obj: MessageBodyRequest | string): Promise<Message | undefined> {
-    var message: EditMessagePayload;
+   var message: EditMessagePayload;
     if (typeof obj === "string") {
       message = new EditMessagePayload({ content: obj as string });
     }
 
-    message = new EditMessagePayload(obj as MessageBodyRequest)
+    message = new EditMessagePayload(obj as MessageBodyRequest);
 
     const result = await this.client.rest.request(
       "PATCH",
@@ -370,7 +375,7 @@ class Message extends Base {
       true
     );
 
-    return deleted?.error ? true : false
+    return deleted?.error ? true : false;
   }
 
   /**

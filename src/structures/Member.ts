@@ -2,7 +2,7 @@ import { Client } from "../client/Client";
 import { Nullable, PresenceData } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { PermissionsBitField } from "../types/PermissionsBitFields";
-import { SnowflakeInformation, getAllStamps, setObj } from "../utils/utils";
+import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
@@ -14,6 +14,7 @@ import {
 } from "../interfaces/rest/requestHandler";
 import { GuildRole } from "./Role";
 import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
+import { RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
 
 /**
  * Represents a guild member and provides methods to manage and interact with it.
@@ -308,7 +309,7 @@ class Member extends Base {
    * @param obj - The payload for editing the member.
    * @returns {Promise<boolean>} True if the edit was successful, false otherwise.
    */
-  async edit(obj: any): Promise<boolean> {
+  async edit(obj: RESTPatchAPIGuildMemberJSONBody): Promise<boolean> {
     var payload = new MemberEditPayload(obj);
 
     var reason = payload.payload.reason;
@@ -338,7 +339,7 @@ class Member extends Base {
    */
   async changeNickname(
     nickname: string,
-    reason: string
+    reason?: string
   ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
     reason = reason?.trim();
     var response = await this.#client.rest.request(
@@ -360,8 +361,6 @@ class Member extends Base {
   async kick(
     reason: string
   ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
-    reason = reason?.trim();
-
     var response = await this.#client.rest.request(
       "DELETE",
       Endpoints.GuildMember(this.guild.id, this.id),
@@ -378,19 +377,10 @@ class Member extends Base {
    * @param obj - The payload for banning the member.
    * @returns The response from the API.
    */
-  async ban(obj: {
-    delete_message_seconds: number;
-    reason: string;
+  async ban(data: {
+    delete_message_seconds?: number;
+    reason?: string;
   }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
-    const banObj = {
-      delete_message_seconds: 0,
-      reason: null,
-    };
-
-    var data = setObj(banObj, obj, {
-      delete_message_seconds: "deleteMessageSeconds",
-    });
-
     var response = await this.#client.rest.request(
       "PUT",
       Endpoints.GuildBan(this.guild.id, this.id),

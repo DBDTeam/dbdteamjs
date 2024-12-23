@@ -11,7 +11,6 @@ import { MessageBodyRequest } from "../common";
 import { Channel } from "./BaseChannel"
 
 export class TextBasedChannel extends Channel {
-  #client: Client;
   /**
    * The Text Channel message manager
    */
@@ -49,7 +48,6 @@ export class TextBasedChannel extends Channel {
   readonly last_pin!: SnowflakeInformation;
   constructor(data: any, client: Client) {
     super(data, client);
-    this.#client = client;
     this.last_message_id = data.last_message_id;
     /**
      * The Text Channel parent id (category id)
@@ -61,7 +59,7 @@ export class TextBasedChannel extends Channel {
      * The Text Channel cooldown per user in seconds
      */
     this.rate_limit_per_user = data.rate_limit_per_user;
-    this.messages = new ChannelMessageManager(this, this.#client);
+    this.messages = new ChannelMessageManager(this, this.client);
     /**
      * The Text Channel cooldown per user in seconds
      * @readonly
@@ -94,7 +92,7 @@ export class TextBasedChannel extends Channel {
     }
     const message = new MessagePayload(body, body?.files);
 
-    var result = await this.#client.rest.request(
+    var result = await this.client.rest.request(
       "POST",
       Endpoints.ChannelMessages(this.id),
       true,
@@ -112,7 +110,7 @@ export class TextBasedChannel extends Channel {
         member: this.guild?.members?.cache.get(result.data?.author.id),
       };
 
-      return new Message(data, this.#client);
+      return new Message(data, this.client);
     } else {
       return result;
     }

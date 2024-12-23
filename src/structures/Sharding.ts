@@ -1,11 +1,11 @@
-import { EventEmitter } from "events";
-// @ts-ignore shh
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
 import { EventNames, GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
+import { ListenerManager } from "../client/ClientListener";
+import { GatewayReceivePayload } from "discord-api-types/v10";
 
-class Shard extends EventEmitter {
+class Shard extends ListenerManager {
   private client: Client;
   private heartbeatInterval: any;
   private sessionID: string;
@@ -157,9 +157,9 @@ class Shard extends EventEmitter {
     this.client.emit("debug", "Resumming the connection", this.shardID);
   }
 
-  async messageEvent(data: any) {
-    const message = JSON.parse(data);
-    if (message.s !== undefined) this.sequence = message.s;
+  async messageEvent(data: string) {
+    const message: GatewayReceivePayload = JSON.parse(data);
+    if (message.s !== null) this.sequence = message.s;
     switch (message.op) {
       case 0:
         this.client.emit(
@@ -170,7 +170,7 @@ class Shard extends EventEmitter {
         if (message.t == "READY") {
           this.sessionID = message.d.session_id;
         }
-        this.emit("eventReceived", message);
+        this.emit("rawEvent", message, this.shardID);
         break;
       case 9:
         this.setAuthenticated();
@@ -216,7 +216,7 @@ class Shard extends EventEmitter {
   }
 }
 
-class ShardManager extends EventEmitter {
+class ShardManager extends ListenerManager {
   public shards;
   private token;
   private intents;
@@ -250,7 +250,7 @@ class ShardManager extends EventEmitter {
       );
 
     if (this.totalShards && this.totalShards <= 0)
-      throw new Error(`Please, input a valid total of shards.`);
+      throw new RangeError(`Please, input a valid total of shards.`);
   }
 
   private async getGatewayConfig() {
@@ -275,8 +275,8 @@ class ShardManager extends EventEmitter {
       );
       this.shards.set(shardID, shard);
       await shard.connect();
-      shard.on("eventReceived", (d: any) => {
-        this.emit("eventReceived", d, shardID);
+      shard.on("rawEvent", (d: GatewayReceivePayload) => {
+        this.emit("rawEvent", d, shardID.toString());
       });
     }
   }
