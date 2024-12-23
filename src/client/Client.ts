@@ -1,4 +1,3 @@
-import { TypedEmitter } from "tiny-typed-emitter";
 import { CacheOptions, ClientEvents, ClientOptions, GatewayConfig, Nullable } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
@@ -10,8 +9,9 @@ import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
 import { EventManager } from "./events/EventManager";
 import { SnowflakeInformation } from "../utils/utils";
+import { ListenerManager } from "./ClientListener";
 
-class Client extends TypedEmitter<ClientEvents> {
+class Client extends ListenerManager {
   /**
    * The token of the client
    */
@@ -109,8 +109,8 @@ class Client extends TypedEmitter<ClientEvents> {
     this.events = new EventManager(this);
 
     this.shardManager.on("debug", (...args) => this.emit("debug", ...args));
-    this.shardManager.on("eventReceived", async (d, id) => {
-      await this.events._handle(d.t, d.d, id);
+    this.shardManager.on("rawEvent", async (d, id) => {
+      await this.events.runEvent(d.t as string, d.d, id);
     });
   }
 
