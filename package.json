@@ -17,7 +17,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "discord-api-types": "^0.37.83",
-    "tiny-typed-emitter": "^2.1.0",
     "ws": "^8.17.0"
   },
   "repository": {

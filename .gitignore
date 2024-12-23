@@ -5,3 +5,4 @@ package-lock.json
 .vscode
 theme/
 test/
+src/client/errors

@@ -62,25 +62,25 @@ declare class Guild extends Base {
      * @param {CDNOptions} config - The config of the request.
      * @returns {Nullable<string>}
      */
-    iconUrl(config: CDNOptions): Nullable<string>;
+    iconUrl(config?: CDNOptions): Nullable<string>;
     /**
      * Returns the icon banner of the guild (if has)
      * @param {CDNOptions} config - The config of the request.
      * @returns {Nullable<string>}
      */
-    bannerUrl(config: CDNOptions): Nullable<string>;
+    bannerUrl(config?: CDNOptions): Nullable<string>;
     /**
      * Returns the icon banner of the guild (if has)
      * @param {CDNOptions} config - The config of the request.
      * @returns {Nullable<string>}
      */
-    splashUrl(config: CDNOptions): Nullable<string>;
+    splashUrl(config?: CDNOptions): Nullable<string>;
     /**
      * Returns the icon banner of the guild (if has)
      * @param {CDNOptions} config - The config of the request.
      * @returns {Nullable<string>}
      */
-    discoverySplashUrl(config: CDNOptions): Nullable<string>;
+    discoverySplashUrl(config?: CDNOptions): Nullable<string>;
     /**
      * Leaves from the server.
      * @async

@@ -8,7 +8,6 @@ import { ThreadChannel } from "./ThreadChannel";
 import { MessageBodyRequest } from "../common";
 import { Channel } from "./BaseChannel";
 export declare class TextBasedChannel extends Channel {
-    #private;
     /**
      * The Text Channel message manager
      */

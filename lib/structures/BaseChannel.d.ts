@@ -8,6 +8,7 @@ import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
 import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
+import { type TextBasedChannel } from "./TextBasedChannel";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -174,7 +175,7 @@ export declare class Channel extends Base {
      * })
      * @async
      */
-    edit(obj: RESTPatchAPIChannelJSONBody, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
+    edit(data: RESTPatchAPIChannelJSONBody, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
     /**
      * Deletes the Channel
      * @param {string} reason - The reason
@@ -189,5 +190,5 @@ export declare class Channel extends Base {
      * channel.send(`Im sending this message in ${channel.toString()}`)
      */
     toString(): string;
-    isTextBased(): boolean;
+    isTextBased(): this is TextBasedChannel;
 }

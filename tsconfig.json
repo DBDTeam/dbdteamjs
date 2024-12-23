@@ -20,7 +20,7 @@
     "rootDir": "./src"
   },
   "include": ["./src"],
-  "exclude": ["./lib"],
+  "exclude": ["./lib", "./src/client/errors"],
   "typedocOptions": {
     "entryPoints": ["./src/"],
     "out": "././docs",

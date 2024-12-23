@@ -1,8 +1,8 @@
-import { EventEmitter } from "events";
 import { type Client } from "../client/Client";
 import { GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
-declare class Shard extends EventEmitter {
+import { ListenerManager } from "../client/ClientListener";
+declare class Shard extends ListenerManager {
     private client;
     private heartbeatInterval;
     private sessionID;
@@ -26,11 +26,11 @@ declare class Shard extends EventEmitter {
     identify(): Promise<void>;
     setAuthenticated(): Promise<void>;
     resume(): Promise<void>;
-    messageEvent(data: any): Promise<void>;
+    messageEvent(data: string): Promise<void>;
     heartbeat(): Promise<void>;
     disconnect(): Promise<void>;
 }
-declare class ShardManager extends EventEmitter {
+declare class ShardManager extends ListenerManager {
     shards: Collection<number, Shard>;
     private token;
     private intents;

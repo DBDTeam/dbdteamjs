@@ -1,5 +1,4 @@
 node_modules/
-tests/
 package-lock.json
 .jsdoc.config.json
 src/
@@ -8,3 +7,4 @@ tsconfig.json
 tsconfig.json
 theme/
 test/
+src/client/errors

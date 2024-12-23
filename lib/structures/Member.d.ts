@@ -7,6 +7,7 @@ import { MemberRolesManager } from "./Managers/RolesManager";
 import { User } from "./User";
 import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
 import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
+import { RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
 /**
  * Represents a guild member and provides methods to manage and interact with it.
  */
@@ -121,14 +122,14 @@ declare class Member extends Base {
      * @param obj - The payload for editing the member.
      * @returns {Promise<boolean>} True if the edit was successful, false otherwise.
      */
-    edit(obj: any): Promise<boolean>;
+    edit(obj: RESTPatchAPIGuildMemberJSONBody): Promise<boolean>;
     /**
      * Changes the nickname of the member.
      * @param nickname - The new nickname.
      * @param reason - The reason for changing the nickname.
      * @returns The response from the API.
      */
-    changeNickname(nickname: string, reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
+    changeNickname(nickname: string, reason?: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
     /**
      * Kicks the member from the guild.
      * @param reason - The reason for kicking the member.
@@ -140,9 +141,9 @@ declare class Member extends Base {
      * @param obj - The payload for banning the member.
      * @returns The response from the API.
      */
-    ban(obj: {
-        delete_message_seconds: number;
-        reason: string;
+    ban(data: {
+        delete_message_seconds?: number;
+        reason?: string;
     }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
     /**
      * Returns a string representation of the member.

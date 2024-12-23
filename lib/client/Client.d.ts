@@ -1,5 +1,4 @@
-import { TypedEmitter } from "tiny-typed-emitter";
-import { CacheOptions, ClientEvents, ClientOptions, GatewayConfig, Nullable } from "../common";
+import { CacheOptions, ClientOptions, GatewayConfig, Nullable } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -9,7 +8,8 @@ import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
 import { SnowflakeInformation } from "../utils/utils";
-declare class Client extends TypedEmitter<ClientEvents> {
+import { ListenerManager } from "./ClientListener";
+declare class Client extends ListenerManager {
     /**
      * The token of the client
      */
