@@ -7,11 +7,7 @@ import { type Message } from "../Message";
  * Represents a manager for handling message reactions.
  */
 declare class MessageReactions {
-    /**
-     * The client
-     * @type {Client}
-     */
-    readonly client: Client;
+    #private;
     /**
      * The current message id
      * @type {string}

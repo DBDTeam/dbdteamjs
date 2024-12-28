@@ -60,7 +60,7 @@ declare class Member extends Base {
     /**
      * The date the member started boosting the guild.
      */
-    premiumSince: SnowflakeInformation;
+    premiumSince: Nullable<SnowflakeInformation>;
     /**
      * Whether the member is pending.
      */
@@ -119,10 +119,10 @@ declare class Member extends Base {
     get bannable(): boolean;
     /**
      * Edits the member with the provided payload.
-     * @param obj - The payload for editing the member.
+     * @param editPayload - The payload for editing the member.
      * @returns {Promise<boolean>} True if the edit was successful, false otherwise.
      */
-    edit(obj: RESTPatchAPIGuildMemberJSONBody): Promise<boolean>;
+    edit(editPayload: RESTPatchAPIGuildMemberJSONBody): Promise<boolean>;
     /**
      * Changes the nickname of the member.
      * @param nickname - The new nickname.
@@ -135,7 +135,7 @@ declare class Member extends Base {
      * @param reason - The reason for kicking the member.
      * @returns The response from the API.
      */
-    kick(reason: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
+    kick(reason?: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
     /**
      * Bans the member from the guild.
      * @param obj - The payload for banning the member.
@@ -150,5 +150,6 @@ declare class Member extends Base {
      * @returns The mention string of the member.
      */
     toString(): string;
+    static type: string;
 }
 export { Member };

@@ -20,7 +20,7 @@ declare class ClientUser extends User {
      * })
      * @returns {Promise<ClientUser>}
      */
-    edit(object: EditClientUserPayload): Promise<import("..").ResponseFromApi | ClientUser | null>;
+    edit(newInfo: EditClientUserPayload): Promise<import("..").ResponseFromApi | ClientUser | null>;
     /**
      *
      * @param {string} username - The new username of the Client

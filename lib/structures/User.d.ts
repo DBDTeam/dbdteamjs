@@ -116,10 +116,11 @@ declare class User extends Base {
      */
     bannerUrl(opts: CDNOptions): string | undefined;
     createDM(): Promise<ErrorResponseFromApi | DMChannel>;
-    send(body: MessageBodyRequest | string): Promise<import("../interfaces/rest/requestHandler").ResponseFromApi | import("./Message").Message | null | undefined>;
+    send(body: MessageBodyRequest | string): Promise<import("./Message").Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
     /**
      * Returns the User mention
      */
     toString(): string;
+    static type: string;
 }
 export { User };

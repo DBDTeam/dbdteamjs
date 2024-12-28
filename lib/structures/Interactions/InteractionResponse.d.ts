@@ -27,5 +27,5 @@ export declare class InteractionResponse extends Message {
      * @param {string | MessageBodyRequest} obj - The EditMessagePayloadData
      * @returns {Promise<InteractionResponse | null>}
      */
-    editInteractionResponse(obj: MessageBodyRequest | string): Promise<import("../..").ResponseFromApi | InteractionResponse | null | undefined>;
+    editInteractionResponse(body: MessageBodyRequest | string): Promise<InteractionResponse | import("../..").ResponseFromApi | null | undefined>;
 }

@@ -7,11 +7,9 @@ import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
 import { GuildMemberManager } from "./Managers/GuildMemberManager";
-import { VoiceChannel } from "./VoiceChannel";
 import { GuildBanManager } from "./Managers/BanManager";
 declare class Guild extends Base {
     #private;
-    private data;
     readonly client: Client;
     name: string;
     icon: Nullable<string>;
@@ -23,7 +21,6 @@ declare class Guild extends Base {
     emojis: Collection<any, any>;
     stickers: Collection<any, any>;
     channels: GuildChannelManager;
-    voice_states: Collection<string, VoiceChannel>;
     members: GuildMemberManager;
     created: any;
     splash: Nullable<string>;

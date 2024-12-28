@@ -18,6 +18,6 @@ declare class ClientPresence {
      * @returns {Promise<boolean>}
      * @async
      */
-    update(obj: ClientPresencePayload, shardId?: number): Promise<boolean | null>;
+    update(obj: ClientPresencePayload, shardId?: number): Promise<boolean>;
 }
 export { ClientPresence };

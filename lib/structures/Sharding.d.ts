@@ -12,14 +12,14 @@ declare class Shard extends ListenerManager {
     private intents;
     private authenticated;
     private time;
-    private mobilePlatform;
+    private browser;
     latency: number;
     ws: any;
     url: string;
-    shardID: string;
+    shardID: number;
     totalShards: number;
     restartTimes: number;
-    constructor(client: Client, shardID: string, totalShards: number, gateway: GatewayConfig);
+    constructor(client: Client, shardID: number, totalShards: number, gateway: GatewayConfig);
     connect(): Promise<void>;
     openEvent(): Promise<void>;
     closeEvent(code: number, reason: string): Promise<void>;
@@ -45,6 +45,11 @@ declare class ShardManager extends ListenerManager {
      * @param {Shard} gateway
      */
     constructor(client: Client, gateway?: GatewayConfig);
+    /**
+     * Validate the intents provided in `this.intents`.
+     * @returns {string[]} A list of invalid intents, if any.
+     */
+    private checkValidIntents;
     private checkInfo;
     private getGatewayConfig;
     connect(): Promise<void>;

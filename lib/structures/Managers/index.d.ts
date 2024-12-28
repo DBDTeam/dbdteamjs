@@ -6,7 +6,7 @@ export * from "./ChannelPermissionManager";
 export * from "./GuildChannelManager";
 export * from "./GuildManager";
 export * from "./GuildMemberManager";
-export * from "./ReactionMessage";
+export * from "./MessageReactionManager";
 export * from "./RolesManager";
 export * from "./ThreadMemberManager";
 export * from "./UserManager";

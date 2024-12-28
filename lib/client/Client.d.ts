@@ -76,7 +76,7 @@ declare class Client extends ListenerManager {
     user: ClientUser;
     /**
      * Represents the Client
-     * @param opts The client options
+     * @param { ClientOptions } opts The client options
      *
      * @example
      * ```ts

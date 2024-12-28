@@ -1,14 +1,15 @@
 import { APIChannelMention, GatewayMessageCreateDispatchData } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { MessageBodyRequest, Nullable } from "../common";
+import { MessageBodyRequest, MessageUpdateBodyRequest, Nullable } from "../common";
 import { Collection } from "../utils/Collection";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
 import { Guild } from "./Guild";
-import { MessageReactions } from "./Managers/ReactionMessage";
+import { MessageReactions } from "./Managers/MessageReactionManager";
 import { Member } from "./Member";
 import { User } from "./User";
 import { TextBasedChannel } from "./TextBasedChannel";
+import { ErrorResponseFromApi } from "../interfaces";
 /**
  * Represents a Discord message.
  */
@@ -26,9 +27,9 @@ declare class Message extends Base {
     id: string;
     /**
      * The ID of the guild where the message was sent.
-     * @type {string | undefined}
+     * @type {string}
      */
-    guildId: string | undefined;
+    guildId: string;
     /**
      * The author of the message.
      * @type {User}
@@ -161,14 +162,14 @@ declare class Message extends Base {
     /**
      * Edits the message.
      * @param {MessageBodyRequest | string} obj - The edit message payload or content.
-     * @returns {Promise<Message | undefined>} A promise that resolves to the edited message, or undefined if failed.
+     * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the edited message, or ErrorResponseFromAPI if failed.
      */
-    edit(obj: MessageBodyRequest | string): Promise<Message | undefined>;
+    edit(newMessage: MessageUpdateBodyRequest | string): Promise<Message | ErrorResponseFromApi>;
     /**
      * Removes all embeds from the message.
-     * @returns {Promise<Message | undefined>} A promise that resolves to the updated message, or undefined if failed.
+     * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the updated message, or undefined if failed.
      */
-    removeEmbeds(): Promise<Message | undefined>;
+    removeEmbeds(): Promise<Message | ErrorResponseFromApi>;
     /**
      * Deletes the message.
      * @returns {Promise<boolean>} A promise that resolves once the message is deleted.

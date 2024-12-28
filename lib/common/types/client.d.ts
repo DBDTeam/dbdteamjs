@@ -62,7 +62,7 @@ export interface GatewayConfig {
     /**
      * The total number of shards to use.
      */
-    totalShards?: number;
+    shards?: number;
 }
 /**
  * Represents the payload for updating the client's presence.
@@ -141,12 +141,12 @@ export interface ClientEvents {
      * Fired when a shard connects to the gateway.
      * @param {string} id - The ID of the shard.
      */
-    shardConnect: (id: string) => unknown;
+    shardConnect: (id: number) => unknown;
     /**
      * Fired when a shard disconnects from the gateway.
      * @param {string} id - The ID of the shard.
      */
-    shardDisconnect: (id: string) => unknown;
+    shardDisconnect: (id: number) => unknown;
     /**
      * Fired when an error occurs within a shard.
      * @param {unknown} error - The error
@@ -239,6 +239,12 @@ export interface ClientEvents {
      * @param {Shard} shard - The shard where the emojis were updated.
      */
     guildEmojiUpdate: (emoji: APIEmoji[], guild: Guild, shard: Shard) => unknown;
+    /**
+     * Fired when a member joins to a guild.
+     * @param {Member} member - The member that has joined to the guild.
+     * @param {Shard} shard - The shard id
+     * @returns
+     */
     guildMemberAdd: (member: Member, shard: Shard) => unknown;
     /**
      * Fired when a chunk of members is received for a guild.
@@ -354,5 +360,5 @@ export interface ClientEvents {
      * @param {GatewayReceivePayload} message - The raw gateway event message.
      * @param {string} shardId - The ID of the shard where the raw event was received.
      */
-    rawEvent: (message: GatewayReceivePayload, shardId: string) => unknown;
+    rawEvent: (message: GatewayReceivePayload, shardId: number) => unknown;
 }

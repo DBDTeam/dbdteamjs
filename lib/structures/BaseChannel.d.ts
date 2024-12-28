@@ -1,4 +1,4 @@
-import { APIChannel, APIGuildCreatePartialChannel, APIOverwrite, ChannelType, RESTPatchAPIChannelJSONBody, Snowflake, ThreadAutoArchiveDuration, VideoQualityMode } from "discord-api-types/v10";
+import { APIChannel, APIOverwrite, ChannelType, RESTPatchAPIChannelJSONBody, Snowflake, ThreadAutoArchiveDuration, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
@@ -9,6 +9,7 @@ import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { type TextBasedChannel } from "./TextBasedChannel";
+import { Guild } from "./Guild";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -17,7 +18,7 @@ import { type TextBasedChannel } from "./TextBasedChannel";
  * @extends {Base}
  */
 export declare class Channel extends Base {
-    readonly data: APIChannel;
+    private data;
     /**
      * The client associated with the channel.
      * @type {Client}
@@ -94,10 +95,15 @@ export declare class Channel extends Base {
      */
     default_auto_archive_duration: ThreadAutoArchiveDuration | undefined;
     /**
+     * The guild where the channel is located.
+     * @type {Guild}
+     */
+    guild: Guild;
+    /**
      * The ID of the guild where the channel is located.
      * @type {Snowflake}
      */
-    guildId?: Snowflake;
+    guildId: Snowflake;
     /**
      * The flags of the channel.
      * @type {number}
@@ -107,7 +113,7 @@ export declare class Channel extends Base {
      * The permissions manager of the channel.
      * @type {ChannelPermissionManager}
      */
-    permissions?: ChannelPermissionManager;
+    permissions: ChannelPermissionManager;
     /**
      * The default reaction emoji of the channel.
      * @type {any}
@@ -141,25 +147,20 @@ export declare class Channel extends Base {
     constructor(data: APIChannel, client: Client);
     private patch;
     /**
-     * The guild where the channel is located.
-     * @type {Guild}
-     */
-    get guild(): import("./Guild").Guild | undefined;
-    /**
      * Clones the channel
-     * @returns {Promise<DefaultChannel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>}
+     * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>> }
      * @async
      * @example
      * const channel = client.channels.cache.get("766497696604487691")
      * channel.clone().then((result) => {
      *  if(result?.error){
-     *      console.log(`Error :()`)
+     *      console.log(`Error :(`)
      *  } else {
      *      console.log(`Channel cloned successfully`)
      *  }
      * })
      */
-    clone(obj: APIGuildCreatePartialChannel): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
+    clone(reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
     /**
      *
      * @param {object} obj - The Channel Edit payload

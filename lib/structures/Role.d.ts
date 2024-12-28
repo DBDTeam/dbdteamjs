@@ -2,6 +2,7 @@ import { Client } from "../client/Client";
 import { Guild } from "./Guild";
 import { APIRole, APIRoleTags, RESTPatchAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { Base } from "./Base";
+import { ErrorResponseFromApi } from "../interfaces";
 export interface EditRolePayload {
     name: string;
     permissions: string;
@@ -57,22 +58,22 @@ export declare class GuildRole extends Base {
     /**
      * The role's flags.
      */
-    flags: number;
+    role_flags: number;
     /**
      * The guild to which the role belongs.
      */
-    private guild?;
+    private guild;
     constructor(data: APIRole, guild: Guild, client: Client);
     _patch(): void;
     delete(reason?: undefined): Promise<boolean>;
     edit(body: RESTPatchAPIGuildRoleJSONBody & {
         position?: number;
-    }, reason?: string): Promise<GuildRole | null>;
-    setName(name: string, reason?: string): Promise<GuildRole | null>;
-    setPosition(position: number, reason?: string): Promise<GuildRole | null>;
-    setColor(color: number, reason?: string): Promise<GuildRole | null>;
-    setHoist(hoist: boolean, reason?: string): Promise<GuildRole | null>;
-    setIcon(icon: string, reason?: string): Promise<GuildRole | null>;
-    setEmoji(unicode_emoji: string, reason?: string): Promise<GuildRole | null>;
-    setMentionable(mentionable: boolean, reason?: string): Promise<GuildRole | null>;
+    }, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setName(name: string, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setPosition(position: number, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setColor(color: number, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setHoist(hoist: boolean, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setIcon(icon: string, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setEmoji(unicode_emoji: string, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
+    setMentionable(mentionable: boolean, reason?: string): Promise<ErrorResponseFromApi | GuildRole>;
 }

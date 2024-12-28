@@ -3,15 +3,6 @@ import { type Client } from "../../client/Client";
 import { CommandsBody, Nullable } from "../../common";
 import { Collection } from "../../utils/Collection";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
-export interface ApplicationCommand extends APIApplicationCommand {
-    defaultMemberPermissions: null | string;
-    defaultMemberPerms: null | string;
-    defaultPermission: boolean;
-    defaultPerm: boolean;
-    descriptionLocalizations: null | Record<"en-US" | "en-GB" | "bg" | "zh-CN" | "zh-TW" | "hr" | "cs" | "da" | "nl" | "fi" | "fr" | "de" | "el" | "hi" | "hu" | "it" | "ja" | "ko" | "lt" | "no" | "pl" | "pt-BR" | "ro" | "ru" | "es-ES" | "es-419" | "sv-SE" | "th" | "tr" | "uk" | "vi", null | string>;
-    descriptionDictionary: null | Record<"en-US" | "en-GB" | "bg" | "zh-CN" | "zh-TW" | "hr" | "cs" | "da" | "nl" | "fi" | "fr" | "de" | "el" | "hi" | "hu" | "it" | "ja" | "ko" | "lt" | "no" | "pl" | "pt-BR" | "ro" | "ru" | "es-ES" | "es-419" | "sv-SE" | "th" | "tr" | "uk" | "vi", null | string>;
-    dmPermission: boolean;
-}
 declare class ApplicationCommandManager {
     #private;
     /**
@@ -28,7 +19,7 @@ declare class ApplicationCommandManager {
      * @param {ApplicationCommand} body - The body of the new application command.
      * @returns {}
      */
-    add(body: ApplicationCommand): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>>;
+    add(body: APIApplicationCommand): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>>;
     /**
      * Fetches a application command with their id.
      * @param {string} id - The ID of the application command to fetch.

@@ -1,12 +1,18 @@
 import { Client } from "../client/Client";
-import { Nullable } from "../common";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
 import { ThreadChannel } from "./ThreadChannel";
+/**
+ * @typedef {import('./TextChannel').TextChannel} TextChannel
+ * @typedef {import('./VoiceChannel').VoiceChannel} VoiceChannel
+ * @typedef {import('./ThreadChannel').ThreadChannel} ThreadChannel
+ * @typedef {import('./Guild').Guild} Guild
+ * @typedef {import('../client/Client').Client} Client
+ */
 declare class ThreadMember {
     #private;
     id: string;
-    guild: Nullable<Guild>;
+    guild: Guild;
     flags: number;
     member: Member;
     threadId: string;
@@ -19,12 +25,13 @@ declare class ThreadMember {
      * @param {Guild} guild - The Guild where the user is
      * @param {Client} client - The Client
      */
-    constructor(data: Record<string, any>, guild: Nullable<Guild>, client: Client);
+    constructor(data: Record<string, any>, guild: Guild, client: Client);
     /**
      * Kick the ThreadMember from the ThreadChannel. Returns true when success, and a object when error.
      * @async
      * @returns {Promise<Object | boolean>}
      */
-    kick(): Promise<true | import("..").ResponseFromApi>;
+    kick(): Promise<true | import("../interfaces").ResponseFromApi>;
+    static type: string;
 }
 export { ThreadMember };

@@ -2,7 +2,7 @@ import { type Client } from "../client/Client";
 import { Channel } from "./BaseChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
-import { Member } from "./Member";
+import { type Member } from "./Member";
 import { TextBasedChannel } from "./TextBasedChannel";
 import { TextChannel } from "./TextChannel";
 /**

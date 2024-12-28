@@ -30,16 +30,16 @@ export declare class TextBasedChannel extends Channel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest) => Promise<import("..").ResponseFromApi | Message | null>;
+    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<Message | import("..").ResponseFromApi | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<import("..").ResponseFromApi | Message | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<Message | import("..").ResponseFromApi | null>;
     /**
-       * The Text Channel last pin time information
-       */
+     * The Text Channel last pin time information
+     */
     readonly last_pin: SnowflakeInformation;
     constructor(data: any, client: Client);
     /**
@@ -57,5 +57,5 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest | string): Promise<import("..").ResponseFromApi | Message | null>;
+    createMessage(body: MessageBodyRequest | string): Promise<Message | import("..").ResponseFromApi | null>;
 }

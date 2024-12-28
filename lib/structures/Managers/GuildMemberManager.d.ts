@@ -33,7 +33,7 @@ declare class GuildMemberManager {
     fetch(memberId: string | Record<string, any>): Promise<Nullable<Member | ErrorResponseFromApi | Collection<string, Member>>>;
     /**
      * Gets the client user as a member of the guild.
-     * @returns {Nullable<Member | unknown>} - The member instance or null if not found, or an error if an error occurred.
+     * @returns {Member} - The member instance or null if not found, or an error if an error occurred.
      */
     get me(): Member;
 }

@@ -3,6 +3,7 @@ import { Client } from "../../client";
 import { InteractionBase } from "./BaseInteraction";
 import { Collection } from "../../utils/Collection";
 export declare class SlashInteraction extends InteractionBase {
+    #private;
     /**
      * The name of the slash command.
      */
