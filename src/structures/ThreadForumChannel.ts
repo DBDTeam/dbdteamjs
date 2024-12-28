@@ -5,6 +5,8 @@ import { Message } from "./Message";
 import { Guild } from "./Guild";
 import { ThreadMember } from "./ThreadMember";
 import * as Endpoints from "../rest/Endpoints";
+import { ClientTypeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
 
 export class ForumThreadChannel extends Channel {
   thread_metadata: APIThreadMetadata;
@@ -34,7 +36,13 @@ export class ForumThreadChannel extends Channel {
     }
   }
 
-  async setTags(tagsIds: string[], reason?: string) {
+  async setTags(tagsIds: Snowflake[], reason?: string) {
+    if (!tagsIds || !Array.isArray(tagsIds))
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "Snowflake[]",
+        "tagsIds"
+      );
     if (!tagsIds || tagsIds.some((id) => typeof id !== "string")) return;
 
     const result = await this.client.rest.request(
@@ -49,6 +57,12 @@ export class ForumThreadChannel extends Channel {
   }
 
   async addTags(tagsIds: string[], reason?: string) {
+    if (!tagsIds || !Array.isArray(tagsIds))
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "Snowflake[]",
+        "tagsIds"
+      );
     if (!tagsIds || tagsIds.some((id) => typeof id !== "string")) return;
 
     let combinedTags = Array.from(new Set([...tagsIds, ...this.applied_tags]));
@@ -65,6 +79,12 @@ export class ForumThreadChannel extends Channel {
   }
 
   async removeTags(tagsIds: string[], reason?: string) {
+    if (!tagsIds || !Array.isArray(tagsIds))
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "Snowflake[]",
+        "tagsIds"
+      );
     if (!tagsIds || tagsIds.some((id) => typeof id !== "string")) return;
 
     let filteredTags = (this.applied_tags || []).filter(

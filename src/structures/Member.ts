@@ -1,7 +1,6 @@
 import { Client } from "../client/Client";
 import { Nullable, PresenceData } from "../common";
 import * as Endpoints from "../rest/Endpoints";
-import { PermissionsBitField } from "../types/PermissionsBitFields";
 import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
@@ -15,12 +14,14 @@ import {
 import { GuildRole } from "./Role";
 import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
 import { RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
+import { ClientTypeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
+import { PermissionsBits } from "../interfaces";
 
 /**
  * Represents a guild member and provides methods to manage and interact with it.
  */
 class Member extends Base {
-  readonly #DATE: Date;
   readonly #PREMIUM: Date;
   readonly #TIMEOUTED: Date;
   readonly #d: any;
@@ -83,7 +84,7 @@ class Member extends Base {
   /**
    * The date the member started boosting the guild.
    */
-  premiumSince!: SnowflakeInformation;
+  premiumSince: Nullable<SnowflakeInformation>;
 
   /**
    * Whether the member is pending.
@@ -128,12 +129,10 @@ class Member extends Base {
     this.#client = client;
     this.#d = data;
 
-    this.guild =
-      (typeof guild === "string"
-        ? client.guilds.cache.get(guild)
-        : guild) as Guild;
+    this.guild = (
+      typeof guild === "string" ? client.guilds.cache.get(guild) : guild
+    ) as Guild;
 
-    this.#DATE = new Date(data?.joined_at || data?.join_timestamp);
     this.#PREMIUM = new Date(data?.premium_since);
     this.#TIMEOUTED = new Date(data?.communication_disabled_until);
 
@@ -207,7 +206,6 @@ class Member extends Base {
     this.roles = new MemberRolesManager(this.guild, this, this.#client);
 
     this.permissions = new MemberPermissionManager(
-      this.#client,
       this,
       this.guild
     );
@@ -257,9 +255,8 @@ class Member extends Base {
 
     const conditions = {
       kick:
-        clientPermissions &
-        (PermissionsBitField.Roles.KickMembers |
-          PermissionsBitField.Roles.Administrator),
+        BigInt(clientPermissions) &
+        (PermissionsBits.KICK_MEMBERS | PermissionsBits.ADMINISTRATOR),
       client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
       highest: highestRolePosition <= clientHighestRolePosition,
@@ -293,9 +290,8 @@ class Member extends Base {
 
     const conditions = {
       ban:
-        clientPermissions &
-        (PermissionsBitField.Roles.BanMembers |
-          PermissionsBitField.Roles.Administrator),
+        BigInt(clientPermissions) &
+        (PermissionsBits.BAN_MEMBERS | PermissionsBits.ADMINISTRATOR),
       client: this.id !== this.#client.user.id,
       owner: this.id.toString() !== this.guild.owner_id,
       highest: highestRolePosition <= clientHighestRolePosition,
@@ -306,11 +302,17 @@ class Member extends Base {
 
   /**
    * Edits the member with the provided payload.
-   * @param obj - The payload for editing the member.
+   * @param editPayload - The payload for editing the member.
    * @returns {Promise<boolean>} True if the edit was successful, false otherwise.
    */
-  async edit(obj: RESTPatchAPIGuildMemberJSONBody): Promise<boolean> {
-    var payload = new MemberEditPayload(obj);
+  async edit(editPayload: RESTPatchAPIGuildMemberJSONBody): Promise<boolean> {
+    if (!editPayload || typeof editPayload !== "object")
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "object",
+        "editPayload"
+      );
+    var payload = new MemberEditPayload(editPayload);
 
     var reason = payload.payload.reason;
 
@@ -341,6 +343,10 @@ class Member extends Base {
     nickname: string,
     reason?: string
   ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+    if (!nickname || typeof nickname !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "nickname");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     reason = reason?.trim();
     var response = await this.#client.rest.request(
       "PATCH",
@@ -359,8 +365,11 @@ class Member extends Base {
    * @returns The response from the API.
    */
   async kick(
-    reason: string
+    reason?: string
   ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
+    reason = reason?.trim();
     var response = await this.#client.rest.request(
       "DELETE",
       Endpoints.GuildMember(this.guild.id, this.id),
@@ -381,6 +390,23 @@ class Member extends Base {
     delete_message_seconds?: number;
     reason?: string;
   }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+    if (!data || typeof data !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "object", "data");
+    if (
+      data.delete_message_seconds &&
+      typeof data.delete_message_seconds !== "number"
+    )
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "number",
+        "data.delete_message_seconds"
+      );
+    if (data.reason && typeof data.reason !== "string")
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "string",
+        "data.reason"
+      );
     var response = await this.#client.rest.request(
       "PUT",
       Endpoints.GuildBan(this.guild.id, this.id),
@@ -399,6 +425,8 @@ class Member extends Base {
   toString() {
     return `<@${this.id}>`;
   }
+
+  static type = "Member";
 }
 
 export { Member };

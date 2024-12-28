@@ -1,6 +1,5 @@
 import {
   APIChannel,
-  APIGuildCreatePartialChannel,
   APIOverwrite,
   ChannelType,
   RESTPatchAPIChannelJSONBody,
@@ -21,6 +20,9 @@ import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { ChannelTypes } from "../types/ChannelTypes";
 import { type TextBasedChannel } from "./TextBasedChannel";
+import { Guild } from "./Guild";
+import { ClientTypeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -120,10 +122,16 @@ export class Channel extends Base {
   default_auto_archive_duration: ThreadAutoArchiveDuration | undefined;
 
   /**
+   * The guild where the channel is located.
+   * @type {Guild}
+   */
+  guild!: Guild;
+
+  /**
    * The ID of the guild where the channel is located.
    * @type {Snowflake}
    */
-  guildId?: Snowflake;
+  guildId!: Snowflake;
 
   /**
    * The flags of the channel.
@@ -135,7 +143,7 @@ export class Channel extends Base {
    * The permissions manager of the channel.
    * @type {ChannelPermissionManager}
    */
-  permissions?: ChannelPermissionManager;
+  permissions!: ChannelPermissionManager;
 
   /**
    * The default reaction emoji of the channel.
@@ -172,7 +180,7 @@ export class Channel extends Base {
    * @param {APIChannel} data - The channel payload.
    * @param {Client} client - The client.
    */
-  constructor(readonly data: APIChannel, client: Client) {
+  constructor(private data: APIChannel, client: Client) {
     super(data.id);
 
     this.data = data;
@@ -214,7 +222,10 @@ export class Channel extends Base {
     }
 
     if ("guild_id" in data) {
-      this.guildId = data.guild_id;
+      this.guildId = data.guild_id as string;
+      this.guild = this.client.guilds.cache.get(
+        this.guildId as string
+      ) as Guild;
     }
 
     if ("flags" in data) {
@@ -222,11 +233,7 @@ export class Channel extends Base {
     }
 
     if ("permission_overwrites" in data) {
-      this.permissions = new ChannelPermissionManager(
-        data.permission_overwrites || [],
-        this.id,
-        this.client
-      );
+      this.permissions = new ChannelPermissionManager(this.id, this.client);
     }
 
     if ("topic" in data) {
@@ -247,23 +254,14 @@ export class Channel extends Base {
   }
 
   /**
-   * The guild where the channel is located.
-   * @type {Guild}
-   */
-  get guild() {
-    if (!this.guildId) return;
-    return this.client.guilds.cache.get(this.guildId);
-  }
-
-  /**
    * Clones the channel
-   * @returns {Promise<DefaultChannel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>}
+   * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>> }
    * @async
    * @example
    * const channel = client.channels.cache.get("766497696604487691")
    * channel.clone().then((result) => {
    *  if(result?.error){
-   *      console.log(`Error :()`)
+   *      console.log(`Error :(`)
    *  } else {
    *      console.log(`Channel cloned successfully`)
    *  }
@@ -271,7 +269,7 @@ export class Channel extends Base {
    */
 
   async clone(
-    obj: APIGuildCreatePartialChannel
+    reason?: string
   ): Promise<
     Nullable<
       | ThreadChannel
@@ -282,43 +280,34 @@ export class Channel extends Base {
       | ErrorResponseFromApi
     >
   > {
-    const channelObj = {
-      name: null,
-      type: null,
-      topic: null,
-      bitrate: null,
-      user_limit: null,
-      rate_limit_per_user: null,
-      position: null,
-      permission_overwrites: null,
-      parent_id: null,
-      nsfw: null,
-      rtc_region: null,
-      video_quality_mode: null,
-      default_auto_archive_duration: null,
-      default_reaction_emoji: null,
-      available_tags: null,
-      default_sort_order: null,
-      default_forum_layout: null,
-      default_thread_rate_limit_per_user: null,
+    const data = {
+      name: this.name,
+      type: this.type,
+      parent_id: this.parent_id,
+      topic: this.topic,
+      bitrate: this.bitrate,
+      user_limit: this.user_limit,
+      rate_limit_per_user: this.rate_limit_per_user,
+      nsfw: this.nsfw,
+      permission_overwrites: this.permission_overwrites,
+      position: this.position,
+      default_auto_archive_duration: this.default_auto_archive_duration,
+      flags: this.flags,
+      default_reaction_emoji: this.default_reaction_emoji,
+      available_tags: this.available_tags,
+      default_sort_order: this.default_sort_order,
+      default_forum_layout: this.default_forum_layout,
     };
 
-    const data = setObj(channelObj, obj, {
-      parent_id: "parent",
-      permission_overwrites: "permissions",
-      rtc_region: "rtc",
-      video_quality_mode: "videoQuality",
-      default_auto_archive_duration: "defaultAutoArchiveDuration",
-      default_reaction_emoji: "defaultReactionEmoji",
-    });
-
-    if (!this.guildId) return null;
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
 
     var result = await this.client.rest.request(
       "POST",
       Endpoints.GuildChannels(this.guildId),
       true,
-      { data }
+      { data },
+      reason
     );
 
     if (!result || !result?.data) return null;
@@ -357,26 +346,8 @@ export class Channel extends Base {
       | ErrorResponseFromApi
     >
   > {
-    const channelObj: RESTPatchAPIChannelJSONBody  = {
-      name: this.name,
-      topic: this.topic,
-      bitrate: this.bitrate,
-      user_limit: this.user_limit,
-      rate_limit_per_user: this.rate_limit_per_user,
-      position: this.position,
-      permission_overwrites: this.permission_overwrites,
-      parent_id: this.parent_id,
-      nsfw: this.nsfw,
-      rtc_region: this.rtc_region,
-      video_quality_mode: this.video_quality_mode,
-      default_auto_archive_duration: this.default_auto_archive_duration,
-      default_reaction_emoji: this.default_reaction_emoji,
-      available_tags: this.available_tags,
-      default_sort_order: this.default_sort_order,
-      default_forum_layout: this.default_forum_layout,
-      default_thread_rate_limit_per_user:
-        this.default_thread_rate_limit_per_user,
-    };
+    if (!data || typeof data !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "object", "data");
 
     var result = await this.client.rest.request(
       "PATCH",
@@ -400,6 +371,9 @@ export class Channel extends Base {
    */
 
   async delete(reason?: string): Promise<boolean> {
+    if(reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason")
+
     var result = await this.client.rest.request(
       "DELETE",
       Endpoints.Channel(this.id),
@@ -424,6 +398,11 @@ export class Channel extends Base {
   }
 
   isTextBased(): this is TextBasedChannel {
-    return [ChannelTypes.Text, ChannelTypes.Voice, ChannelTypes.PublicThread, ChannelTypes.PrivateThread].includes(this.type)
+    return [
+      ChannelTypes.Text,
+      ChannelTypes.Voice,
+      ChannelTypes.PublicThread,
+      ChannelTypes.PrivateThread,
+    ].includes(this.type);
   }
 }

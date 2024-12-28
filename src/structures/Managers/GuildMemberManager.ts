@@ -6,6 +6,8 @@ import { type Guild } from "../Guild";
 import { Member } from "../Member";
 import { Nullable } from "../../common";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { ClientError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 
 export interface FetchWithLimitAndAfter {
   limit?: number;
@@ -120,10 +122,12 @@ class GuildMemberManager {
 
   /**
    * Gets the client user as a member of the guild.
-   * @returns {Nullable<Member | unknown>} - The member instance or null if not found, or an error if an error occurred.
+   * @returns {Member} - The member instance or null if not found, or an error if an error occurred.
    */
   get me(): Member {
       var member = this.cache.get(this.#client.user.id) as Member;
+
+      if(!member) throw new ClientError(ErrorNames.GuildMemberMeUncached)
 
       return member;
   }

@@ -1,4 +1,8 @@
-import { APIUser, InteractionResponseType, InteractionType } from "discord-api-types/v10";
+import {
+  APIUser,
+  InteractionResponseType,
+  InteractionType,
+} from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Guild } from "../Guild";
@@ -18,10 +22,15 @@ import {
   InteractionModalPayload,
   ModalPayloadData,
 } from "../Payloads/ModalPayload";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
+import {
+  ErrorResponseFromApi,
+  ResponseFromApi,
+} from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
+import { ClientError, ClientTypeError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 
 /**
  * Represents the base class for interactions.
@@ -140,7 +149,7 @@ class InteractionBase {
       { ...data.member, id: data.member.user.id },
       this.guild,
       this.client
-    );;
+    );
 
     this.channel = this.guild?.channels.cache.get(
       data.channel_id
@@ -194,7 +203,7 @@ class InteractionBase {
    * @type {User | undefined}
    */
   public get author(): User | undefined {
-    return this.user
+    return this.user;
   }
 
   /**
@@ -249,7 +258,7 @@ class InteractionBase {
   public async makeReply(
     obj: InteractionBodyRequest | string
   ): Promise<InteractionResponse | ResponseFromApi> {
-    if(typeof obj === "string" || obj instanceof String) {
+    if (typeof obj === "string" || obj instanceof String) {
       obj = { content: obj } as InteractionBodyRequest;
     }
     const payload = new InteractionPayload(obj, obj.files);
@@ -274,6 +283,8 @@ class InteractionBase {
    * @returns {Promise<InteractionResponse | object>}
    */
   public async deferReply(ephemeral?: boolean): Promise<any> {
+    if (ephemeral && typeof ephemeral !== "boolean")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "ephemeral");
     ephemeral = !!ephemeral;
     this.__makeReply({
       type: InteractionResponseType.DeferredChannelMessageWithSource,
@@ -294,7 +305,21 @@ class InteractionBase {
       body = { content: body as string };
     }
 
-    //@ts-ignore
+    if (body && typeof body !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "object", "body");
+    if (
+      !body?.content &&
+      !body.files &&
+      !body.embeds &&
+      !body.poll &&
+      !body.sticker_ids
+    )
+      throw new ClientError(
+        ErrorNames.MissingRequiredProperties,
+        "Interaction response",
+        ["content", "files", "embeds", "poll", "sticker_ids"]
+      );
+
     const MessagePayloadData = new EditMessagePayload(body, body.files);
 
     const [data, files] = [
@@ -326,9 +351,25 @@ class InteractionBase {
    * @returns {Promise<InteractionResponse>}
    */
   public async followUp(body: MessageBodyRequest | string): Promise<any> {
-    if(typeof body === "string" || body instanceof String) {
-      body = { content: body } as MessageBodyRequest
+    if (typeof body === "string" || body instanceof String) {
+      body = { content: body } as MessageBodyRequest;
     }
+
+    if (body && typeof body !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "body");
+    if (
+      !body?.content &&
+      !body.files &&
+      !body.embeds &&
+      !body.poll &&
+      !body.sticker_ids
+    )
+      throw new ClientError(
+        ErrorNames.MissingRequiredProperties,
+        "Interaction response",
+        ["content", "files", "embeds", "poll", "sticker_ids"]
+      );
+
     const MessagePayloadData = new MessagePayload(body, body.files);
 
     const [data, files] = [
@@ -361,6 +402,9 @@ class InteractionBase {
   public async modal(
     body: ModalPayloadData
   ): Promise<InteractionResponse | ResponseFromApi> {
+    if (body && typeof body !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "body");
+
     const ModalData = new InteractionModalPayload(body);
 
     const payload = ModalData.payload;

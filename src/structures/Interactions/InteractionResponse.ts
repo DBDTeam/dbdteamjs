@@ -1,5 +1,7 @@
 import { User } from "..";
 import { type Client } from "../../client/Client";
+import { ClientTypeError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 import { MessageBodyRequest } from "../../common";
 import { InteractionResponseData } from "../../common/types/interactions"
 import * as Endpoints from "../../rest/Endpoints";
@@ -46,22 +48,23 @@ export class InteractionResponse extends Message {
    * @param {string | MessageBodyRequest} obj - The EditMessagePayloadData
    * @returns {Promise<InteractionResponse | null>}
    */
-  async editInteractionResponse(obj: MessageBodyRequest | string) {
-    const { user, rest } = this.client;
-    if (!user) return null;
+  async editInteractionResponse(body: MessageBodyRequest | string) {
+    if (typeof body === "string" || body instanceof String) {
+      body = { content: body } as MessageBodyRequest;
+    }
 
-    const isString = typeof obj === "string";
-    const { payload, files } = isString
-      ? { payload: { content: obj }, files: null }
-      : new EditMessagePayload(obj, obj.files);
+    if (body && typeof body !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "body");
 
-    const response = await rest.request(
+    const message = new EditMessagePayload(body, body?.files)
+
+    const response = await this.client.rest.request(
       "PATCH",
-      Endpoints.InteractionOriginal(user.id, this.token),
+      Endpoints.InteractionOriginal(this.client.user.id, this.token),
       true,
-      { data: payload },
+      { data: message.payload },
       null,
-      files
+      message.files
     );
 
     if (!response) return null;

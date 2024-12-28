@@ -60,7 +60,7 @@ class ThreadMemberManager {
       return null;
     } else {
       for (var m of response.data as Array<any>) {
-        var x = new ThreadMember(m, this.guild, this.#client);
+        var x = new ThreadMember(m, this.guild as Guild, this.#client);
         this.cache.set(x.id, x);
       }
 
@@ -85,7 +85,7 @@ class ThreadMemberManager {
       } else {
         var x = new ThreadMember(
           result.data as Record<string, any>,
-          this.guild,
+          this.guild as Guild,
           this.#client
         );
         this.cache.set(x.id, x);

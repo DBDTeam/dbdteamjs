@@ -3,111 +3,9 @@ import { type Client } from "../../client/Client";
 import { CommandsBody, Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
-import { setObj } from "../../utils/utils";
 import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
-
-const Data = {
-  name: "",
-  name_localizations: null,
-  type: 1,
-  guild_id: null,
-  description: null,
-  description_localizations: null,
-  options: null,
-  default_member_permissions: null,
-  dm_permission: null,
-  default_permission: null,
-  nsfw: null,
-};
-const Mapping = {
-  default_member_permissions: [
-    "defaultMemberPermissions",
-    "defaultMemberPerms",
-  ],
-  default_permission: ["defaultPermissions", "defaultPerms"],
-  name_localizations: ["nameLocalizations", "nameDictionary"],
-  description_localizations: [
-    "descriptionLocalizations",
-    "descriptionDictionary",
-  ],
-  dm_permission: "dmPermission",
-};
-
-export interface ApplicationCommand extends APIApplicationCommand {
-  defaultMemberPermissions: null | string;
-  defaultMemberPerms: null | string;
-  defaultPermission: boolean;
-  defaultPerm: boolean;
-  descriptionLocalizations: null | Record<
-    | "en-US"
-    | "en-GB"
-    | "bg"
-    | "zh-CN"
-    | "zh-TW"
-    | "hr"
-    | "cs"
-    | "da"
-    | "nl"
-    | "fi"
-    | "fr"
-    | "de"
-    | "el"
-    | "hi"
-    | "hu"
-    | "it"
-    | "ja"
-    | "ko"
-    | "lt"
-    | "no"
-    | "pl"
-    | "pt-BR"
-    | "ro"
-    | "ru"
-    | "es-ES"
-    | "es-419"
-    | "sv-SE"
-    | "th"
-    | "tr"
-    | "uk"
-    | "vi",
-    null | string
-  >;
-  descriptionDictionary: null | Record<
-    | "en-US"
-    | "en-GB"
-    | "bg"
-    | "zh-CN"
-    | "zh-TW"
-    | "hr"
-    | "cs"
-    | "da"
-    | "nl"
-    | "fi"
-    | "fr"
-    | "de"
-    | "el"
-    | "hi"
-    | "hu"
-    | "it"
-    | "ja"
-    | "ko"
-    | "lt"
-    | "no"
-    | "pl"
-    | "pt-BR"
-    | "ro"
-    | "ru"
-    | "es-ES"
-    | "es-419"
-    | "sv-SE"
-    | "th"
-    | "tr"
-    | "uk"
-    | "vi",
-    null | string
-  >;
-  dmPermission: boolean;
-}
+import { ClientTypeError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 
 class ApplicationCommandManager {
   #client: Client;
@@ -132,23 +30,28 @@ class ApplicationCommandManager {
    */
 
   async add(
-    body: ApplicationCommand
+    body: APIApplicationCommand
   ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
-    var data = setObj(Data, body, Mapping);
+    if (!body || typeof body !== "object")
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "APIApplicationCommand",
+        "body"
+      );
     if (!this.#client.user) return;
     if (this.target !== "global") {
       var response = await this.#client.rest.request(
         "POST",
         Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
         true,
-        { data }
+        { data: body }
       );
     } else {
       var response = await this.#client.rest.request(
         "POST",
         Endpoints.ApplicationCommands(this.#client.user.id),
         true,
-        { data }
+        { data: body }
       );
     }
 
@@ -171,6 +74,8 @@ class ApplicationCommandManager {
   async fetch(
     id: string
   ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
+    if (!id && typeof id !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
     if (this.target !== "global") {
       var response = await this.#client.rest.request(
@@ -204,8 +109,12 @@ class ApplicationCommandManager {
   ): Promise<
     Nullable<ErrorResponseFromApi | Collection<string, APIApplicationCommand>>
   > {
-    // Reference: https://discord.com/developers/docs/interactions/application-commands#bulk-overwrite-global-application-commands
-    var data = commands;
+    if (!commands || typeof commands !== "object")
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "APIApplicationCommand or APIApplicationCommand[]",
+        "body"
+      );
 
     if (!this.#client.user) return;
 
@@ -214,14 +123,14 @@ class ApplicationCommandManager {
         "PUT",
         Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
         true,
-        { data }
+        { data: commands }
       );
     } else {
       var response = await this.#client.rest.request(
         "PUT",
         Endpoints.ApplicationCommands(this.#client.user.id),
         true,
-        { data }
+        { data: commands }
       );
     }
 
@@ -230,7 +139,7 @@ class ApplicationCommandManager {
     if (response.error) {
       return response as ErrorResponseFromApi;
     } else {
-      for (const i of response.data as ApplicationCommand[]) {
+      for (const i of response.data as APIApplicationCommand[]) {
         if (!i || typeof i !== "object") continue;
         this.cache.set(i.id, i);
       }
@@ -245,6 +154,8 @@ class ApplicationCommandManager {
    */
 
   async remove(id: string): Promise<Nullable<ErrorResponseFromApi | boolean>> {
+    if (!id && typeof id !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
     if (this.target !== "global") {
       var response = await this.#client.rest.request(

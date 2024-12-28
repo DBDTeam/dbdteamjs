@@ -1,5 +1,7 @@
 import { Client } from "../client/Client";
-import { Nullable } from "../common";
+import { ClientError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
+import { PermissionNames } from "../interfaces";
 import * as Endpoints from "../rest/Endpoints";
 import { getAllStamps } from "../utils/utils";
 import { type Guild } from "./Guild";
@@ -14,16 +16,10 @@ import { ThreadChannel } from "./ThreadChannel";
  * @typedef {import('../client/Client').Client} Client
  */
 
-interface StampInformation {
-  stamp: any;
-  unix: number;
-  date: Date;
-}
-
 class ThreadMember {
   #client: Client;
   id: string;
-  guild: Nullable<Guild>;
+  guild: Guild;
   flags: number;
   member: Member;
   threadId: string;
@@ -38,7 +34,7 @@ class ThreadMember {
    */
   constructor(
     data: Record<string, any>,
-    guild: Nullable<Guild>,
+    guild: Guild,
     client: Client
   ) {
     this.thread = null;
@@ -94,6 +90,10 @@ class ThreadMember {
    */
 
   async kick() {
+    const me = this.guild.members.me
+
+    if(!me.permissions.hasPermission([PermissionNames.ManageThreads]))
+      throw new ClientError(ErrorNames.MissingPermissions, "ManageThreads")
     const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.ChannelThreadMember(this.threadId, this.id),
@@ -102,6 +102,8 @@ class ThreadMember {
 
     return response?.error ? response : true;
   }
+
+  static type = "ThreadMember";
 }
 
 export { ThreadMember };

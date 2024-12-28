@@ -17,7 +17,7 @@ class MessageReactions {
    * The client
    * @type {Client}
    */
-  readonly client: Client;
+  #client: Client;
   /**
    * The current message id
    * @type {string}
@@ -47,10 +47,10 @@ class MessageReactions {
    * @param {Array<string>} reacts - The reactions associated with the message.
    */
   constructor(client: Client, msgObj: Message, reacts: Array<any>) {
-    this.client = client;
+    this.#client = client;
     this.messageId = msgObj.id;
     this.channelId = msgObj.channelId;
-    this.guildId = msgObj.guildId;
+    this.guildId = msgObj.guild.id;
     this.reactions = reacts;
   }
 
@@ -77,7 +77,7 @@ class MessageReactions {
       for (var i of emojis) {
         var emoji = encodeURIComponent(getId(i));
 
-        var result = await this.client.rest.request(
+        var result = await this.#client.rest.request(
           "DELETE",
           Endpoints.ChannelMessageReactionUser(
             this.channelId,
@@ -119,7 +119,7 @@ class MessageReactions {
     for (var i of emojis) {
       var emoji = encodeURIComponent(getId(i));
 
-      var result = await this.client.rest.request(
+      var result = await this.#client.rest.request(
         "PUT",
         Endpoints.ChannelMessageReactionUser(
           this.channelId,
@@ -150,7 +150,7 @@ class MessageReactions {
    * @returns {Promise<ResponseFromApi | ErrorResponseFromApi | null>} - The result of the removal operation.
    */
   async removeAll(): Promise<ResponseFromApi | ErrorResponseFromApi | null> {
-    var result = await this.client.rest.request(
+    var result = await this.#client.rest.request(
       "DELETE",
       Endpoints.ChannelMessageReactions(this.channelId, this.messageId),
       true

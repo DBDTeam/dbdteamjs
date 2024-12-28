@@ -36,22 +36,18 @@ export class SelectMenuInteraction extends ComponentInteraction {
         users: this.guild?.members,
       };
   
-      // Recorremos los tipos presentes en resolvedData
-      for (const [type, resolvedItems] of Object.entries(resolvedData)) { //@ts-ignore
-        const cache: GuildChannelManager | GuildMemberManager | GuildRolesManager = resolveTypes[type]; // Seleccionamos la caché correspondiente al tipo
-        if (!cache) continue; // Si no hay caché para este tipo, saltamos
+      for (const [type, resolvedItems] of Object.entries(resolvedData)) {
+        const cache: GuildChannelManager | GuildMemberManager | GuildRolesManager = resolveTypes[type as "channels" | "roles" | "users"];
+        if (!cache) continue;
   
-        // @ts-ignore Recorremos los elementos dentro del tipo 
-        for (const [id, item] of Object.entries(resolvedItems)) {
+        for (const [id, item] of Object.entries(resolvedItems as Record<string, any>)) {
 
-          let entity = cache.cache.get(id); // Intentamos obtenerlo de la caché
+          let entity: any = cache.cache.get(id);
 
           if (!entity) {
-            // @ts-ignore Si no está en la caché, intentamos fetchearlo
             entity = await cache.fetch(id);
           }
           
-          //@ts-ignore
           this.resolved.set(id, entity);
         }
       }

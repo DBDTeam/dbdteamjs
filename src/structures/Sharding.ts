@@ -4,6 +4,9 @@ import { EventNames, GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
 import { ListenerManager } from "../client/ClientListener";
 import { GatewayReceivePayload } from "discord-api-types/v10";
+import { ClientError, ClientRangeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
+import { Intents } from "../types";
 
 class Shard extends ListenerManager {
   private client: Client;
@@ -15,17 +18,17 @@ class Shard extends ListenerManager {
   private intents: number;
   private authenticated: boolean;
   private time: number;
-  private mobilePlatform: string;
+  private browser: string;
   public latency: number;
   public ws: any;
   public url: string;
-  public shardID: string;
+  public shardID: number;
   public totalShards: number;
   public restartTimes: number;
 
   constructor(
     client: Client,
-    shardID: string,
+    shardID: number,
     totalShards: number,
     gateway: GatewayConfig
   ) {
@@ -33,7 +36,7 @@ class Shard extends ListenerManager {
     this.time = Date.now();
     this.client = client;
     this.url = "wss://gateway.discord.gg/?v=10&encoding=json";
-    this.mobilePlatform =
+    this.browser =
       gateway?.mobilePlatform === true ? "Discord Android" : "dbdteamjs";
     this.token = client.token;
     this.intents = client.intents;
@@ -64,12 +67,12 @@ class Shard extends ListenerManager {
       this.ws.on("close", (code: number, reason: string) =>
         this.closeEvent(code, reason)
       );
-      this.ws.on('error', (error: any) => {
-        if (error.code === 'ECONNRESET') {
+      this.ws.on("error", (error: any) => {
+        if (error.code === "ECONNRESET") {
           return;
         }
 
-        this.emit("shardError", error)
+        this.emit("shardError", error);
       });
     } catch (error) {
       this.client.emit("shardError", error);
@@ -117,15 +120,17 @@ class Shard extends ListenerManager {
   async identify() {
     if (!this.authenticated) {
       this.setAuthenticated();
-
-      let _browser = this.mobilePlatform;
       const identifyPayload = {
         op: 2,
         d: {
           token: this.token,
           intents: this.intents,
           shard: [this.shardID, this.totalShards],
-          properties: { os: "linux", browser: _browser, device: "dbdteam.js" },
+          properties: {
+            os: "linux",
+            browser: this.browser,
+            device: "dbdteam.js",
+          },
         },
       };
 
@@ -224,7 +229,7 @@ class ShardManager extends ListenerManager {
   private url;
   public client;
   public gateway;
-  private config: any;
+  private config!: GatewayConfig;
 
   /**
    *
@@ -236,21 +241,45 @@ class ShardManager extends ListenerManager {
     this.client = client;
     this.token = client?.token;
     this.intents = client?.intents;
-    this.totalShards = gateway?.totalShards || 0;
+    this.totalShards = gateway?.shards || 0;
     this.url = "wss://gateway.discord.gg/?v=10&encoding=json";
     this.shards = new Collection<number, Shard>();
     this.gateway = gateway || {};
     this.checkInfo();
   }
 
+  /**
+   * Validate the intents provided in `this.intents`.
+   * @returns {string[]} A list of invalid intents, if any.
+   */
+  private checkValidIntents() {
+    // Obtenemos los valores de los intents válidos (solo los números)
+    const validIntents = Object.values(Intents).filter(
+      (value) => typeof value === "number"
+    ) as number[];
+  
+    return validIntents
+  }
+  
+
   private checkInfo() {
     if (!this.token || !this.intents)
-      throw new Error(
-        `Please, input a valid token and intents to run the client.`
-      );
+      throw new ClientError(ErrorNames.ClientInvalidTokenAndIntents);
 
     if (this.totalShards && this.totalShards <= 0)
-      throw new RangeError(`Please, input a valid total of shards.`);
+      throw new ClientRangeError(
+        ErrorNames.ClientInvalidOptionValue,
+        "shards",
+        "number"
+      );
+
+    const validIntents = this.checkValidIntents();
+    if ((this.intents & validIntents.reduce((acc, curr) => acc | curr, 0)) !== this.intents)
+      throw new ClientError(
+        ErrorNames.ClientInvalidOptionValue,
+        "intents",
+        `intent value.`
+      );
   }
 
   private async getGatewayConfig() {
@@ -258,17 +287,19 @@ class ShardManager extends ListenerManager {
   }
 
   public async connect() {
-    this.config = (await this.getGatewayConfig())?.data;
-    if (!this.config) throw new Error(`Please, provide a valid client token.`);
+    let gatewayConfig = await this.getGatewayConfig();
+    if (gatewayConfig?.error || !gatewayConfig?.data) throw new ClientError(ErrorNames.ClientInvalidToken);
+
+    this.config = gatewayConfig.data as GatewayConfig;
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;
-      this.gateway.totalShards = this.config.shards;
+      this.gateway.shards = this.config.shards;
     }
 
     for (var shardID = 0; shardID < this.totalShards; shardID++) {
       const shard = new Shard(
-        this.client, // @ts-ignore lmaooo
+        this.client,
         shardID,
         this.totalShards,
         this.gateway
@@ -276,7 +307,7 @@ class ShardManager extends ListenerManager {
       this.shards.set(shardID, shard);
       await shard.connect();
       shard.on("rawEvent", (d: GatewayReceivePayload) => {
-        this.emit("rawEvent", d, shardID.toString());
+        this.emit("rawEvent", d, shardID);
       });
     }
   }
@@ -284,10 +315,7 @@ class ShardManager extends ListenerManager {
   public async reconnect(shardID: number) {
     this.client.emit("debug", "Trying to reconnect...", shardID);
     const shard = this.shards.get(shardID) as Shard;
-    if (!shard) {
-      this.client.emit("debug", "Shard doesn't exists", shardID);
-      return;
-    }
+    if (!shard) throw new ClientError(ErrorNames.ShardNotFound, shardID)
     await shard.connect();
   }
 

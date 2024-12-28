@@ -1,192 +1,165 @@
-import { User } from "../User";
-import { PermissionsBitField } from "../../types/PermissionsBitFields";
-import * as Endpoints from "../../rest/Endpoints";
-import { Member } from "../Member";
-import { type Client } from "../../client/Client";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../../interfaces/rest/requestHandler";
-import { ThreadMember } from "../ThreadMember";
-import { Nullable } from "../../common";
 import {
   ChannelPermissionSuccessResponse,
   ObjectOfThePerms,
   TargetPayload,
 } from "../../interfaces/channel/Permissions";
+import {
+  PermissionsBits,
+  PermissionsType,
+} from "../../interfaces/channel/Permissions";
+import { Client } from "../../client/Client";
+import { Nullable } from "../../common";
+import { ResponseFromApi } from "../../interfaces/rest/requestHandler";
+import * as Endpoints from "../../rest/Endpoints";
+import { PermissionManager } from "./PermissionManager";
+import { ClientError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 
 export class ChannelPermissionManager {
-  #Perms: Record<string, any>;
+  #permissionsBits = PermissionsBits;
   #client: Client;
-  private target: any;
-  public overwrites: Record<string, any>;
+  private readonly channelId: string;
 
   /**
    * Constructs a new ChannelPermissionManager instance.
-   * @param {any} overwrites - The permission overwrites for the channel.
-   * @param {string} target - The target channel or guild ID.
-   * @param {Client} client - The client instance to interact with the Discord API.
+   * @param {string} channelId - The ID of the target channel.
+   * @param {Client} #client - The #client instance to interact with the API.
    */
-  constructor(overwrites: any, target: string, client: Client) {
+  constructor(channelId: string, client: Client) {
+    this.channelId = channelId;
     this.#client = client;
-    this.target = target;
-    this.#Perms = PermissionsBitField.Channels;
-    this.overwrites = overwrites;
+  }
+
+  get channel() {
+    return this.#client.channels.cache.get(this.channelId);
   }
 
   /**
-   * Resolves permissions from the provided permissions object.
-   * @private
-   * @param {ObjectOfThePerms} permsObj - The permissions object.
-   * @returns {Object} - An object containing added and removed permissions.
+   * Resolves the permissions into bitwise values.
+   * @param {ObjectOfThePerms} permsObj - The permissions to resolve.
+   * @returns {Object} - Resolved added and removed permissions.
    */
-  #resolve(permsObj: ObjectOfThePerms) {
-    var addedPerms = 0,
-      addedPermsArr = [];
-    var removedPerms = 0,
-      removedPermsArr = [];
-    for (const allowPerm of permsObj?.allow || []) {
-      if (
-        this.#Perms.hasOwnProperty(allowPerm) &&
-        !permsObj?.deny?.includes(allowPerm)
-      ) {
-        addedPerms |= this.#Perms[allowPerm];
-        addedPermsArr.push(this.#Perms[allowPerm]);
+  private resolvePermissions(permsObj: ObjectOfThePerms) {
+    let allow = BigInt(0);
+    let deny = BigInt(0);
+
+    if (permsObj.allow) {
+      const allowArray = Array.isArray(permsObj.allow)
+        ? permsObj.allow
+        : [permsObj.allow];
+      for (const perm of allowArray) {
+        if (!PermissionManager.isValidPermission(perm))
+          throw new ClientError(ErrorNames.InvalidPermission, perm);
+        allow |= this.#permissionsBits[perm];
       }
     }
 
-    for (const denyPerm of permsObj.deny || []) {
-      if (
-        this.#Perms.hasOwnProperty(denyPerm) &&
-        !permsObj?.allow?.includes(denyPerm)
-      ) {
-        removedPerms |= this.#Perms[denyPerm];
-        removedPermsArr.push(this.#Perms[denyPerm]);
+    if (permsObj.deny) {
+      const denyArray = Array.isArray(permsObj.deny)
+        ? permsObj.deny
+        : [permsObj.deny];
+      for (const perm of denyArray) {
+        if (!PermissionManager.isValidPermission(perm))
+          throw new ClientError(ErrorNames.InvalidPermission, perm);
+        deny |= this.#permissionsBits[perm];
       }
     }
 
-    return { removedPerms, addedPerms, removedPermsArr, addedPermsArr };
+    return { allow: allow.toString(), deny: deny.toString() };
   }
 
   /**
-   * Edits the permissions for a target object.
-   * @param {TargetPayload | "everyone"} TargetPayload - The target object or "everyone".
-   * @param {ObjectOfThePerms} permsObj - The permissions object.
-   * @param {Nullable<string>} reason - The reason for the permission change.
-   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+   * Edits permissions for a specific target.
+   * @param {TargetPayload} target - The target payload.
+   * @param {ObjectOfThePerms} perms - The permissions to apply.
+   * @param {Nullable<string>} reason - The reason for the modification.
+   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
    */
   async edit(
-    TargetPayload: TargetPayload | "everyone",
-    permsObj: ObjectOfThePerms,
+    target: TargetPayload | "everyone",
+    perms: ObjectOfThePerms,
     reason: Nullable<string> = null
-  ): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null> {
-    let addedPerms = 0;
-    let removedPerms = 0;
+  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+    const preparedTarget = this.prepareTarget(target);
+    const resolvedPerms = this.resolvePermissions(perms);
 
-    const obj = getType(
-      TargetPayload == "everyone" ? this.target.guildId : TargetPayload,
-      this.target
-    );
-
-    if (!permsObj) return null;
-
-    const result = this.#resolve(permsObj);
     const data = {
-      allow: result?.addedPerms,
-      deny: result?.removedPerms,
-      id: obj.targetId,
-      type: obj.type,
+      id: this.channel?.id,
+      targetId: preparedTarget.targetId,
+      type: preparedTarget.type,
+      allow: resolvedPerms.allow || [],
+      deny: resolvedPerms.deny || [],
     };
 
-    var response = await this.#client.rest.request(
+    const response = await this.#client.rest.request(
       "PUT",
-      Endpoints.ChannelPermissions(obj.id, obj.targetId),
+      Endpoints.ChannelPermissions(this.channelId, data.targetId),
       true,
       { data },
       reason
     );
 
-    if (response?.error) {
-      return response as ErrorResponseFromApi;
-    } else {
-      return {
-        ...(response as ResponseFromApi),
-        allow: addedPerms,
-        deny: removedPerms,
-      };
-    }
+    return response as ChannelPermissionSuccessResponse;
   }
 
   /**
-   * Adds permissions to a target object.
-   * @param {TargetPayload | "everyone"} TargetPayload - The target object or "everyone".
-   * @param {ObjectOfThePerms} permsObj - The permissions object.
-   * @param {Nullable<string>} reason - The reason for adding the permissions.
-   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+   * Adds permissions for a specific target.
+   * @param {TargetPayload} target - The target payload.
+   * @param {PermissionsType[]} permissions - The permissions to add.
+   * @param {Nullable<string>} reason - The reason for adding permissions.
+   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
    */
   async add(
-    TargetPayload: TargetPayload | "everyone",
-    permsObj: ObjectOfThePerms,
+    target: TargetPayload,
+    permissions: PermissionsType[] | PermissionsType,
     reason: Nullable<string> = null
-  ): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null> {
-    const obj = getType(
-      TargetPayload == "everyone" ? this.target.guildId : TargetPayload,
-      this.target
-    ) as TargetPayload;
-
-    const result = this.#resolve(permsObj);
-
-    const response = await this.edit(
-      obj,
-      { allow: result?.addedPermsArr },
-      reason
-    );
-
-    return response;
+  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+    const perms: ObjectOfThePerms = { allow: permissions };
+    return this.edit(target, perms, reason);
   }
 
   /**
-   * Removes permissions from a target object.
-   * @param {Record<string, any> | "everyone"} TargetPayload - The target object or "everyone".
-   * @param {Record<string, any>} permsObj - The permissions object.
-   * @param {string | null | undefined} reason - The reason for removing the permissions.
-   * @returns {Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null>} - The response from the API.
+   * Removes permissions for a specific target.
+   * @param {TargetPayload} target - The target payload.
+   * @param {PermissionsType[]} permissions - The permissions to remove.
+   * @param {Nullable<string>} reason - The reason for removing permissions.
+   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
    */
   async remove(
-    TargetPayload: Record<string, any> | "everyone",
-    permsObj: Record<string, any>,
-    reason: string | null | undefined = null
-  ): Promise<ErrorResponseFromApi | ChannelPermissionSuccessResponse | null> {
-    const obj = getType(
-      TargetPayload == "everyone" ? this.target.guildId : TargetPayload,
-      this.target
-    ) as TargetPayload;
-
-    const result = this.#resolve(permsObj);
-
-    const response = await this.edit(
-      obj,
-      { deny: result?.removedPermsArr },
-      reason
-    );
-
-    return response;
+    target: TargetPayload,
+    permissions: PermissionsType[] | PermissionsType,
+    reason: Nullable<string> = null
+  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+    const perms: ObjectOfThePerms = { deny: permissions };
+    return this.edit(target, perms, reason);
   }
-}
 
-function getType(obj: any, channel: any) {
-  var isUser =
-    obj instanceof User || obj instanceof Member || obj instanceof ThreadMember;
+  private determineTargetType(target: any): "0" | "1" {
+    const isUser =
+      target?.constructor?.type === "User" ||
+      target?.constructor?.type === "Member" ||
+      target?.constructor?.type === "ThreadMember";
 
-  return isUser
-    ? {
-        type: 1,
-        id: channel.id,
-        targetId: obj.id || obj.user.id,
-      }
-    : {
-        type: 0,
-        id: channel.id,
-        targetId: obj.id,
-      };
+    return isUser ? "1" : "0";
+  }
+
+  private prepareTarget(
+    target: TargetPayload | "everyone"
+  ): Required<{ targetId: string, type: "0" | "1"}> {
+    let targetId: string;
+    let targetType: "0" | "1";
+
+    if (target === "everyone") {
+      targetId = this.channel?.guildId as string;
+      targetType = "0";
+    } else {
+      targetId = target.target?.id;
+      targetType = target.type ?? this.determineTargetType(target.target);
+    }
+
+    return {
+      targetId,
+      type: targetType,
+    };
+  }
 }

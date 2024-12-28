@@ -33,18 +33,6 @@ class VoiceChannel extends TextBasedChannel {
    * @type {string}
    */
   session_id: string;
-  /**
-   * Creates a message in the Text Channel
-   * @readonly
-   * @function
-   */
-  readonly sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
-  /**
-   * Creates a message in the Text Channel
-   * @readonly
-   * @function
-   */
-  readonly send = (body: MessageBodyRequest | string) => this.createMessage(body);
   readonly client: Client;
   /**
    * Represents a Voice Channel
@@ -61,50 +49,6 @@ class VoiceChannel extends TextBasedChannel {
     this.region = data.rtc_region;
     this.video_quality = data.video_quality_mode;
     this.session_id = data.session_id;
-    this.sendMessage = (body: MessageBodyRequest) => this.createMessage(body);
-    this.send = (body: MessageBodyRequest | string) => this.createMessage(body);
-  }
-
-  /**
-   * Creates a message in the Text Channel
-   * @param {MessagePayload} obj - The message send payload
-   * @example
-   * const channel = client.channels.cache.get("766497696604487691")
-   *
-   * channel.createMessage(`Hello world!`).then((response) => {
-   *  if(response.error){
-   *      return console.log(response)
-   *  } else {
-   *      console.log(`Message sended successfully!`)
-   *  }
-   * })
-   * @returns {Promise<Message | Object>}
-   */
-  async createMessage(obj: any) {
-    const message = new MessagePayload(obj, obj.files);
-
-    var result = await this.client.rest.request(
-      "POST",
-      Endpoints.ChannelMessages(this.id),
-      true,
-      { data: message.payload },
-      null,
-      message.files
-    );
-
-    if (!result) return null;
-
-    if (!result.error) {
-      result.data = {
-        ...result.data,
-        guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data?.author.id),
-      };
-
-      return new Message(result.data as RESTGetAPIChannelMessageResult, this.client);
-    } else {
-      return result;
-    }
   }
 }
 

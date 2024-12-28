@@ -15,6 +15,8 @@ import { InteractionBase } from "./BaseInteraction";
 import { InteractionResponse } from "./InteractionResponse";
 import { ButtonInteraction } from "./ButtonInteraction";
 import { SelectMenuInteraction } from "./SelectMenuInteraction";
+import { ClientTypeError } from "../../client/errors/ClientError";
+import { ErrorNames } from "../../client/errors/ErrorList";
 
 /**
  * Represents a ComponentInteraction.
@@ -96,6 +98,9 @@ class ComponentInteraction extends InteractionBase {
   async updateReply(
     obj: ComponentInteractionMessageUpdate
   ): Promise<InteractionResponse | boolean> {
+    if (obj && typeof obj !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "object", "obj");
+
     const payload = new InteractionPayload(obj, obj.files);
     let { payload: _d, files } = payload;
 
@@ -131,7 +136,7 @@ class ComponentInteraction extends InteractionBase {
       return result;
     }
 
-    return true
+    return true;
   }
 
   /**

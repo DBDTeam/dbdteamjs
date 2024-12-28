@@ -270,6 +270,8 @@ class User extends Base {
   toString() {
     return `<@${this.id}>`;
   }
+
+  static type = "User";
 }
 
 export { User };

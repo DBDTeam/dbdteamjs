@@ -9,6 +9,9 @@ import {
 import * as Endpoints from "../rest/Endpoints";
 import { resolveImage } from "../utils/ImageResolver";
 import { Base } from "./Base";
+import { ErrorResponseFromApi, PermissionNames } from "../interfaces";
+import { ClientError, ClientTypeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
 
 export interface EditRolePayload {
   name: string;
@@ -29,57 +32,57 @@ export class GuildRole extends Base {
    * The ID of the guild to which the role belongs.
    */
   guildId: string;
-  
+
   /**
    * The name of the role.
    */
   name: string;
-  
+
   /**
    * Whether the role is displayed separately in the member list.
    */
   hoist: boolean;
-  
+
   /**
    * The role's icon hash, if it has one.
    */
   icon: string | null;
-  
+
   /**
    * The role's position in the hierarchy.
    */
   position: number;
-  
+
   /**
    * The permissions the role has.
    */
   permissions: number;
-  
+
   /**
    * Whether the role is managed by an integration.
    */
   managed: boolean;
-  
+
   /**
    * Whether the role is mentionable.
    */
   mentionable: boolean;
-  
+
   /**
    * The role's tags.
    */
   tags: APIRoleTags;
-  
+
   /**
    * The role's flags.
    */
-  flags: number;
-  
+  role_flags: number;
+
   /**
    * The guild to which the role belongs.
    */
-  private guild?: Guild;
-  
+  private guild: Guild;
+
   /**
    * A reference to the client.
    */
@@ -92,8 +95,7 @@ export class GuildRole extends Base {
     this.data = data;
     this.id = data.id;
     this.guildId = guild?.id || guild;
-    if (client.guilds && client.guilds.cache)
-      this.guild = client.guilds.cache.get(guild.id);
+    this.guild = client.guilds.cache.get(guild.id) as Guild;
     this.name = data.name;
     this.hoist = !!data.hoist;
     this.icon = null;
@@ -102,7 +104,7 @@ export class GuildRole extends Base {
     this.managed = !!data.managed;
     this.mentionable = !!data.mentionable;
     this.tags = {};
-    this.flags = data.flags;
+    this.role_flags = data.flags;
 
     this._patch();
   }
@@ -117,6 +119,10 @@ export class GuildRole extends Base {
   }
 
   async delete(reason = undefined) {
+    const me = this.guild.members.me;
+
+    if (!me.permissions.hasPermission(PermissionNames.ManageRoles))
+      throw new ClientError(ErrorNames.MissingPermissions, "ManageRoles");
     const response = await this.#client.rest.request(
       "DELETE",
       Endpoints.GuildRole(this.guildId, this.id),
@@ -125,13 +131,25 @@ export class GuildRole extends Base {
       reason
     );
 
-    return response ? false : true;
+    return response?.error ? false : true;
   }
 
   async edit(
     body: RESTPatchAPIGuildRoleJSONBody & { position?: number },
     reason?: string
-  ) {
+  ): Promise<ErrorResponseFromApi | GuildRole> {
+    const me = this.guild.members.me;
+
+    if (!me.permissions.hasPermission(PermissionNames.ManageRoles))
+      throw new ClientError(ErrorNames.MissingPermissions, "ManageRoles");
+
+    if (!body && typeof body !== "object")
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "RESTPatchAPIGuildRoleJSONBody & { position?: number }",
+        "body"
+      );
+
     const response = await this.#client.rest.request(
       "PATCH",
       Endpoints.GuildRole(this.guildId, this.id),
@@ -140,38 +158,62 @@ export class GuildRole extends Base {
       reason
     );
 
-    if (!response) {
-      return response;
+    if (response?.error || !response) {
+      return response as ErrorResponseFromApi;
     } else {
-      return new GuildRole(response.data as APIRole, this.guild as Guild, this.#client);
+      return new GuildRole(
+        response.data as APIRole,
+        this.guild as Guild,
+        this.#client
+      );
     }
   }
 
   async setName(name: string, reason?: string) {
+    if (!name && typeof name !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "name");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const response = await this.edit({ name }, reason);
 
     return response;
   }
 
   async setPosition(position: number, reason?: string) {
+    if (!position && typeof position !== "number")
+      throw new ClientTypeError(ErrorNames.InvalidType, "number", "position");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const response = await this.edit({ position }, reason);
 
     return response;
   }
 
   async setColor(color: number, reason?: string) {
+    if (!color && typeof color !== "number")
+      throw new ClientTypeError(ErrorNames.InvalidType, "number", "color");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const response = await this.edit({ color }, reason);
 
     return response;
   }
 
   async setHoist(hoist: boolean, reason?: string) {
+    if (!hoist && typeof hoist !== "boolean")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "hoist");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const response = await this.edit({ hoist: !!hoist }, reason);
 
     return response;
   }
 
   async setIcon(icon: string, reason?: string) {
+    if (!icon && typeof icon !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "icon");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const data = await resolveImage(icon);
     const response = await this.edit({ icon: data.uri }, reason);
 
@@ -179,13 +221,21 @@ export class GuildRole extends Base {
   }
 
   async setEmoji(unicode_emoji: string, reason?: string) {
+    if (!unicode_emoji && typeof unicode_emoji !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "unicode_emoji");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const response = await this.edit({ unicode_emoji }, reason);
 
     return response;
   }
 
   async setMentionable(mentionable: boolean, reason?: string) {
-    const response = await this.edit({ mentionable: !!mentionable }, reason);
+    if (!mentionable && typeof mentionable !== "boolean")
+      throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "mentionable");
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
+    const response = await this.edit({ mentionable }, reason);
 
     return response;
   }

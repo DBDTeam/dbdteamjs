@@ -4,19 +4,26 @@ import {
   GatewayMessageCreateDispatchData,
 } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { MessageBodyRequest, Nullable } from "../common";
+import {
+  MessageBodyRequest,
+  MessageUpdateBodyRequest,
+  Nullable,
+} from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { Collection } from "../utils/Collection";
 import { getAllStamps, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
 import { Guild } from "./Guild";
-import { MessageReactions } from "./Managers/ReactionMessage";
+import { MessageReactions } from "./Managers/MessageReactionManager";
 import { Member } from "./Member";
 import { EditMessagePayload } from "./Payloads/EditMessagePayload";
 import { MessagePayload } from "./Payloads/MessagePayload";
 import { User } from "./User";
 import { TextBasedChannel } from "./TextBasedChannel";
+import { ClientError, ClientTypeError } from "../client/errors/ClientError";
+import { ErrorNames } from "../client/errors/ErrorList";
+import { ErrorResponseFromApi, PermissionNames } from "../interfaces";
 
 /**
  * Represents a Discord message.
@@ -36,9 +43,9 @@ class Message extends Base {
 
   /**
    * The ID of the guild where the message was sent.
-   * @type {string | undefined}
+   * @type {string}
    */
-  guildId: string | undefined;
+  guildId: string;
 
   /**
    * The author of the message.
@@ -176,7 +183,6 @@ class Message extends Base {
     super(client);
     this.client = client;
     this.id = data.id;
-    this.guildId = data.guild_id;
     this.type = data.type || 0;
     this.channelId = data.channel_id;
     this.author = new User(
@@ -193,7 +199,10 @@ class Message extends Base {
     this.channel = this.client.channels.cache.get(
       data.channel_id
     ) as TextBasedChannel;
-    this.guild = this.client.guilds.cache.get(this.guildId as string) as Guild;
+    this.guild =
+      (this.client.guilds.cache.get(data.guild_id as string) as Guild) ||
+      (this.client.channels.cache.get(this.channelId)?.guild as Guild);
+    this.guildId = this.guild.id as string;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.reactions = new MessageReactions(
       this.client,
@@ -269,6 +278,24 @@ class Message extends Base {
       body = { content: body as string } as MessageBodyRequest;
     }
 
+    if (!body && typeof body !== "object")
+      throw new ClientError(ErrorNames.InvalidType, "object", "body");
+
+    if (
+      !body.content &&
+      !body.files &&
+      !body.embeds &&
+      !body.poll &&
+      !body.sticker_ids
+    )
+      throw new ClientError(ErrorNames.MissingRequiredProperties, "Message", [
+        "content",
+        "files",
+        "embeds",
+        "poll",
+        "sticker_ids",
+      ]);
+
     if (!body.message_reference) {
       body.message_reference = { message_id: this.id };
     }
@@ -303,45 +330,66 @@ class Message extends Base {
   /**
    * Edits the message.
    * @param {MessageBodyRequest | string} obj - The edit message payload or content.
-   * @returns {Promise<Message | undefined>} A promise that resolves to the edited message, or undefined if failed.
+   * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the edited message, or ErrorResponseFromAPI if failed.
    */
-  async edit(obj: MessageBodyRequest | string): Promise<Message | undefined> {
-   var message: EditMessagePayload;
-    if (typeof obj === "string") {
-      message = new EditMessagePayload({ content: obj as string });
+  async edit(
+    newMessage: MessageUpdateBodyRequest | string
+  ): Promise<Message | ErrorResponseFromApi> {
+    if (
+      !newMessage ||
+      (typeof newMessage !== "string" && typeof newMessage !== "object")
+    ) {
+      throw new ClientTypeError(
+        ErrorNames.InvalidType,
+        "string or object",
+        "newMessage"
+      );
     }
 
-    message = new EditMessagePayload(obj as MessageBodyRequest);
+    const editedMessage = new EditMessagePayload(
+      typeof newMessage === "string" ? { content: newMessage } : newMessage
+    );
+
+    const data = editedMessage.payload;
+    const files = editedMessage.files;
+
+    if (!files && !data.content && !data.embeds)
+      throw new ClientError(ErrorNames.MissingRequiredProperties, "Message", [
+        "content",
+        "files",
+        "embeds",
+      ]);
 
     const result = await this.client.rest.request(
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true,
-      { data: message.payload },
+      { data },
       null,
-      message.files
+      files
     );
 
-    if (!result) return;
-
-    if (!result.error && result.data) {
-      const data: APIMessage | { guild?: Guild; member?: Member } = {
-        ...result.data,
-        guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data.author.id),
+    if (result?.data && !result.error) {
+      const data: APIMessage & { guild_id: string } = {
+        ...(result.data as APIMessage),
+        guild_id: this.guild.id,
       };
 
       return new Message(data as APIMessage, this.client);
-    } else {
-      return undefined;
     }
+
+    return result as ErrorResponseFromApi;
   }
 
   /**
    * Removes all embeds from the message.
-   * @returns {Promise<Message | undefined>} A promise that resolves to the updated message, or undefined if failed.
+   * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the updated message, or undefined if failed.
    */
-  async removeEmbeds(): Promise<Message | undefined> {
+  async removeEmbeds(): Promise<Message | ErrorResponseFromApi> {
+    const me = this.guild.members.me;
+
+    if (!me.permissions.hasPermission(PermissionNames.ManageMessages))
+      throw new ClientError(ErrorNames.MissingPermissions, "ManageMessages");
     const result = await this.client.rest.request(
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
@@ -349,19 +397,14 @@ class Message extends Base {
       { data: { flags: 4 } }
     );
 
-    if (!result) return;
-
-    if (!result.error && result.data) {
-      const data: APIMessage | { guild?: Guild; member?: Member } = {
-        ...result.data,
-        guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data.author.id),
-      };
-
-      return new Message(data as APIMessage, this.client);
-    } else {
-      return undefined;
+    if (result?.data && !result.error) {
+      return new Message(
+        { ...(result.data as APIMessage), guild_id: this.guildId },
+        this.client
+      );
     }
+
+    return result as ErrorResponseFromApi;
   }
 
   /**
@@ -369,6 +412,14 @@ class Message extends Base {
    * @returns {Promise<boolean>} A promise that resolves once the message is deleted.
    */
   async delete(): Promise<boolean> {
+    const me = this.guild.members.me;
+
+    if (
+      this.author.id !== this.client.user.id &&
+      !me.permissions.hasPermission(PermissionNames.ManageMessages)
+    )
+      throw new ClientError(ErrorNames.MissingPermissions, "ManageMessages");
+
     const deleted = await this.client.rest.request(
       "DELETE",
       Endpoints.ChannelMessage(this.channelId, this.id),

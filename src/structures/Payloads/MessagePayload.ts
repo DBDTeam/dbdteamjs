@@ -55,7 +55,7 @@ class MessagePayload {
     components: null,
     sticker_ids: null,
     files: null,
-    nonce: Date.now(),
+    nonce: null,
     attachments: null,
     poll: null
   };
@@ -121,7 +121,8 @@ class MessagePayload {
       this.d.poll.layout_type = 1
     }
 
-    if (typeof this.f === "object") {
+    if (typeof this.f === "object" && this.f?.[0]) {
+      this.d.attachments = []
       var i: number = 0;
       const filesArray = Array.isArray(this.f) ? this.f : [this.f];
       for (const currentItem of filesArray) {

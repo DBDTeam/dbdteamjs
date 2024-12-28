@@ -29,28 +29,24 @@ export class SlashInteraction extends InteractionBase {
     this.name = data.data.name;
     this.values = new Collection();
 
-    // Procesar opciones y guardar subcommand y subcommand_group si existen
-    const processOptions = (options: any[]): void => {
-      for (const option of options || []) {
-        if (option.type === 2) {
-          // SubCommandGroup
-          this.subcommand_group = option.name;
-          processOptions(option.options || []);
-        } else if (option.type === 1) {
-          // SubCommand
-          this.subcommand = option.name;
-          processOptions(option.options || []);
-        } else {
-          // Opciones finales con valores directos
-          this.values.set(option.name, {
-            name: option.name,
-            type: option.type,
-            value: option.value,
-          });
-        }
-      }
-    };
+    this.#processOptions(data);
+  }
 
-    processOptions(data.data?.options || []);
+  #processOptions(data: any) {
+    for (const option of data.data?.options || []) {
+      if (option.type === 2) {
+        this.subcommand_group = option.name;
+        this.#processOptions(option.options || []);
+      } else if (option.type === 1) {
+        this.subcommand = option.name;
+        this.#processOptions(option.options || []);
+      } else {
+        this.values.set(option.name, {
+          name: option.name,
+          type: option.type,
+          value: option.value,
+        });
+      }
+    }
   }
 }
