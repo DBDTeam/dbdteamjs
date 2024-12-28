@@ -80,7 +80,7 @@ class Client extends ListenerManager {
 
   /**
    * Represents the Client
-   * @param opts The client options
+   * @param { ClientOptions } opts The client options
    *
    * @example
    * ```ts

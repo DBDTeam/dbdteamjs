@@ -1,6 +1,8 @@
 import { ClientPresencePayload, Nullable } from "../common";
 import { GatewayActivityPayload, PresenceStatus } from "../types/Presences";
 import { type Client } from "./Client";
+import { ClientError } from "./errors/ClientError";
+import { ErrorNames } from "./errors/ErrorList";
 
 /**
  * Represents the client presence (WS presence)
@@ -42,17 +44,9 @@ class ClientPresence {
     obj: ClientPresencePayload,
     shardId: number = 0
   ) {
-    const shard = this.client.shardManager.shards.get(shardId);
-    if (!shard) {
-      this.client.emit("error", {
-        status: 0,
-        error: {
-          message:
-            "Shard Not Found while trying to update the presence of the User",
-        },
-      });
-      return null;
-    }
+    const shard = this.client.shardManager.shards.get(Number(shardId));
+    
+    if(!shard) throw new ClientError(ErrorNames.ShardNotFound, shardId)
 
     const ws = shard.ws;
 
@@ -77,7 +71,7 @@ class ClientPresence {
     this.since = obj.since;
 
     try {
-      var i = await ws.send(JSON.stringify(payload));
+      await ws.send(JSON.stringify(payload));
     } catch (err) {
       return false;
     }

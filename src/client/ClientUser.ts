@@ -4,6 +4,8 @@ import * as Endpoints from "../rest/Endpoints";
 import { User } from "../structures/User";
 import { resolveImage } from "../utils/ImageResolver";
 import { Client } from "./Client";
+import { ErrorNames } from "./errors/ErrorList";
+import { ClientTypeError } from "./errors/ClientError";
 
 /**
  * @extends {User}
@@ -11,7 +13,7 @@ import { Client } from "./Client";
 class ClientUser extends User {
   #client: Client;
   constructor(data: any, client: Client) {
-    super(data, client)
+    super(data, client);
     this.#client = client;
   }
   /**
@@ -27,9 +29,11 @@ class ClientUser extends User {
    * })
    * @returns {Promise<ClientUser>}
    */
-  async edit(object: EditClientUserPayload) {
-    if (object.avatar) {
-      object.avatar = await resolveImage(object.avatar);
+  async edit(newInfo: EditClientUserPayload) {
+    if (!newInfo || typeof newInfo !== "object")
+      throw new ClientTypeError(ErrorNames.InvalidType, "object", "newInfo");
+    if (newInfo.avatar) {
+      newInfo.avatar = await resolveImage(newInfo.avatar);
     }
 
     const result = await this.#client.rest.request(
@@ -37,9 +41,9 @@ class ClientUser extends User {
       Endpoints.User("@me"),
       true,
       {
-        data: object,
+        data: newInfo,
         headers: {
-          "Content-Length": Buffer.byteLength(JSON.stringify(object)),
+          "Content-Length": Buffer.byteLength(JSON.stringify(newInfo)),
         },
       }
     );
@@ -86,9 +90,7 @@ class ClientUser extends User {
    */
 
   async editAvatar(url: string) {
-    const imageUrl = await resolveImage(url);
-
-    return await this.edit({ avatar: imageUrl });
+    return await this.edit({ avatar: url });
   }
 }
 
