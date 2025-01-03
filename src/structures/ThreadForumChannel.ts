@@ -49,7 +49,7 @@ export class ForumThreadChannel extends Channel {
       "PATCH",
       Endpoints.Channel(this.id),
       true,
-      { data: { applied_tags: tagsIds } },
+      { applied_tags: tagsIds },
       reason
     );
 
@@ -65,13 +65,13 @@ export class ForumThreadChannel extends Channel {
       );
     if (!tagsIds || tagsIds.some((id) => typeof id !== "string")) return;
 
-    let combinedTags = Array.from(new Set([...tagsIds, ...this.applied_tags]));
+    let combinedTags = [... new Set(this.applied_tags.concat(tagsIds))];
 
     const result = await this.client.rest.request(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
-      { data: { applied_tags: combinedTags } },
+      { applied_tags: combinedTags },
       reason
     );
 
@@ -95,7 +95,7 @@ export class ForumThreadChannel extends Channel {
       "PATCH",
       Endpoints.Channel(this.id),
       true,
-      { data: { applied_tags: filteredTags } },
+      { applied_tags: filteredTags },
       reason
     );
 

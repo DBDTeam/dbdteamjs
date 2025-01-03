@@ -10,19 +10,18 @@ import {
   GuildVerificationLevel,
   RESTPatchAPIGuildJSONBody,
 } from "discord-api-types/v10";
-import { CDNOptions } from "../interfaces/rest/cdn";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
-import { getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { GuildChannelManager } from "./Managers/GuildChannelManager";
 import { GuildRolesManager } from "./Managers/RolesManager";
 import { GuildMemberManager } from "./Managers/GuildMemberManager";
 import { GuildRole } from "./Role";
-import { VoiceChannel } from "./VoiceChannel";
 import * as Endpoints from "../rest/Endpoints";
 import { GuildBanManager } from "./Managers/BanManager";
+import { Utilities } from "../utils/utils";
 
 class Guild extends Base {
   #exists: any;
@@ -132,23 +131,23 @@ class Guild extends Base {
      * The Guild Bans Manager.
      * @type {GuildBanManager}
      */
-    this.bans = new GuildBanManager(this, this.client)
+    this.bans = new GuildBanManager(this, this.client);
     /**
      * The Guild time information.
      * @type {object}
      */
-    this.created = getAllStamps(this);
+    this.created = Utilities.getAllStamps(this);
     /**
      * The owner id of the guild
      * @type {string}
      */
     this.owner_id = data.owner_id;
-     /**
+    /**
      * The Guild roles
      * @type {GuildRolesManager}
      */
-     this.roles = new GuildRolesManager(this, this.client);
-     /**
+    this.roles = new GuildRolesManager(this, this.client);
+    /**
      * The Guild members in the cache.
      * @type {GuildMemberManager}
      */
@@ -208,7 +207,8 @@ class Guild extends Base {
        * The Guild default message notifactions level
        * @type {number}
        */
-      this.default_message_notifications = this.#data.default_message_notifications;
+      this.default_message_notifications =
+        this.#data.default_message_notifications;
     }
     if ("explicit_content_filter" in this.#data) {
       /**
@@ -216,22 +216,6 @@ class Guild extends Base {
        * @type {number}
        */
       this.explicit_level = this.#data.explicit_content_filter;
-    }
-    if ("roles" in this.#data && this.roles) {
-      for (var roleData of this.#data.roles) {
-        const role = new GuildRole(roleData, this, this.client);
-        this.roles.cache.set(role.id, role);
-      }
-    }
-    if ("emojis" in this.#data) {
-      for (var emojiData of this.#data.emojis) {
-        this.emojis.set(emojiData.id, emojiData);
-      }
-    }
-    if ("stickers" in this.#data) {
-      for (var stickerData of this.#data.stickers) {
-        this.stickers.set(stickerData.id, stickerData);
-      }
     }
     if ("mfa_level" in this.#data) {
       /**
@@ -331,6 +315,43 @@ class Guild extends Base {
        */
       this.nsfw_level = this.#data.nsfw_level;
     }
+
+    this.#patch();
+  }
+
+  #patch() {
+    if ("channels" in this.#data) {
+      for (var channelData of this.#data.channels) {
+        const channel = Utilities.typeChannel(channelData, this.client);
+
+        this.channels.cache.set(channel.id, channel);
+
+        this.client.channels.cache.set(channel.id, channel);
+      }
+    }
+
+    if ("roles" in this.#data && this.roles) {
+      for (var roleData of this.#data.roles) {
+        const role = new GuildRole(roleData, this, this.client);
+        this.roles.cache.set(role.id, role);
+      }
+    }
+    if (
+      "emojis" in this.#data &&
+      (this.client.cacheOpts?.guild_emojis ?? true)
+    ) {
+      for (var emojiData of this.#data.emojis) {
+        this.emojis.set(emojiData.id, emojiData);
+      }
+    }
+    if (
+      "stickers" in this.#data &&
+      (this.client.cacheOpts?.guild_stickers ?? true)
+    ) {
+      for (var stickerData of this.#data.stickers) {
+        this.stickers.set(stickerData.id, stickerData);
+      }
+    }
   }
 
   /**
@@ -339,8 +360,8 @@ class Guild extends Base {
    * @returns {Nullable<string>}
    */
   public iconUrl(config?: CDNOptions): Nullable<string> {
-    if(!this.icon) return null;
-    return this.client.rest.cdn.guildIcon(this.id, this.icon, config || {})
+    if (!this.icon) return null;
+    return this.client.rest.cdn.guildIcon(this.id, this.icon, config || {});
   }
 
   /**
@@ -349,8 +370,8 @@ class Guild extends Base {
    * @returns {Nullable<string>}
    */
   public bannerUrl(config?: CDNOptions): Nullable<string> {
-    if(!this.banner) return null;
-    return this.client.rest.cdn.guildBanner(this.id, this.banner, config || {})
+    if (!this.banner) return null;
+    return this.client.rest.cdn.guildBanner(this.id, this.banner, config || {});
   }
 
   /**
@@ -359,8 +380,8 @@ class Guild extends Base {
    * @returns {Nullable<string>}
    */
   public splashUrl(config?: CDNOptions): Nullable<string> {
-    if(!this.splash) return null;
-    return this.client.rest.cdn.guildSplash(this.id, this.splash, config || {})
+    if (!this.splash) return null;
+    return this.client.rest.cdn.guildSplash(this.id, this.splash, config || {});
   }
 
   /**
@@ -369,8 +390,12 @@ class Guild extends Base {
    * @returns {Nullable<string>}
    */
   public discoverySplashUrl(config?: CDNOptions): Nullable<string> {
-    if(!this.discovery_splash) return null;
-    return this.client.rest.cdn.discoverySplash(this.id, this.discovery_splash as string, config || {})
+    if (!this.discovery_splash) return null;
+    return this.client.rest.cdn.discoverySplash(
+      this.id,
+      this.discovery_splash as string,
+      config || {}
+    );
   }
 
   /**
@@ -392,16 +417,16 @@ class Guild extends Base {
   public async edit(body: RESTPatchAPIGuildJSONBody) {
     if (!body || typeof body !== "object") return null;
 
-    const response = await this.client.rest.request(
+    const response = await this.client.rest.request<APIGuild>(
       "PATCH",
       Endpoints.Guild(this.id),
       true,
-      { data: body }
+      body
     );
 
-    if(!response || response?.error || !response?.data) return response;
+    if (!response || response?.error) return response;
 
-    return new Guild(response.data as APIGuild, this.client)
+    return new Guild(response as APIGuild, this.client);
   }
 }
 

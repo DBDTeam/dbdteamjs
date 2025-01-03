@@ -1,13 +1,12 @@
 import { Client } from "../client/Client";
-import { Nullable, PresenceData } from "../common";
-import { SnowflakeInformation } from "../utils/utils";
+import { Nullable } from "../common";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
 import { User } from "./User";
-import { ErrorResponseFromApi, ResponseFromApi } from "../interfaces/rest/requestHandler";
 import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
-import { RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
+import { GatewayPresenceUpdate, RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
+import { SnowflakeInformation } from "../common/interfaces";
 /**
  * Represents a guild member and provides methods to manage and interact with it.
  */
@@ -48,7 +47,7 @@ declare class Member extends Base {
     /**
      * The presence status of the member.
      */
-    presence: Nullable<PresenceData>;
+    presence: Nullable<GatewayPresenceUpdate>;
     /**
      * The nickname of the member.
      */
@@ -106,7 +105,9 @@ declare class Member extends Base {
     /**
      * Makes the member leave the guild.
      */
-    leave(): Promise<ResponseFromApi | ErrorResponseFromApi | null>;
+    leave(): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | null>;
     /**
      * Checks if the member is kickable.
      * @returns {boolean} True if the member can be kicked, false otherwise.
@@ -129,13 +130,13 @@ declare class Member extends Base {
      * @param reason - The reason for changing the nickname.
      * @returns The response from the API.
      */
-    changeNickname(nickname: string, reason?: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
+    changeNickname(nickname: string, reason?: string): Promise<boolean>;
     /**
      * Kicks the member from the guild.
      * @param reason - The reason for kicking the member.
      * @returns The response from the API.
      */
-    kick(reason?: string): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
+    kick(reason?: string): Promise<Nullable<boolean>>;
     /**
      * Bans the member from the guild.
      * @param obj - The payload for banning the member.
@@ -144,7 +145,7 @@ declare class Member extends Base {
     ban(data: {
         delete_message_seconds?: number;
         reason?: string;
-    }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>>;
+    }): Promise<Nullable<boolean>>;
     /**
      * Returns a string representation of the member.
      * @returns The mention string of the member.

@@ -1,4 +1,4 @@
-import { CacheOptions, ClientEvents, ClientOptions, GatewayConfig, Nullable } from "../common";
+import { CacheOptions, ClientOptions, GatewayConfig, Nullable, SnowflakeInformation } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -8,7 +8,6 @@ import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
 import { EventManager } from "./events/EventManager";
-import { SnowflakeInformation } from "../utils/utils";
 import { ListenerManager } from "./ClientListener";
 
 class Client extends ListenerManager {

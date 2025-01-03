@@ -1,11 +1,11 @@
-import { RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
+import { APIRole, RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { Collection } from "../../utils/Collection";
 import { Guild } from "../Guild";
 import { type Member } from "../Member";
 import { EditRolePayload, GuildRole } from "../Role";
 import { Nullable } from "../../common";
+import { RESTResponse } from "../../rest/requestHandler";
 type RoleOptions = {
     roles: string[];
     reason?: string | undefined | null;
@@ -31,8 +31,8 @@ export declare class MemberRolesManager {
      * @returns An object containing errors and success responses.
      */
     add(addObject: RoleOptions): Promise<{
-        error: ErrorResponseFromApi[];
-        success: ResponseFromApi[];
+        error: RESTResponse[];
+        success: RESTResponse[];
     } | null>;
     /**
      * Removes roles from a member.
@@ -40,8 +40,8 @@ export declare class MemberRolesManager {
      * @returns An object containing errors and success responses.
      */
     remove(removeObject: RoleOptions): Promise<{
-        error: ErrorResponseFromApi[];
-        success: ResponseFromApi[];
+        error: RESTResponse[];
+        success: RESTResponse[];
     } | null>;
     /**
      * Fetches roles of a member.
@@ -68,7 +68,7 @@ export declare class GuildRolesManager {
      * @param roleId - The role ID to fetch, or null to fetch all roles.
      * @returns A collection of guild roles, a single guild role, or an error response.
      */
-    fetch(roleId: string | null | undefined): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi>;
+    fetch(roleId: string | null | undefined): Promise<Collection<string, GuildRole> | GuildRole | RESTResponse>;
     /**
      * Edits a role in the guild.
      *
@@ -77,15 +77,15 @@ export declare class GuildRolesManager {
      *
      * @returns {Nullable<ErrorResponseFromApi | GuildRole | Collection<string, GuildRole[]>>} Returns the edited role if the request was successful, otherwise returns an error.
      */
-    edit(id: string, editOptions: EditRolePayload): Promise<Nullable<ErrorResponseFromApi | GuildRole>>;
+    edit(id: string, editOptions: EditRolePayload): Promise<Nullable<RESTResponse | GuildRole>>;
     /**
      * Deletes roles from the guild.
      * @param deleteObject - An object containing roles to delete and a reason.
      * @returns An object containing errors and success responses or the current cache.
      */
     delete(deleteObject: RoleOptions): Promise<{
-        error: ErrorResponseFromApi[];
-        success: ResponseFromApi[];
+        error: RESTResponse[];
+        success: GuildRole[];
     } | Collection<string, GuildRole>>;
     /**
      * Creates a new role in the guild.
@@ -94,6 +94,8 @@ export declare class GuildRolesManager {
      */
     create(createObject: RESTPostAPIGuildRoleJSONBody & {
         reason?: string;
-    }): Promise<ResponseFromApi | Record<any, any> | null>;
+    }): Promise<GuildRole | ((Record<string, any> | APIRole) & {
+        error?: boolean;
+    }) | null>;
 }
 export {};

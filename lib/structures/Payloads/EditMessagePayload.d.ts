@@ -1,4 +1,4 @@
-import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { MessagePayloadFileData } from "../../common/interfaces/message/MessagePayload";
 import { MessageUpdateBodyRequest } from "../../common";
 declare class EditMessagePayload {
     private MENTIONS;

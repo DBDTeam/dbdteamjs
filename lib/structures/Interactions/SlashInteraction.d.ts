@@ -1,4 +1,4 @@
-import { InteractionOptionValue } from "../../common/types/interactions";
+import { InteractionOptionValue } from "../../common/types/Interactions";
 import { Client } from "../../client";
 import { InteractionBase } from "./BaseInteraction";
 import { Collection } from "../../utils/Collection";

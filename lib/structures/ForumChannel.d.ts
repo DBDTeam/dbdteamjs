@@ -2,9 +2,9 @@ import { APIGuildForumChannel, APIGuildForumTag, RESTPostAPIGuildForumThreadsJSO
 import { type Client } from "../client";
 import { Channel } from "./BaseChannel";
 import { Nullable } from "../common";
-import { MessagePayloadFileData } from "../interfaces/message/MessagePayload";
+import { MessagePayloadFileData } from "../common/interfaces/message/MessagePayload";
 import { ForumThreadChannel } from "./ThreadForumChannel";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import { RESTResponse } from "../rest/requestHandler";
 export declare class ForumChannel extends Channel {
     #private;
     last_message_id: Nullable<string>;
@@ -20,5 +20,5 @@ export declare class ForumChannel extends Channel {
     createThread(object: RESTPostAPIGuildForumThreadsJSONBody & {
         files?: MessagePayloadFileData[];
         reason?: string;
-    }): Promise<ErrorResponseFromApi | ForumThreadChannel>;
+    }): Promise<RESTResponse | ForumThreadChannel>;
 }

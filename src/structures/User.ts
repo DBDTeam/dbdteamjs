@@ -1,50 +1,13 @@
-import { ChannelType, RESTGetAPIUserResult } from "discord-api-types/v10";
+import { RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { CDNOptions } from "../interfaces/rest/cdn";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
 import * as Endpoints from "../rest/Endpoints";
 import { Base } from "./Base";
-import { MessageBodyRequest, Nullable } from "../common";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
-import { TextChannel } from ".";
-import { typeChannel } from "../utils/utils";
+import { Badge, BadgesBitfieldValues, MessageBodyRequest, Nullable } from "../common";
 import { DMChannel } from "./DMChannel";
-export type Badge =
-  | "Discord Employee"
-  | "Discord Partner"
-  | "HypeSquad Events"
-  | "Bug Hunter Level 1"
-  | "HypeSquad Bravery"
-  | "HypeSquad Brilliance"
-  | "HypeSquad Balance"
-  | "Early Nitro Supporter"
-  | "Team User"
-  | "Bug Hunter Level 2"
-  | "Verified Bot"
-  | "Early Verified Bot Developer"
-  | "Moderator Programs Alumni"
-  | "Bot with HTTP Interactions"
-  | "Active Developer"
-  | "Nitro Basic"
-  | "Nitro"
-  | "Pomelo";
+import { Utilities } from "../utils/utils";
+import { RESTResponse } from "../rest/requestHandler";
 
-const badgesMapping: Record<number, Badge> = {
-  1: "Discord Employee",
-  2: "Discord Partner",
-  4: "HypeSquad Events",
-  8: "Bug Hunter Level 1",
-  64: "HypeSquad Bravery",
-  128: "HypeSquad Brilliance",
-  256: "HypeSquad Balance",
-  512: "Early Nitro Supporter",
-  1024: "Team User",
-  16384: "Bug Hunter Level 2",
-  65536: "Verified Bot",
-  131072: "Early Verified Bot Developer",
-  262144: "Moderator Programs Alumni",
-  524288: "Bot with HTTP Interactions",
-  4194304: "Active Developer",
-};
 /**
  * Represents a User
  */
@@ -173,7 +136,7 @@ class User extends Base {
       "avatar_decoration" in data && data.avatar_decoration != null
         ? data.avatar_decoration
         : this.#oldUser?.avatarDecoration ?? null;
-    this.badges = Object.entries(badgesMapping)
+    this.badges = Object.entries(BadgesBitfieldValues)
       .filter(([flag]) => (this.flags & Number(flag)) !== 0)
       .map(([, badge]) => badge);
 
@@ -245,13 +208,12 @@ class User extends Base {
       "POST",
       Endpoints.UserDM(),
       true,
-      { data: { recipient_id: this.id } }
+      { recipient_id: this.id }
     );
 
-    if (result?.error || !result?.data) return result as ErrorResponseFromApi;
+    if (result?.error || !result?.data) return result as RESTResponse;
 
-    const dm = typeChannel(result.data, this.#client) as DMChannel; // idk why, but it works, if
-    // i use new TextChannel(...) makes a circular dependency error lmfao
+    const dm = Utilities.typeChannel(result.data, this.#client) as DMChannel;
 
     this.dmChannel = dm;
 
@@ -259,9 +221,9 @@ class User extends Base {
   }
 
   async send(body: MessageBodyRequest | string) {
-    if(!this.dmChannel) await this.createDM();
+    if (!this.dmChannel) await this.createDM();
 
-    return this.dmChannel?.send(body)
+    return this.dmChannel?.send(body);
   }
 
   /**

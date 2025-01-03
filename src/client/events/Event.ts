@@ -4,7 +4,7 @@ import { Member } from "../../structures/Member";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
 import { User } from "../../structures/User";
-import { typeChannel } from "../../utils/utils";
+import { Utilities } from "../../utils/utils";
 import { type Client } from "../Client";
 
 export abstract class Event<T> {
@@ -26,7 +26,7 @@ export abstract class Event<T> {
   }
 
   getChannel(data: any) {
-    const channel = typeChannel(data, this.client);
+    const channel = Utilities.typeChannel(data, this.client);
 
     channel.guild?.channels?.cache?.set(channel.id, channel);
 

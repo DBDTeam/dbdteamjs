@@ -1,6 +1,6 @@
 import { Nullable } from "../common";
-import { CDNOptions } from "../interfaces/rest/cdn";
-import { setObj } from "../utils/utils";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
+import { Utilities } from "../utils/utils";
 
 /**
  * Default options for CDN requests
@@ -236,7 +236,7 @@ export class CDN {
       opts = {};
     }
 
-    var _opts = setObj(OPTIONS, opts);
+    var _opts = Utilities.setObj(OPTIONS, opts);
 
     if (_opts.size) _opts.size = this._validSize(_opts.size);
 

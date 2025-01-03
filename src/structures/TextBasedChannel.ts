@@ -1,16 +1,16 @@
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
-import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import * as Endpoints from "../rest/Endpoints";
 import { Message } from "./Message";
 import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
-import { MessageBodyRequest } from "../common";
+import { MessageBodyRequest, SnowflakeInformation } from "../common";
 import { Channel } from "./BaseChannel";
 import { ClientError, ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
+import { Utilities } from "../utils/utils";
 
 export class TextBasedChannel extends Channel {
   /**
@@ -57,7 +57,7 @@ export class TextBasedChannel extends Channel {
      * @type {string}
      */
     this.parent_id = data.parent_id;
-    this.last_pin = getAllStamps(
+    this.last_pin = Utilities.getAllStamps(
       data.last_pin_timestamp
     ) as SnowflakeInformation;
     /**
@@ -120,7 +120,7 @@ export class TextBasedChannel extends Channel {
       "POST",
       Endpoints.ChannelMessages(this.id),
       true,
-      { data: message.payload },
+      message.payload,
       null,
       message.files
     );

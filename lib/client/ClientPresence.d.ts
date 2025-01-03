@@ -1,5 +1,5 @@
 import { ClientPresencePayload, Nullable } from "../common";
-import { GatewayActivityPayload } from "../types/Presences";
+import { GatewayActivityPayload } from "../common/types/Presences";
 import { type Client } from "./Client";
 /**
  * Represents the client presence (WS presence)

@@ -1,5 +1,5 @@
 import { RESTPostAPIGuildForumThreadsJSONBody, Snowflake } from "discord-api-types/v10";
-import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { MessagePayloadFileData } from "../../common/interfaces/message/MessagePayload";
 import { MessageBodyRequest, Nullable } from "../../common";
 export declare class ForumThreadPayload {
     name: string;

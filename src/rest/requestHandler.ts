@@ -1,10 +1,6 @@
 import https from "https";
 import { type Client } from "../client/Client";
-import {
-  ErrorResponseFromApi,
-  Methods,
-  ResponseFromApi,
-} from "../interfaces/rest/requestHandler";
+import { Methods } from "../common/interfaces/rest/requestHandler";
 import * as Endpoints from "./Endpoints";
 import { Collection } from "../utils/Collection";
 import { Bucket } from "./Bucket";
@@ -43,6 +39,34 @@ export class RequestHandler {
     this.buckets = new Collection(); // Initialize rate limit buckets.
   }
 
+  public async request<T = RESTResponse>(
+    method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
+    endpoint: string,
+    auth: boolean = true,
+    data?: Record<string, any>,
+    reason?: Nullable<string>,
+    files?: Nullable<Array<Record<string, any>>>,
+    headers?: Nullable<Record<any, any>>
+  ): Promise<((T | Record<string, any>) & { error?: boolean }) | null> {
+    try {
+      const response = await this.fetchFromAPI(
+        method,
+        endpoint,
+        auth,
+        { data },
+        reason,
+        files,
+        headers
+      );
+
+      if (!response || response.error) return response;
+
+      return response.data as (T | Record<string, any>) & { error?: boolean };
+    } catch (error) {
+      return null;
+    }
+  }
+
   /**
    * Makes an API request while handling rate limits and errors.
    * @param method - HTTP method to use (e.g., GET, POST).
@@ -53,14 +77,15 @@ export class RequestHandler {
    * @param files - Optional files to include in the request.
    * @returns A promise resolving to the API response or rejecting on error.
    */
-  public async request(
+  private async fetchFromAPI(
     method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     url: string,
     auth: boolean = true,
     body?: Record<string, any>,
     reason?: Nullable<string>,
-    files?: Nullable<Array<Record<string, any>>>
-  ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
+    files?: Nullable<Array<Record<string, any>>>,
+    addHeaders?: Nullable<Record<any, any>>
+  ): Promise<null | RESTResponse> {
     const routeKey = this.getRouteKey(url); // Generate a unique route key.
     const bucket = this.getBucket(routeKey); // Get or create a rate limit bucket.
 
@@ -71,8 +96,9 @@ export class RequestHandler {
           method as Methods,
           auth,
           files,
-          reason
-        ); // Build headers.
+          reason,
+          addHeaders
+        );
 
         try {
           const response = await this.makeResponse(
@@ -89,7 +115,9 @@ export class RequestHandler {
               "debug",
               "Rate limit encountered. Retrying after the specified delay."
             );
-            resolve(await this.request(method, url, auth, body, reason, files)); // Retry on rate limit.
+            resolve(
+              await this.fetchFromAPI(method, url, auth, body, reason, files)
+            ); // Retry on rate limit.
           } else {
             reject(error);
           }
@@ -142,12 +170,13 @@ export class RequestHandler {
     method: Methods,
     auth: boolean,
     files: Nullable<Array<Record<string, any>>>,
-    reason: Nullable<string>
+    reason: Nullable<string>,
+    heads: Nullable<any>
   ): Record<string, any> {
     const headers: Record<string, any> = {
       "User-Agent": "DiscordBot (https://discord.com)",
     };
-    this._setHeaders(method, headers, auth, files, reason);
+    this._setHeaders(method, headers, auth, files, reason, heads);
     return headers;
   }
 
@@ -166,7 +195,7 @@ export class RequestHandler {
     method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
     body?: Record<string, any>,
     files?: Nullable<Array<Record<string, any>>>
-  ): Promise<null | ResponseFromApi | ErrorResponseFromApi> {
+  ): Promise<null | RESTResponse> {
     const startTime = Date.now(); // Track request start time.
 
     return new Promise(async (resolve, reject) => {
@@ -183,11 +212,13 @@ export class RequestHandler {
           try {
             await this._handle(res, parsedData, reject); // Handle response errors.
             this.ping = Date.now() - startTime; // Calculate request ping.
-            resolve({
-              status: res.statusCode as number,
-              data: parsedData,
-              error: false,
-            });
+            resolve(
+              new RESTResponse({
+                status: res.statusCode as number,
+                data: parsedData,
+                error: false,
+              })
+            );
           } catch (err) {
             reject(err);
           }
@@ -220,7 +251,8 @@ export class RequestHandler {
     headers: Record<string, any>,
     auth: boolean,
     files: Nullable<Array<Record<string, any>>>,
-    reason: Nullable<string>
+    reason: Nullable<string>,
+    heads: Nullable<any>
   ) {
     Object.assign(headers, {
       "Content-Type": files
@@ -230,6 +262,7 @@ export class RequestHandler {
         : undefined,
       ...(auth && { Authorization: "Bot " + this.client.token }),
       ...(reason && { "X-Audit-Log-Reason": reason }),
+      ...heads,
     });
   }
 
@@ -348,7 +381,6 @@ export class RequestHandler {
     parsedData: any,
     reject: any
   ) {
-    console.log(parsedData)
     const discordError = new DiscordAPIError(
       parsedData?.message || "Discord API error.",
       res.statusCode as number,
@@ -381,5 +413,17 @@ export class RequestHandler {
    */
   private _sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+}
+
+export class RESTResponse {
+  status: number;
+  data: any;
+  error: boolean;
+  #data: any;
+  constructor(data: any) {
+    this.#data = data;
+    (this.status = data.statusCode), (this.data = data.data);
+    this.error = data.error;
   }
 }

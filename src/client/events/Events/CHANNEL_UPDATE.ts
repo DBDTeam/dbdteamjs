@@ -1,8 +1,8 @@
 import { GatewayChannelUpdateDispatchData } from "discord-api-types/v10";
 import { type Shard } from "../../../structures/Sharding";
-import { typeChannel } from "../../../utils/utils";
 import { Event } from "../Event";
 import { EventNames } from "../../../common";
+import { Utilities } from "../../../utils/utils";
 
 export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchData> {
   handle(data: GatewayChannelUpdateDispatchData, shard: Shard) {
@@ -17,11 +17,11 @@ export default class ChannelUpdate extends Event<GatewayChannelUpdateDispatchDat
 
       newChannel = this.client.channels.cache.set(
         data.id,
-        typeChannel(data, this.client)
+        Utilities.typeChannel(data, this.client)
       );
       this.client.guilds.cache.forEach((x) => {
         if (x.id === data.guild_id) {
-          x.channels.cache.set(data.id, typeChannel(data, this.client));
+          x.channels.cache.set(data.id, Utilities.typeChannel(data, this.client));
         }
       });
     }

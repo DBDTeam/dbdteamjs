@@ -2,18 +2,18 @@ import {
   ChannelPermissionSuccessResponse,
   ObjectOfThePerms,
   TargetPayload,
-} from "../../interfaces/channel/Permissions";
+} from "../../common/interfaces/general/Permissions";
 import {
   PermissionsBits,
   PermissionsType,
-} from "../../interfaces/channel/Permissions";
+} from "../../common/interfaces/general/Permissions";
 import { Client } from "../../client/Client";
 import { Nullable } from "../../common";
-import { ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import * as Endpoints from "../../rest/Endpoints";
-import { PermissionManager } from "./PermissionManager";
+import { PermissionManager } from "../Flags/Permission";
 import { ClientError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
+import { RESTResponse } from "../../rest/requestHandler";
 
 export class ChannelPermissionManager {
   #permissionsBits = PermissionsBits;
@@ -73,13 +73,13 @@ export class ChannelPermissionManager {
    * @param {TargetPayload} target - The target payload.
    * @param {ObjectOfThePerms} perms - The permissions to apply.
    * @param {Nullable<string>} reason - The reason for the modification.
-   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
+   * @returns {Promise<ChannelPermissionSuccessResponse | RESTResponse>} - API response.
    */
   async edit(
     target: TargetPayload | "everyone",
     perms: ObjectOfThePerms,
     reason: Nullable<string> = null
-  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+  ): Promise<ChannelPermissionSuccessResponse | RESTResponse> {
     const preparedTarget = this.prepareTarget(target);
     const resolvedPerms = this.resolvePermissions(perms);
 
@@ -95,7 +95,7 @@ export class ChannelPermissionManager {
       "PUT",
       Endpoints.ChannelPermissions(this.channelId, data.targetId),
       true,
-      { data },
+      data,
       reason
     );
 
@@ -107,13 +107,13 @@ export class ChannelPermissionManager {
    * @param {TargetPayload} target - The target payload.
    * @param {PermissionsType[]} permissions - The permissions to add.
    * @param {Nullable<string>} reason - The reason for adding permissions.
-   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
+   * @returns {Promise<ChannelPermissionSuccessResponse | RESTResponse>} - API response.
    */
   async add(
     target: TargetPayload,
     permissions: PermissionsType[] | PermissionsType,
     reason: Nullable<string> = null
-  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+  ): Promise<ChannelPermissionSuccessResponse | RESTResponse> {
     const perms: ObjectOfThePerms = { allow: permissions };
     return this.edit(target, perms, reason);
   }
@@ -123,15 +123,95 @@ export class ChannelPermissionManager {
    * @param {TargetPayload} target - The target payload.
    * @param {PermissionsType[]} permissions - The permissions to remove.
    * @param {Nullable<string>} reason - The reason for removing permissions.
-   * @returns {Promise<ChannelPermissionSuccessResponse | ResponseFromApi>} - API response.
+   * @returns {Promise<ChannelPermissionSuccessResponse | RESTResponse>} - API response.
    */
   async remove(
     target: TargetPayload,
     permissions: PermissionsType[] | PermissionsType,
     reason: Nullable<string> = null
-  ): Promise<ChannelPermissionSuccessResponse | ResponseFromApi> {
+  ): Promise<ChannelPermissionSuccessResponse | RESTResponse> {
     const perms: ObjectOfThePerms = { deny: permissions };
     return this.edit(target, perms, reason);
+  }
+
+  /**
+   * Utility to get the allow and deny bitfields for a target in the channel.
+   * @param {TargetPayload} target - The target payload to prepare.
+   * @returns {{ allow: bigint, deny: bigint }} - The allow and deny bitfields for the target.
+   */
+  private getPermissionBitfields(target: TargetPayload): {
+    allow: bigint;
+    deny: bigint;
+  } {
+    const preparedTarget = this.prepareTarget(target);
+    const permissionOverwrites = this.channel?.permission_overwrites || [];
+    const targetOverwrites = permissionOverwrites.find(
+      (overwrite) => overwrite.id === preparedTarget.targetId
+    );
+
+    let allow = BigInt(0);
+    let deny = BigInt(0);
+
+    if (targetOverwrites) {
+      allow = BigInt(targetOverwrites.allow);
+      deny = BigInt(targetOverwrites.deny);
+    }
+
+    return { allow, deny };
+  }
+
+  /**
+   * Checks if a target has all the specified permissions in the channel.
+   * @param {TargetPayload} target - The target payload (e.g., user or role) whose permissions are being checked.
+   * @param {Partial<Record<PermissionsType, boolean>>} permissions - An object where keys are permission names,
+   * and values are booleans indicating whether the target should have (`true`) or not have (`false`) the permission.
+   * @returns {Promise<boolean>} - Returns true if the target has all the permissions required, otherwise false.
+   */
+  async has(
+    target: TargetPayload,
+    permissions: Partial<Record<PermissionsType, boolean>>
+  ): Promise<boolean> {
+    const { allow } = this.getPermissionBitfields(target);
+
+    return Object.entries(permissions).every(([permission, value]) => {
+      const permissionBit = BigInt(
+        this.#permissionsBits[permission as PermissionsType]
+      );
+
+      if (!permissionBit)
+        throw new ClientError(ErrorNames.InvalidPermission, permission);
+
+      const hasPermission = (allow & permissionBit) === permissionBit;
+
+      return value ? hasPermission : !hasPermission;
+    });
+  }
+
+  /**
+   * Checks if a target has at least one of the specified permissions in the channel.
+   * @param {TargetPayload} target - The target payload (e.g., user or role) whose permissions are being checked.
+   * @param {Partial<Record<PermissionsType, boolean>>} permissions - An object where keys are permission names,
+   * and values are booleans indicating whether the target should have (`true`) or not have (`false`) the permission.
+   * @returns {Promise<boolean>} - Returns true if the target has at least one of the required permissions, otherwise false.
+   */
+  async hasAny(
+    target: TargetPayload,
+    permissions: Partial<Record<PermissionsType, boolean>>
+  ): Promise<boolean> {
+    const { allow } = this.getPermissionBitfields(target);
+
+    return Object.entries(permissions).some(([permission, value]) => {
+      const permissionBit = BigInt(
+        this.#permissionsBits[permission as PermissionsType]
+      );
+
+      if (!permissionBit)
+        throw new ClientError(ErrorNames.InvalidPermission, permission);
+
+      const hasPermission = (allow & permissionBit) === permissionBit;
+
+      return value ? hasPermission : !hasPermission;
+    });
   }
 
   private determineTargetType(target: any): "0" | "1" {
@@ -145,7 +225,7 @@ export class ChannelPermissionManager {
 
   private prepareTarget(
     target: TargetPayload | "everyone"
-  ): Required<{ targetId: string, type: "0" | "1"}> {
+  ): Required<{ targetId: string; type: "0" | "1" }> {
     let targetId: string;
     let targetType: "0" | "1";
 

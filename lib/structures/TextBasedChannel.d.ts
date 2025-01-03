@@ -1,11 +1,10 @@
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
-import { SnowflakeInformation } from "../utils/utils";
 import { Message } from "./Message";
 import { TextChannel } from "./TextChannel";
 import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
-import { MessageBodyRequest } from "../common";
+import { MessageBodyRequest, SnowflakeInformation } from "../common";
 import { Channel } from "./BaseChannel";
 export declare class TextBasedChannel extends Channel {
     /**
@@ -30,13 +29,17 @@ export declare class TextBasedChannel extends Channel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<Message | import("..").ResponseFromApi | null>;
+    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | Message | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<Message | import("..").ResponseFromApi | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | Message | null>;
     /**
      * The Text Channel last pin time information
      */
@@ -57,5 +60,7 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest | string): Promise<Message | import("..").ResponseFromApi | null>;
+    createMessage(body: MessageBodyRequest | string): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | Message | null>;
 }

@@ -1,5 +1,5 @@
 import { MessageBodyRequest } from "../../common";
-import { MessagePayloadData, MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
+import { MessagePayloadData, MessagePayloadFileData } from "../../common/interfaces/message/MessagePayload";
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
  */

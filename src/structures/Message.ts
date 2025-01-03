@@ -11,7 +11,6 @@ import {
 } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { Collection } from "../utils/Collection";
-import { getAllStamps, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
 import { Channel } from "./BaseChannel";
 import { Guild } from "./Guild";
@@ -23,7 +22,9 @@ import { User } from "./User";
 import { TextBasedChannel } from "./TextBasedChannel";
 import { ClientError, ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
-import { ErrorResponseFromApi, PermissionNames } from "../interfaces";
+import { PermissionNames } from "../common/interfaces";
+import { Utilities } from "../utils/utils";
+import { RESTResponse } from "../rest/requestHandler";
 
 /**
  * Represents a Discord message.
@@ -119,7 +120,7 @@ class Message extends Base {
    * Reactions associated with the message.
    * @type {MessageReactions}
    */
-  reactions: MessageReactions;
+  reactions!: MessageReactions;
 
   /**
    * Whether the message was text-to-speech.
@@ -202,16 +203,11 @@ class Message extends Base {
     this.guild =
       (this.client.guilds.cache.get(data.guild_id as string) as Guild) ||
       (this.client.channels.cache.get(this.channelId)?.guild as Guild);
-    this.guildId = this.guild.id as string;
+    this.guildId = this.guild?.id as string;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
-    this.reactions = new MessageReactions(
-      this.client,
-      this,
-      data.reactions || []
-    );
     this.tts = data.tts;
     this.flags = data.flags || 0;
-    this.sended = getAllStamps(this);
+    this.sended = Utilities.getAllStamps(this);
     this.embeds = data.embeds || [];
     this.attachments = data.attachments || [];
     this.stickers = new Collection();
@@ -229,6 +225,12 @@ class Message extends Base {
         this.channelId
       )) as TextBasedChannel;
     }
+
+    if(!this.guild) {
+      this.guild = this.channel.guild
+      this.guildId = this.channel.guildId
+    }
+
     if (!this.member) {
       this.member = (await this.guild.members?.fetch(
         this.data.author.id
@@ -266,6 +268,12 @@ class Message extends Base {
         this.stickers.set(i.id, i);
       }
     }
+
+    this.reactions = new MessageReactions(
+      this.client,
+      this,
+      this.data.reactions || []
+    );
   }
 
   /**
@@ -273,7 +281,7 @@ class Message extends Base {
    * @param {MessagePayloadData | string} obj - The message payload or content.
    * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
    */
-  async reply(body: MessageBodyRequest | string): Promise<Message | null> {
+  async reply(body: MessageBodyRequest | string): Promise<Message | RESTResponse | null> {
     if (typeof body === "string" || body instanceof String) {
       body = { content: body as string } as MessageBodyRequest;
     }
@@ -303,28 +311,23 @@ class Message extends Base {
 
     var data = message.payload;
 
-    var result = await this.client.rest.request(
+    var result = await this.client.rest.request<APIMessage>(
       "POST",
       Endpoints.ChannelMessages(this.channelId),
       true,
-      { data },
+      data,
       null,
       message.files
     );
 
-    if (!result) return null;
+    if (!result || !result?.error) return result as RESTResponse;
 
-    if (!result.error) {
-      const data: any = {
-        ...result.data,
+      const messageData: any = {
+        ...result,
         guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data?.author.id),
-      };
-
-      return new Message(data, this.client);
-    } else {
-      return null;
-    }
+        member: this.guild?.members?.cache.get(result.author.id),
+      }
+      return new Message(messageData, this.client);
   }
 
   /**
@@ -334,7 +337,7 @@ class Message extends Base {
    */
   async edit(
     newMessage: MessageUpdateBodyRequest | string
-  ): Promise<Message | ErrorResponseFromApi> {
+  ): Promise<Message | RESTResponse> {
     if (
       !newMessage ||
       (typeof newMessage !== "string" && typeof newMessage !== "object")
@@ -364,7 +367,7 @@ class Message extends Base {
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true,
-      { data },
+      data,
       null,
       files
     );
@@ -378,23 +381,23 @@ class Message extends Base {
       return new Message(data as APIMessage, this.client);
     }
 
-    return result as ErrorResponseFromApi;
+    return result as RESTResponse;
   }
 
   /**
    * Removes all embeds from the message.
    * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the updated message, or undefined if failed.
    */
-  async removeEmbeds(): Promise<Message | ErrorResponseFromApi> {
+  async removeEmbeds(): Promise<Message | RESTResponse> {
     const me = this.guild.members.me;
 
-    if (!me.permissions.hasPermission(PermissionNames.ManageMessages))
+    if (!me.permissions.has(PermissionNames.ManageMessages))
       throw new ClientError(ErrorNames.MissingPermissions, "ManageMessages");
     const result = await this.client.rest.request(
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true,
-      { data: { flags: 4 } }
+      { flags: 4 }
     );
 
     if (result?.data && !result.error) {
@@ -404,7 +407,7 @@ class Message extends Base {
       );
     }
 
-    return result as ErrorResponseFromApi;
+    return result as RESTResponse;
   }
 
   /**
@@ -416,7 +419,7 @@ class Message extends Base {
 
     if (
       this.author.id !== this.client.user.id &&
-      !me.permissions.hasPermission(PermissionNames.ManageMessages)
+      !me.permissions.has(PermissionNames.ManageMessages)
     )
       throw new ClientError(ErrorNames.MissingPermissions, "ManageMessages");
 
@@ -446,7 +449,7 @@ class Message extends Base {
 
       if (this.guild) channel.guild = this.guild;
 
-      channel = typeChannel(channel.data, this.client);
+      channel = Utilities.typeChannel(channel.data, this.client);
 
       this.client.channels.cache.set(channel.id, channel);
       this.guild?.channels.cache.set(channel.id, channel);

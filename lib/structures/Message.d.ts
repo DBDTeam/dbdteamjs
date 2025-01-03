@@ -9,7 +9,7 @@ import { MessageReactions } from "./Managers/MessageReactionManager";
 import { Member } from "./Member";
 import { User } from "./User";
 import { TextBasedChannel } from "./TextBasedChannel";
-import { ErrorResponseFromApi } from "../interfaces";
+import { RESTResponse } from "../rest/requestHandler";
 /**
  * Represents a Discord message.
  */
@@ -158,18 +158,18 @@ declare class Message extends Base {
      * @param {MessagePayloadData | string} obj - The message payload or content.
      * @returns {Promise<Message | null>} A promise that resolves to the sent message, or null if failed.
      */
-    reply(body: MessageBodyRequest | string): Promise<Message | null>;
+    reply(body: MessageBodyRequest | string): Promise<Message | RESTResponse | null>;
     /**
      * Edits the message.
      * @param {MessageBodyRequest | string} obj - The edit message payload or content.
      * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the edited message, or ErrorResponseFromAPI if failed.
      */
-    edit(newMessage: MessageUpdateBodyRequest | string): Promise<Message | ErrorResponseFromApi>;
+    edit(newMessage: MessageUpdateBodyRequest | string): Promise<Message | RESTResponse>;
     /**
      * Removes all embeds from the message.
      * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the updated message, or undefined if failed.
      */
-    removeEmbeds(): Promise<Message | ErrorResponseFromApi>;
+    removeEmbeds(): Promise<Message | RESTResponse>;
     /**
      * Deletes the message.
      * @returns {Promise<boolean>} A promise that resolves once the message is deleted.

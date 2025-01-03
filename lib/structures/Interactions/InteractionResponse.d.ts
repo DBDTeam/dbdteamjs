@@ -1,6 +1,6 @@
 import { type Client } from "../../client/Client";
 import { MessageBodyRequest } from "../../common";
-import { InteractionResponseData } from "../../common/types/interactions";
+import { InteractionResponseData } from "../../common/types/Interactions";
 import { Message } from "../Message";
 export declare class InteractionResponse extends Message {
     readonly client: Client;
@@ -27,5 +27,7 @@ export declare class InteractionResponse extends Message {
      * @param {string | MessageBodyRequest} obj - The EditMessagePayloadData
      * @returns {Promise<InteractionResponse | null>}
      */
-    editInteractionResponse(body: MessageBodyRequest | string): Promise<InteractionResponse | import("../..").ResponseFromApi | null | undefined>;
+    editInteractionResponse(body: MessageBodyRequest | string): Promise<((import("../../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | InteractionResponse | null | undefined>;
 }

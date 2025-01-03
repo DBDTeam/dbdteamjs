@@ -1,9 +1,8 @@
 import { AllowedMentionsTypes } from "discord-api-types/v10";
-import { MessageEditPayload } from "../../interfaces/message/EditMessage";
-import { MessageMentionParse } from "../../interfaces/message/Mentions";
-import { MessagePayloadFileData } from "../../interfaces/message/MessagePayload";
-import { setObj } from "../../utils/utils";
-import { MessageUpdateBodyRequest, Nullable } from "../../common";
+import { MessageMentionParse } from "../../common/interfaces/message/Mentions";
+import { MessagePayloadFileData } from "../../common/interfaces/message/MessagePayload";
+import { MessageUpdateBodyRequest } from "../../common";
+import { Utilities } from "../../utils/utils";
 
 class EditMessagePayload {
   private MENTIONS = [AllowedMentionsTypes.User, AllowedMentionsTypes.Role, AllowedMentionsTypes.Everyone];
@@ -38,7 +37,7 @@ class EditMessagePayload {
     this.d =
       typeof data === "string"
         ? { content: data }
-        : setObj(this.Data, data, { sticker_ids: "stickers" });
+        : Utilities.setObj(this.Data, data, { sticker_ids: "stickers" });
     this.file = [];
     this.f = files;
     if (typeof this.d == "string") {

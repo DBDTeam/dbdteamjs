@@ -9,9 +9,10 @@ import {
 import * as Endpoints from "../rest/Endpoints";
 import { resolveImage } from "../utils/ImageResolver";
 import { Base } from "./Base";
-import { ErrorResponseFromApi, PermissionNames } from "../interfaces";
+import { PermissionNames } from "../common/interfaces";
 import { ClientError, ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
+import { RESTResponse } from "../rest/requestHandler";
 
 export interface EditRolePayload {
   name: string;
@@ -121,7 +122,7 @@ export class GuildRole extends Base {
   async delete(reason = undefined) {
     const me = this.guild.members.me;
 
-    if (!me.permissions.hasPermission(PermissionNames.ManageRoles))
+    if (!me.permissions.has(PermissionNames.ManageRoles))
       throw new ClientError(ErrorNames.MissingPermissions, "ManageRoles");
     const response = await this.#client.rest.request(
       "DELETE",
@@ -137,10 +138,10 @@ export class GuildRole extends Base {
   async edit(
     body: RESTPatchAPIGuildRoleJSONBody & { position?: number },
     reason?: string
-  ): Promise<ErrorResponseFromApi | GuildRole> {
+  ): Promise<RESTResponse | GuildRole> {
     const me = this.guild.members.me;
 
-    if (!me.permissions.hasPermission(PermissionNames.ManageRoles))
+    if (!me.permissions.has(PermissionNames.ManageRoles))
       throw new ClientError(ErrorNames.MissingPermissions, "ManageRoles");
 
     if (!body && typeof body !== "object")
@@ -159,14 +160,13 @@ export class GuildRole extends Base {
     );
 
     if (response?.error || !response) {
-      return response as ErrorResponseFromApi;
-    } else {
+      return response as RESTResponse;
+    }
       return new GuildRole(
         response.data as APIRole,
         this.guild as Guild,
         this.#client
       );
-    }
   }
 
   async setName(name: string, reason?: string) {
@@ -215,7 +215,7 @@ export class GuildRole extends Base {
     if (reason && typeof reason !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     const data = await resolveImage(icon);
-    const response = await this.edit({ icon: data.uri }, reason);
+    const response = await this.edit({ icon: data?.uri }, reason);
 
     return response;
   }

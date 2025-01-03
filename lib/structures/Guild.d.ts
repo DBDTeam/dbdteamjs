@@ -1,5 +1,5 @@
 import { APIGuild, APIGuildWelcomeScreen, GatewayGuildCreateDispatchData, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel, RESTPatchAPIGuildJSONBody } from "discord-api-types/v10";
-import { CDNOptions } from "../interfaces/rest/cdn";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
 import { Collection } from "../utils/Collection";
@@ -83,6 +83,8 @@ declare class Guild extends Base {
      * @async
      */
     leave(): Promise<boolean | null>;
-    edit(body: RESTPatchAPIGuildJSONBody): Promise<import("..").ResponseFromApi | Guild | null>;
+    edit(body: RESTPatchAPIGuildJSONBody): Promise<Guild | ((Record<string, any> | APIGuild) & {
+        error?: boolean;
+    }) | null>;
 }
 export { Guild };

@@ -2,11 +2,12 @@ import { type Client } from "../../client";
 import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
 import * as Endpoints from "../../rest/Endpoints";
-import { FetchWithLimitAfterAndBefore } from "./ThreadMemberManager";
-import { Nullable } from "../../common";
+import { FetchWithLimitAfterAndBefore, Nullable } from "../../common";
 import { User } from "../User";
 import { Member } from "../Member";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { Utilities } from "../../utils/utils";
+import { APIBan } from "discord-api-types/v10";
+import { RESTResponse } from "../../rest/requestHandler";
 
 export class GuildBanManager {
   /**
@@ -19,64 +20,58 @@ export class GuildBanManager {
   id: string;
   constructor(guild: Guild, readonly client: Client) {
     this.cache = new Collection<string, Record<string, any>>();
-    this.id = guild.id
+    this.id = guild.id;
   }
   get guild() {
-    return this.client.guilds.cache.get(this.id) as Guild
+    return this.client.guilds.cache.get(this.id) as Guild;
   }
 
   /**
    * Fetches a guild ban if target is defined, otherwise, it fetches the first 100 bans.
    * @param {Nullable<string>} target - The target id of the ban to fetch.
    * @param {FetchWithLimitAfterAndBefore} [options] - The options of the fetch. (Only when target is not defined.)
-   * @returns {Promise<Nullable<ErrorResponseFromApi | Record<string, any>>> }
+   * @returns {Promise<Nullable<RESTResponse | Record<string, any>>> }
    */
 
   async fetch(
-    target: Nullable<string>,
+    target?: string,
     options?: FetchWithLimitAfterAndBefore
-  ): Promise<Nullable<ErrorResponseFromApi | Record<string, any>>> {
-    var url = Endpoints.GuildBans(this.guild.id);
+  ): Promise<Nullable<RESTResponse | Record<string, any>>> {
+    var url;
     if (target) {
-      url += "/" + target;
+      url = Endpoints.GuildBan(this.guild.id, target);
+    } else {
+      url = Utilities.buildUrl(
+        Endpoints.GuildBans(this.guild.id),
+        undefined,
+        options
+      );
     }
 
-    const opts = {
-      limit: !!options?.limit,
-      before: !!options?.before,
-      after: !!options?.after,
-    };
+    const response = await this.client.rest.request<APIBan>(
+      "GET",
+      url
+    );
 
-    if (opts.after) {
-      url +=
-        (opts.before || opts.limit ? "&" : "?") + "after=" + options?.after;
-    }
-    if (opts.before) {
-      url +=
-        (opts.after || opts.limit ? "&" : "?") + "before=" + options?.before;
-    }
-    if (opts.limit) {
-      url +=
-        (opts.after || opts.before ? "&" : "?") + "limit=" + options?.limit;
-    }
+    if (!response || response?.error)
+      return response as RESTResponse;
 
-    const response = await this.client.rest.request("GET", url, true);
+    const user = new User(response.user, this.client);
 
-    if (!response || response?.error || !response.data) return response as ErrorResponseFromApi;
-
-    const user = new User(response.data?.user, this.client)
-
-    return { user, reason: response.data?.reason };
+    return { user, reason: response?.reason };
   }
 
   /**
    * Creates a ban in the current guild.
-   * @param {string | User | Member} userId - The user to ban. 
+   * @param {string | User | Member} userId - The user to ban.
    * @param {string} [reason] - The reason of the ban.
-   * @returns 
+   * @returns
    */
 
-  async create(userId: User | string | Member, reason?: string): Promise<boolean> {
+  async create(
+    userId: User | string | Member,
+    reason?: string
+  ): Promise<boolean> {
     const id =
       userId instanceof User
         ? userId.id
@@ -92,13 +87,13 @@ export class GuildBanManager {
       reason
     );
 
-    return response?.error ? false : true
+    return response?.error ? false : true;
   }
 
   /**
    * Removes a ban in the current guild.
-   * @param {string | User | Member} userId - The user to unban. 
-   * @returns 
+   * @param {string | User | Member} userId - The user to unban.
+   * @returns
    */
 
   async remove(userId: User | string | Member): Promise<boolean> {
@@ -115,6 +110,6 @@ export class GuildBanManager {
       true
     );
 
-    return response?.error ? false : true
+    return response?.error ? false : true;
   }
 }

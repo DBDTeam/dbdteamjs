@@ -1,4 +1,4 @@
-import { CacheOptions, ClientOptions, GatewayConfig, Nullable } from "../common";
+import { CacheOptions, ClientOptions, GatewayConfig, Nullable, SnowflakeInformation } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -7,7 +7,6 @@ import { ShardManager } from "../structures/Sharding";
 import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
-import { SnowflakeInformation } from "../utils/utils";
 import { ListenerManager } from "./ClientListener";
 declare class Client extends ListenerManager {
     /**

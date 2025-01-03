@@ -5,7 +5,7 @@ import {
 import { Event } from "../Event";
 import { Member, Shard } from "../../../structures";
 import { EventNames, PresenceData } from "../../../common";
-import { GatewayActivityPayload, PresencePlatforms, PresenceStatus } from "../../../types/Presences";
+import { GatewayActivityPayload, PresencePlatforms, PresenceStatus } from "../../../common/types/Presences";
 
 export default class PresenceUpdate extends Event<GatewayPresenceUpdateDispatchData> {
   handle(data: GatewayPresenceUpdate, shard: Shard) {
@@ -19,13 +19,7 @@ export default class PresenceUpdate extends Event<GatewayPresenceUpdateDispatchD
 
     const oldPresence = member.presence;
 
-    const newPresence = {
-      status: data.status,
-      activities: data.activities,
-      platforms: data.client_status,
-    } as PresenceData;
-
-    member.presence = newPresence;
+    member.presence = data;
 
     guild.members?.cache.set(data.user.id, member);
 
@@ -33,7 +27,7 @@ export default class PresenceUpdate extends Event<GatewayPresenceUpdateDispatchD
       EventNames.PresenceUpdate,
       member,
       oldPresence,
-      newPresence,
+      member.presence,
       shard
     );
   }

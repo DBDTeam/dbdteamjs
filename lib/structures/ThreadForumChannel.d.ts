@@ -12,7 +12,13 @@ export declare class ForumThreadChannel extends Channel {
     member: ThreadMember;
     message?: Message;
     constructor(data: any, client: Client);
-    setTags(tagsIds: Snowflake[], reason?: string): Promise<import("..").ResponseFromApi | null | undefined>;
-    addTags(tagsIds: string[], reason?: string): Promise<import("..").ResponseFromApi | null | undefined>;
-    removeTags(tagsIds: string[], reason?: string): Promise<import("..").ResponseFromApi | null | undefined>;
+    setTags(tagsIds: Snowflake[], reason?: string): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | null | undefined>;
+    addTags(tagsIds: string[], reason?: string): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | null | undefined>;
+    removeTags(tagsIds: string[], reason?: string): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | null | undefined>;
 }

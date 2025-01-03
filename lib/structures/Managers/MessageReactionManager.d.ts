@@ -1,7 +1,6 @@
 import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
-import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../interfaces/message/Reactions";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../common/interfaces/message/Reactions";
 import { type Message } from "../Message";
 /**
  * Represents a manager for handling message reactions.
@@ -54,8 +53,8 @@ declare class MessageReactions {
     add(...emojis: string[]): Promise<Nullable<EmojisEmptyAnswer[]>>;
     /**
      * Removes all reactions from the message.
-     * @returns {Promise<ResponseFromApi | ErrorResponseFromApi | null>} - The result of the removal operation.
+     * @returns {Promise<RESTResponse | null>} - The result of the removal operation.
      */
-    removeAll(): Promise<ResponseFromApi | ErrorResponseFromApi | null>;
+    removeAll(): Promise<boolean>;
 }
 export { MessageReactions };

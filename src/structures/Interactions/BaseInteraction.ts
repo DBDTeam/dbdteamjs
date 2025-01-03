@@ -1,5 +1,4 @@
 import {
-  APIUser,
   InteractionResponseType,
   InteractionType,
 } from "discord-api-types/v10";
@@ -15,6 +14,7 @@ import {
   InteractionBodyRequest,
   MessageBodyRequest,
   MessageUpdateBodyRequest,
+  Nullable,
 } from "../../common";
 import { MessagePayload } from "../Payloads/MessagePayload";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
@@ -22,15 +22,12 @@ import {
   InteractionModalPayload,
   ModalPayloadData,
 } from "../Payloads/ModalPayload";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
 import { ClientError, ClientTypeError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
+import { RESTResponse } from "../../rest/requestHandler";
 
 /**
  * Represents the base class for interactions.
@@ -108,17 +105,17 @@ class InteractionBase {
    */
   showModal: (
     body: ModalPayloadData
-  ) => Promise<InteractionResponse | ResponseFromApi>;
+  ) => Promise<Nullable<InteractionResponse | RESTResponse>>;
 
   /**
    * Makes a reply using the gateway.
    * @async
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ResponseFromApi>}
+   * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
    */
   reply: (
     obj: InteractionBodyRequest | string
-  ) => Promise<InteractionResponse | ResponseFromApi>;
+  ) => Promise<Nullable<InteractionResponse | RESTResponse>>;
 
   /**
    * The ID of the interaction.
@@ -211,33 +208,35 @@ class InteractionBase {
    * @private
    * @async
    * @param {InteractionPayload} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ResponseFromApi>}
+   * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
    */
   private async __makeReply(
     obj: any
-  ): Promise<InteractionResponse | ResponseFromApi> {
+  ): Promise<Nullable<InteractionResponse | RESTResponse>> {
     const data = { type: obj.type, data: obj.data };
 
     var response;
-    var res = await this.client.rest.request(
+    var request = await this.client.rest.request(
       "POST",
       Endpoints.Interaction(this.interactionId, this.token),
       true,
-      { data },
+      data,
       null,
       data?.data?.files
     );
 
     if (obj.fetchResponse) {
-      res = await this.client.rest.request(
+      request = await this.client.rest.request(
         "GET",
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
         true
       );
 
+      if(!request?.error) return null;
+
       response = new InteractionResponse(
         {
-          ...res?.data,
+          ...request?.data,
           guild_id: this.guildId,
           token: this.token,
           interactionId: this.interactionId,
@@ -246,18 +245,18 @@ class InteractionBase {
       );
     }
 
-    return response ?? (res as ResponseFromApi);
+    return response;
   }
 
   /**
    * Makes a reply using the gateway.
    * @async
    * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-   * @returns {Promise<InteractionResponse | ResponseFromApi>}
+   * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
    */
   public async makeReply(
     obj: InteractionBodyRequest | string
-  ): Promise<InteractionResponse | ResponseFromApi> {
+  ): Promise<Nullable<InteractionResponse | RESTResponse>> {
     if (typeof obj === "string" || obj instanceof String) {
       obj = { content: obj } as InteractionBodyRequest;
     }
@@ -300,7 +299,7 @@ class InteractionBase {
    */
   public async editReply(
     body: MessageUpdateBodyRequest | string
-  ): Promise<InteractionResponse | ErrorResponseFromApi> {
+  ): Promise<Nullable<InteractionResponse | RESTResponse>> {
     if (typeof body === "string" || body instanceof String) {
       body = { content: body as string };
     }
@@ -331,13 +330,15 @@ class InteractionBase {
       "PATCH",
       Endpoints.InteractionOriginal(this.client.user.id, this.token),
       true,
-      { data },
+      data,
       null,
       files
     );
 
-    if (!request || request?.error || !request?.data)
-      return request as ErrorResponseFromApi;
+    if(!request) return null;
+
+    if (request?.error)
+      return request as RESTResponse;
 
     const message = new InteractionResponse(request.data, this.client);
 
@@ -381,7 +382,7 @@ class InteractionBase {
       "POST",
       Endpoints.InteractionCreateFollowUp(this.client.user.id, this.token),
       true,
-      { data },
+      data,
       null,
       files
     );
@@ -401,7 +402,7 @@ class InteractionBase {
    */
   public async modal(
     body: ModalPayloadData
-  ): Promise<InteractionResponse | ResponseFromApi> {
+  ): Promise<Nullable<InteractionResponse | RESTResponse>> {
     if (body && typeof body !== "object")
       throw new ClientTypeError(ErrorNames.InvalidType, "boolean", "body");
 

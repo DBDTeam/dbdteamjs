@@ -1,4 +1,4 @@
-import { type Client } from "../client/Client";
+import { Client } from "../client/Client";
 import { Base } from "../structures/Base";
 import { Channel } from "../structures/BaseChannel";
 import { ButtonInteraction } from "../structures/Interactions/ButtonInteraction";
@@ -7,15 +7,15 @@ import { MessageInteraction } from "../structures/Interactions/MessageInteractio
 import { SelectMenuInteraction } from "../structures/Interactions/SelectMenuInteraction";
 import { SlashInteraction } from "../structures/Interactions/SlashInteraction";
 import { UserInteraction } from "../structures/Interactions/UserInteraction";
-import { Nullable } from "../common";
-export declare const getId: (t: string) => string;
-export declare function typeChannel(channelData: any, client: Client): Channel;
-export declare function interactionType(data: any, client: any): Promise<ButtonInteraction | SelectMenuInteraction | SlashInteraction | UserInteraction | InteractionModal | MessageInteraction | undefined>;
-export declare function setObj<T>(baseObj: Record<any, any>, actualObj: T, mappings?: {}, includeUndefined?: boolean): T;
-export declare function getKeyByValue(object: object, value: any): string | null;
-export interface SnowflakeInformation {
-    stamp: number;
-    unix: number;
-    date: Date;
+import { Nullable, SnowflakeInformation } from "../common";
+export declare class Utilities {
+    static buildUrl(baseUrl: string, target?: string, options?: {
+        [key: string]: any;
+    }): string;
+    static getId(t: string): string;
+    static typeChannel(channelData: any, client: Client): Channel;
+    static interactionType(data: any, client: any): Promise<SlashInteraction | UserInteraction | MessageInteraction | SelectMenuInteraction | ButtonInteraction | InteractionModal | undefined>;
+    static setObj<T>(baseObj: Record<any, any>, actualObj: T, mappings?: {}, includeUndefined?: boolean): T;
+    static getKeyByValue(object: object, value: any): string | null;
+    static getAllStamps(c: Base | Date): Nullable<SnowflakeInformation>;
 }
-export declare function getAllStamps(c: Base | Date): Nullable<SnowflakeInformation>;

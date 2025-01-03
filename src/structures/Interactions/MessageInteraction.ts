@@ -1,6 +1,5 @@
 import { Client } from "../../client";
 import { Nullable } from "../../common";
-import { Guild } from "../Guild";
 import { Message } from "../Message";
 import { InteractionBase } from "./BaseInteraction";
 

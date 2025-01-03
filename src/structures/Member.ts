@@ -1,22 +1,18 @@
 import { Client } from "../client/Client";
-import { Nullable, PresenceData } from "../common";
+import { Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
-import { SnowflakeInformation, getAllStamps } from "../utils/utils";
 import { Base } from "./Base";
 import { Guild } from "./Guild";
 import { MemberRolesManager } from "./Managers/RolesManager";
 import { MemberEditPayload } from "./Payloads/MemberEditPayload";
 import { User } from "./User";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../interfaces/rest/requestHandler";
 import { GuildRole } from "./Role";
 import { MemberPermissionManager } from "./Managers/MemberPermissionManager";
-import { RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
+import { GatewayPresenceUpdate, RESTPatchAPIGuildMemberJSONBody } from "discord-api-types/v10";
 import { ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
-import { PermissionsBits } from "../interfaces";
+import { PermissionsBits, SnowflakeInformation } from "../common/interfaces";
+import { Utilities } from "../utils/utils";
 
 /**
  * Represents a guild member and provides methods to manage and interact with it.
@@ -69,7 +65,7 @@ class Member extends Base {
   /**
    * The presence status of the member.
    */
-  presence: Nullable<PresenceData>;
+  presence: Nullable<GatewayPresenceUpdate>;
 
   /**
    * The nickname of the member.
@@ -136,7 +132,7 @@ class Member extends Base {
     this.#PREMIUM = new Date(data?.premium_since);
     this.#TIMEOUTED = new Date(data?.communication_disabled_until);
 
-    this.joined = getAllStamps(this) as SnowflakeInformation;
+    this.joined = Utilities.getAllStamps(this) as SnowflakeInformation;
     this.user = this.author;
 
     this.muted = data?.mute;
@@ -184,7 +180,7 @@ class Member extends Base {
       data.premium_since !== null &&
       data.premium_since !== undefined
     ) {
-      this.premiumSince = getAllStamps(this.#PREMIUM) as SnowflakeInformation;
+      this.premiumSince = Utilities.getAllStamps(this.#PREMIUM) as SnowflakeInformation;
     }
     if ("pending" in data) {
       this.pending = data.pending;
@@ -193,7 +189,7 @@ class Member extends Base {
       this.permissions = data.permissions;
     }
     if ("communication_disabled_until" in data) {
-      this.communicationDisabledUntil = getAllStamps(
+      this.communicationDisabledUntil = Utilities.getAllStamps(
         this.#TIMEOUTED
       ) as SnowflakeInformation;
       this.timeoutUntil = this.communicationDisabledUntil;
@@ -322,15 +318,11 @@ class Member extends Base {
       "PATCH",
       Endpoints.GuildMember(this.guild.id, this.id),
       true,
-      { data: payload.payload },
+      payload.payload,
       reason
     );
 
-    if (response?.error) {
-      return false;
-    } else {
-      return true;
-    }
+    return response?.error ? false : true
   }
 
   /**
@@ -342,7 +334,7 @@ class Member extends Base {
   async changeNickname(
     nickname: string,
     reason?: string
-  ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  ): Promise<boolean> {
     if (!nickname || typeof nickname !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "nickname");
     if (reason && typeof reason !== "string")
@@ -352,11 +344,11 @@ class Member extends Base {
       "PATCH",
       Endpoints.GuildMember(this.guild.id, this.id),
       true,
-      { data: { roles: this.roles, flags: this.flags, nick: nickname } },
+      { roles: this.roles, flags: this.flags, nick: nickname },
       reason
     );
 
-    return response;
+    return response?.error ? false : true;
   }
 
   /**
@@ -366,7 +358,7 @@ class Member extends Base {
    */
   async kick(
     reason?: string
-  ): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  ): Promise<Nullable<boolean>> {
     if (reason && typeof reason !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
     reason = reason?.trim();
@@ -378,7 +370,7 @@ class Member extends Base {
       reason
     );
 
-    return response;
+    return response?.error ? true : false;
   }
 
   /**
@@ -389,7 +381,7 @@ class Member extends Base {
   async ban(data: {
     delete_message_seconds?: number;
     reason?: string;
-  }): Promise<Nullable<ErrorResponseFromApi | ResponseFromApi>> {
+  }): Promise<Nullable<boolean>> {
     if (!data || typeof data !== "object")
       throw new ClientTypeError(ErrorNames.InvalidType, "object", "data");
     if (
@@ -415,7 +407,7 @@ class Member extends Base {
       data.reason
     );
 
-    return response;
+    return response?.error ? false : true;
   }
 
   /**

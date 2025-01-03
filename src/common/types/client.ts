@@ -1,5 +1,6 @@
 import {
   APIEmoji,
+  GatewayPresenceUpdate,
   GatewayReceivePayload,
   PresenceUpdateStatus,
 } from "discord-api-types/v10";
@@ -9,12 +10,12 @@ import { Guild } from "../../structures/Guild";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
 import { User } from "../../structures/User";
-import { GatewayActivityPayload, PresenceStatus } from "../../types/Presences";
+import { GatewayActivityPayload, PresenceStatus } from "./Presences";
 import { SlashInteraction } from "../../structures/Interactions/SlashInteraction";
 import { MessageInteraction } from "../../structures/Interactions/MessageInteraction";
 import { ComponentInteraction } from "../../structures/Interactions/ComponentInteraction";
 import { UserInteraction } from "../../structures/Interactions/UserInteraction";
-import { Nullable, PresenceData } from "./utils";
+import { Nullable } from "./utils";
 import { Collection } from "../../utils/Collection";
 import { ThreadMember } from "../../structures/ThreadMember";
 
@@ -437,14 +438,14 @@ export interface ClientEvents {
   /**
    * Fired when a member's presence data is updated in a guild.
    * @param {Member} member - The member whose presence data was updated.
-   * @param {Nullable<PresenceData>} oldPresence - The old presence data before the update.
-   * @param {PresenceData} newPresence - The new presence data after the update.
+   * @param {Nullable<GatewayPresenceUpdate>} oldPresence - The old presence data before the update.
+   * @param {GatewayPresenceUpdate} newPresence - The new presence data after the update.
    * @param {Shard} shard - The shard where the presence update occurred.
    */
   presenceUpdate: (
     member: Member,
-    oldPresence: Nullable<PresenceData>,
-    newPresence: PresenceData,
+    oldPresence: Nullable<GatewayPresenceUpdate>,
+    newPresence: GatewayPresenceUpdate,
     shard: Shard
   ) => unknown;
 

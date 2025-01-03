@@ -1,7 +1,6 @@
 import { APIChannel, APIOverwrite, ChannelType, RESTPatchAPIChannelJSONBody, Snowflake, ThreadAutoArchiveDuration, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import { Base } from "./Base";
 import { type CategoryChannel } from "./CategoryChannel";
 import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
@@ -10,6 +9,7 @@ import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { type TextBasedChannel } from "./TextBasedChannel";
 import { Guild } from "./Guild";
+import { RESTResponse } from "../rest/requestHandler";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -148,7 +148,7 @@ export declare class Channel extends Base {
     private patch;
     /**
      * Clones the channel
-     * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>> }
+     * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | RESTResponse>> }
      * @async
      * @example
      * const channel = client.channels.cache.get("766497696604487691")
@@ -160,7 +160,7 @@ export declare class Channel extends Base {
      *  }
      * })
      */
-    clone(reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
+    clone(reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | RESTResponse>>;
     /**
      *
      * @param {object} obj - The Channel Edit payload
@@ -176,7 +176,7 @@ export declare class Channel extends Base {
      * })
      * @async
      */
-    edit(data: RESTPatchAPIChannelJSONBody, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>>;
+    edit(data: RESTPatchAPIChannelJSONBody, reason?: string): Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | RESTResponse>>;
     /**
      * Deletes the Channel
      * @param {string} reason - The reason

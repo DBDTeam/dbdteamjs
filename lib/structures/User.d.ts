@@ -1,10 +1,10 @@
 import { RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
-import { CDNOptions } from "../interfaces/rest/cdn";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
 import { Base } from "./Base";
 import { MessageBodyRequest, Nullable } from "../common";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import { DMChannel } from "./DMChannel";
+import { RESTResponse } from "../rest/requestHandler";
 export type Badge = "Discord Employee" | "Discord Partner" | "HypeSquad Events" | "Bug Hunter Level 1" | "HypeSquad Bravery" | "HypeSquad Brilliance" | "HypeSquad Balance" | "Early Nitro Supporter" | "Team User" | "Bug Hunter Level 2" | "Verified Bot" | "Early Verified Bot Developer" | "Moderator Programs Alumni" | "Bot with HTTP Interactions" | "Active Developer" | "Nitro Basic" | "Nitro" | "Pomelo";
 /**
  * Represents a User
@@ -115,8 +115,10 @@ declare class User extends Base {
      * user.bannerUrl() // https://cdn.discordapp.com/banners/640685917467705344/0510a7bd372082644a05c92ffbbe7b2b.webp
      */
     bannerUrl(opts: CDNOptions): string | undefined;
-    createDM(): Promise<ErrorResponseFromApi | DMChannel>;
-    send(body: MessageBodyRequest | string): Promise<import("./Message").Message | import("../interfaces/rest/requestHandler").ResponseFromApi | null | undefined>;
+    createDM(): Promise<RESTResponse | DMChannel>;
+    send(body: MessageBodyRequest | string): Promise<((RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    }) | import("./Message").Message | null | undefined>;
     /**
      * Returns the User mention
      */

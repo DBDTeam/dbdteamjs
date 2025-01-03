@@ -3,8 +3,8 @@ import { MessageBodyRequest } from "../../common";
 import {
   MessagePayloadData,
   MessagePayloadFileData,
-} from "../../interfaces/message/MessagePayload";
-import { setObj } from "../../utils/utils";
+} from "../../common/interfaces/message/MessagePayload";
+import { Utilities } from "../../utils/utils";
 
 /**
  * @typedef {("users" | "roles" | "everyone")} MentionType
@@ -76,7 +76,7 @@ class MessagePayload {
     this.d =
       typeof data === "string"
         ? { content: data } as MessageBodyRequest
-        : setObj(this.Data, data, { sticker_ids: "stickers" }) as MessageBodyRequest;
+        : Utilities.setObj(this.Data, data, { sticker_ids: "stickers" }) as MessageBodyRequest;
     this.file = [];
     this.f = files;
 
