@@ -1,11 +1,10 @@
 import { type Client } from "../../client";
 import { Collection } from "../../utils/Collection";
 import { type Guild } from "../Guild";
-import { FetchWithLimitAfterAndBefore } from "./ThreadMemberManager";
-import { Nullable } from "../../common";
+import { FetchWithLimitAfterAndBefore, Nullable } from "../../common";
 import { User } from "../User";
 import { Member } from "../Member";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { RESTResponse } from "../../rest/requestHandler";
 export declare class GuildBanManager {
     readonly client: Client;
     /**
@@ -22,9 +21,9 @@ export declare class GuildBanManager {
      * Fetches a guild ban if target is defined, otherwise, it fetches the first 100 bans.
      * @param {Nullable<string>} target - The target id of the ban to fetch.
      * @param {FetchWithLimitAfterAndBefore} [options] - The options of the fetch. (Only when target is not defined.)
-     * @returns {Promise<Nullable<ErrorResponseFromApi | Record<string, any>>> }
+     * @returns {Promise<Nullable<RESTResponse | Record<string, any>>> }
      */
-    fetch(target: Nullable<string>, options?: FetchWithLimitAfterAndBefore): Promise<Nullable<ErrorResponseFromApi | Record<string, any>>>;
+    fetch(target?: string, options?: FetchWithLimitAfterAndBefore): Promise<Nullable<RESTResponse | Record<string, any>>>;
     /**
      * Creates a ban in the current guild.
      * @param {string | User | Member} userId - The user to ban.

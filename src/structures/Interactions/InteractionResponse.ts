@@ -3,7 +3,7 @@ import { type Client } from "../../client/Client";
 import { ClientTypeError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { MessageBodyRequest } from "../../common";
-import { InteractionResponseData } from "../../common/types/interactions"
+import { InteractionResponseData } from "../../common/types/Interactions"
 import * as Endpoints from "../../rest/Endpoints";
 import { Message } from "../Message";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
@@ -62,7 +62,7 @@ export class InteractionResponse extends Message {
       "PATCH",
       Endpoints.InteractionOriginal(this.client.user.id, this.token),
       true,
-      { data: message.payload },
+      message.payload,
       null,
       message.files
     );

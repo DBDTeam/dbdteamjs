@@ -1,7 +1,8 @@
 import { Collection } from "../../utils/Collection";
 import * as Endpoints from "../../rest/Endpoints";
 import { type Client } from "../../client/Client"
-import { type Guild } from "../Guild";
+import { Guild } from "../Guild";
+import { APIGuild } from "discord-api-types/v10";
 
 class GuildManager {
   #client: Client;
@@ -16,15 +17,16 @@ class GuildManager {
    * @returns {Guild | null}
    */
   async fetch(id: string) {
-    const response = await this.#client.rest.request(
+    const response = await this.#client.rest.request<APIGuild>(
       "GET",
       Endpoints.Guild(id),
       true
     );
 
-    if(!response) return null;
+    if(!response || response.error) return null;
 
-    var guild = response.data;
+    var guild = new Guild(response as APIGuild, this.#client);
+    this.cache.set(guild.id, guild)
 
     return guild;
   }

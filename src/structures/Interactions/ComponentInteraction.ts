@@ -110,7 +110,7 @@ class ComponentInteraction extends InteractionBase {
       "POST",
       Endpoints.Interaction(this.interactionId, this.token),
       true,
-      { data },
+      data,
       null,
       files
     );

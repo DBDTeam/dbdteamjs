@@ -9,20 +9,20 @@ import {
 } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
 import { Nullable } from "../common";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
 import * as Endpoints from "../rest/Endpoints";
-import { setObj, typeChannel } from "../utils/utils";
 import { Base } from "./Base";
 import { type CategoryChannel } from "./CategoryChannel";
 import { ChannelPermissionManager } from "./Managers/ChannelPermissionManager";
 import { type TextChannel } from "./TextChannel";
 import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
-import { ChannelTypes } from "../types/ChannelTypes";
+import { ChannelTypes } from "../common/types/ChannelTypes";
 import { type TextBasedChannel } from "./TextBasedChannel";
 import { Guild } from "./Guild";
 import { ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
+import { Utilities } from "../utils/utils";
+import { RESTResponse } from "../rest/requestHandler";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -255,7 +255,7 @@ export class Channel extends Base {
 
   /**
    * Clones the channel
-   * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | ErrorResponseFromApi>> }
+   * @returns {Promise<Nullable<ThreadChannel | VoiceChannel | Channel | TextChannel | CategoryChannel | RESTResponse>> }
    * @async
    * @example
    * const channel = client.channels.cache.get("766497696604487691")
@@ -277,7 +277,7 @@ export class Channel extends Base {
       | Channel
       | TextChannel
       | CategoryChannel
-      | ErrorResponseFromApi
+      | RESTResponse
     >
   > {
     const data = {
@@ -302,19 +302,19 @@ export class Channel extends Base {
     if (reason && typeof reason !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
 
-    var result = await this.client.rest.request(
+    var result = await this.client.rest.request<APIChannel>(
       "POST",
       Endpoints.GuildChannels(this.guildId),
       true,
-      { data },
+      data,
       reason
     );
 
-    if (!result || !result?.data) return null;
+    if (!result || !result?.error) return null;
 
     return result?.error
-      ? (result as ErrorResponseFromApi)
-      : typeChannel(result.data, this.client);
+      ? (result as RESTResponse)
+      : Utilities.typeChannel(result, this.client);
   }
 
   /**
@@ -343,25 +343,25 @@ export class Channel extends Base {
       | Channel
       | TextChannel
       | CategoryChannel
-      | ErrorResponseFromApi
+      | RESTResponse
     >
   > {
     if (!data || typeof data !== "object")
       throw new ClientTypeError(ErrorNames.InvalidType, "object", "data");
 
-    var result = await this.client.rest.request(
+    var result = await this.client.rest.request<APIChannel>(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
-      { data },
+      data,
       reason
     );
 
-    if (!result || !result?.data) return null;
+    if (!result || !result?.error) return null;
 
     return result?.error
-      ? (result as ErrorResponseFromApi)
-      : typeChannel(result.data, this.client);
+      ? (result as RESTResponse)
+      : Utilities.typeChannel(result, this.client);
   }
 
   /**
@@ -371,8 +371,8 @@ export class Channel extends Base {
    */
 
   async delete(reason?: string): Promise<boolean> {
-    if(reason && typeof reason !== "string")
-      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason")
+    if (reason && typeof reason !== "string")
+      throw new ClientTypeError(ErrorNames.InvalidType, "string", "reason");
 
     var result = await this.client.rest.request(
       "DELETE",

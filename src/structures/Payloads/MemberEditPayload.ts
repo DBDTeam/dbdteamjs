@@ -1,5 +1,3 @@
-import { setObj } from "../../utils/utils";
-
 /**
  * At least one of the options must be placed and not undefined.
  * @typedef {object} MemberEditPayloadData
@@ -12,6 +10,8 @@ import { setObj } from "../../utils/utils";
  * @property {number} [flags] - The new flags of the Member. (Only the flag 'BYPASSES_VERIFICATION (1 << 2)' can be edited)
  * @property {string} [reason=null]  - The reason of the edit.
  */
+
+import { Utilities } from "../../utils/utils";
 
 export class MemberEditPayload {
   #Data = {
@@ -35,7 +35,7 @@ export class MemberEditPayload {
     this.#d =
       typeof data == "string"
         ? data
-        : setObj(
+        : Utilities.setObj(
             this.#Data,
             data,
             {

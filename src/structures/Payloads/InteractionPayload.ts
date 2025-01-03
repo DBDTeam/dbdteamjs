@@ -1,6 +1,5 @@
 import { InteractionBodyRequest } from "../../common";
-import { setObj } from "../../utils/utils";
-
+import { Utilities } from "../../utils/utils";
 /**
  * Represents the data structure of an interaction payload.
  */
@@ -57,7 +56,7 @@ export class InteractionPayload {
    */
   constructor(data: InteractionBodyRequest | string, files: any[] = []) {
     this.d =
-      typeof data === "string" ? { content: data } : setObj(this.Data, data);
+      typeof data === "string" ? { content: data } : Utilities.setObj(this.Data, data);
 
     this._files = [];
     this.f = files;

@@ -1,17 +1,12 @@
 import { type Client } from "../../client/Client";
+import { FetchWithLimitAfterAndBefore } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
+import { RESTResponse } from "../../rest/requestHandler";
 import { Collection } from "../../utils/Collection";
+import { Utilities } from "../../utils/utils";
 import { type Guild } from "../Guild";
 import { type ThreadChannel } from "../ThreadChannel";
 import { ThreadMember } from "../ThreadMember";
-import { FetchWithLimitAndAfter } from "./GuildMemberManager";
-
-/**
- * Interface for fetching members with limit, after, and before parameters.
- */
-export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
-  before: string;
-}
 
 /**
  * Manages the members of a thread in a guild.
@@ -19,7 +14,7 @@ export interface FetchWithLimitAfterAndBefore extends FetchWithLimitAndAfter {
 class ThreadMemberManager {
   #client: Client;
   id: string;
-  guild?: Guild;
+  guild: Guild;
   memberCount: number;
   cache: Collection<string, ThreadMember>;
 
@@ -42,29 +37,25 @@ class ThreadMemberManager {
    * @returns A collection of thread members or null if an error occurs.
    * @private
    */
-  async #fetchAllMembersInThread(obj: FetchWithLimitAfterAndBefore) {
-    var endpoint = Endpoints.ChannelThreadMembers(this.id) + `?with_member=true`;
+  async #fetchAllMembersInThread(config: FetchWithLimitAfterAndBefore) {
+    const endpoint = Endpoints.ChannelThreadMembers(this.id);
 
-    if (obj?.limit && Number.isInteger(obj?.limit) && (obj?.limit >= 1 || obj?.limit <= 100)) {
-      endpoint += "&limit=" + obj?.limit;
-    }
-    if (obj?.after && typeof obj?.after == "string") {
-      endpoint += "&after=" + obj?.after;
-    }
-    if (obj?.before && typeof obj?.before == "string") {
-      endpoint += "&before=" + obj?.before;
-    }
-    const response = await this.#client.rest.request("GET", endpoint, true);
+    const url = Utilities.buildUrl(endpoint, "", config);
 
-    if (response?.error || !response || !response.data) {
-      return null;
+    const response = await this.#client.rest.request("GET", url);
+
+    var fetched = new Collection<string, ThreadMember>();
+
+    if (response?.error || !response) {
+      return response as RESTResponse;
     } else {
-      for (var m of response.data as Array<any>) {
-        var x = new ThreadMember(m, this.guild as Guild, this.#client);
-        this.cache.set(x.id, x);
+      for (var member of response.data) {
+        var thread_member = new ThreadMember(member, this.guild, this.#client);
+        this.cache.set(thread_member.id, thread_member);
+        fetched.set(thread_member.id, thread_member);
       }
 
-      return this.cache;
+      return fetched;
     }
   }
 
@@ -81,22 +72,18 @@ class ThreadMemberManager {
       );
 
       if (result?.error || !result) {
-        return result;
+        return result as RESTResponse;
       } else {
-        var x = new ThreadMember(
-          result.data as Record<string, any>,
+        var thread_member = new ThreadMember(
+          result as Record<string, any>,
           this.guild as Guild,
           this.#client
         );
-        this.cache.set(x.id, x);
+        this.cache.set(thread_member.id, thread_member);
 
-        return x;
+        return thread_member;
       }
-    } else if (
-      typeof memberId === "object" ||
-      memberId === null ||
-      memberId === undefined
-    ) {
+    } else {
       return await this.#fetchAllMembersInThread(memberId || {});
     }
   }
@@ -109,15 +96,12 @@ class ThreadMemberManager {
   async remove(memberId: string) {
     const response = await this.#client.rest.request(
       "DELETE",
-      Endpoints.ChannelThreadMember(this.id, memberId),
-      true
+      Endpoints.ChannelThreadMember(this.id, memberId)
     );
 
-    if(!response) return null;
+    if (response?.error) return false;
 
-    if(response?.error) return false;
-
-    this.cache.delete(memberId)
+    this.cache.delete(memberId);
     return true;
   }
 }

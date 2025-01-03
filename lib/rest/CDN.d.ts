@@ -1,5 +1,5 @@
 import { Nullable } from "../common";
-import { CDNOptions } from "../interfaces/rest/cdn";
+import { CDNOptions } from "../common/interfaces/rest/cdn";
 /**
  * Represents a Discord CDN (Content Delivery Network) utility.
  */

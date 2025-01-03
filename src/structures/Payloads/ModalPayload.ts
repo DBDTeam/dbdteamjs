@@ -1,4 +1,4 @@
-import { setObj } from "../../utils/utils";
+import { Utilities } from "../../utils/utils";
 
 /**
  * The Components of an Action Row.
@@ -101,12 +101,12 @@ export class InteractionModalPayload {
    * @param {ModalPayloadData} data - The ModalPayloadData.
    */
   constructor(data: any) {
-    this.#d = setObj(this.#DATA, data, { custom_id: "customId" });
+    this.#d = Utilities.setObj(this.#DATA, data, { custom_id: "customId" });
 
     for (var i in this.#d?.components) {
       const d = this.#d.components[i];
       for (var x in d?.components) {
-        var _data = setObj(
+        var _data = Utilities.setObj(
           this.#COMPONENT_DATA,
           this.#d.components[i]?.components[x],
           {

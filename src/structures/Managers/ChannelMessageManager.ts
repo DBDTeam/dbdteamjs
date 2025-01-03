@@ -2,7 +2,7 @@ import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
-import { setObj } from "../../utils/utils";
+import { Utilities } from "../../utils/utils";
 import { Guild } from "../Guild";
 import { Message } from "../Message";
 
@@ -44,7 +44,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         around: null,
       };
 
-      const data = setObj(config, msgId, {});
+      const data = Utilities.setObj(config, msgId, {});
 
       var endpoint = Endpoints.ChannelMessages(this.channel.id);
 

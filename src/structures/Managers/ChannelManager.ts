@@ -10,14 +10,12 @@ import {
 import { type Client } from "../../client/Client";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
-import { typeChannel } from "../../utils/utils";
 import { type Channel } from "../BaseChannel";
 import { type VoiceChannel } from "../VoiceChannel";
 import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type CategoryChannel } from "../CategoryChannel";
-import { Nullable } from "../../common";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
+import { Utilities } from "../../utils/utils";
 
 export interface ChannnelCreatePayload {
   name: string;
@@ -71,7 +69,7 @@ class ChannelManager {
 
     if (!response || response.status !== 200) return response;
 
-    return await typeChannel(response.data, this.#client);
+    return await Utilities.typeChannel(response.data, this.#client);
   }
 }
 

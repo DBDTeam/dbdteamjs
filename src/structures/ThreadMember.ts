@@ -1,9 +1,9 @@
 import { Client } from "../client/Client";
 import { ClientError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
-import { PermissionNames } from "../interfaces";
+import { PermissionNames } from "../common/interfaces";
 import * as Endpoints from "../rest/Endpoints";
-import { getAllStamps } from "../utils/utils";
+import { Utilities } from "../utils/utils";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
 import { ThreadChannel } from "./ThreadChannel";
@@ -74,7 +74,7 @@ class ThreadMember {
     /**
      * The time information when the user joined to the Thread
      */
-    this.joined = getAllStamps(data?.joined_timestamp);
+    this.joined = Utilities.getAllStamps(data?.joined_timestamp);
     /**
      * Removes the user (alias of {@link ThreadMember.kick})
      * @async
@@ -91,8 +91,8 @@ class ThreadMember {
 
   async kick() {
     const me = this.guild.members.me
-
-    if(!me.permissions.hasPermission([PermissionNames.ManageThreads]))
+    
+    if(!me.permissions.has([PermissionNames.ManageThreads]))
       throw new ClientError(ErrorNames.MissingPermissions, "ManageThreads")
     const response = await this.#client.rest.request(
       "DELETE",

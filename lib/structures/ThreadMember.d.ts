@@ -31,7 +31,9 @@ declare class ThreadMember {
      * @async
      * @returns {Promise<Object | boolean>}
      */
-    kick(): Promise<true | import("../interfaces").ResponseFromApi>;
+    kick(): Promise<true | ((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+        error?: boolean;
+    })>;
     static type: string;
 }
 export { ThreadMember };

@@ -1,6 +1,6 @@
 import { Collection } from "../../utils/Collection";
 import { type Client } from "../../client/Client";
-import { type Guild } from "../Guild";
+import { Guild } from "../Guild";
 declare class GuildManager {
     #private;
     cache: Collection<string, Guild>;
@@ -10,6 +10,6 @@ declare class GuildManager {
      * @param id - The Guild id
      * @returns {Guild | null}
      */
-    fetch(id: string): Promise<Record<any, any> | null | undefined>;
+    fetch(id: string): Promise<Guild | null>;
 }
 export { GuildManager };

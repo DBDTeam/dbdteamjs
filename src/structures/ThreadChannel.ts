@@ -1,6 +1,6 @@
 import { type Client } from "../client/Client";
 import * as Endpoints from "../rest/Endpoints";
-import { getAllStamps } from "../utils/utils";
+import { Utilities } from "../utils/utils";
 import { Channel } from "./BaseChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
@@ -53,7 +53,7 @@ class ThreadChannel extends TextBasedChannel {
      * The time information when the ThreadChannel was created
      * @type {object}
      */
-    this.created = getAllStamps(data.thread_metadata?.create_timestamp);
+    this.created = Utilities.getAllStamps(data.thread_metadata?.create_timestamp);
     /**
      * The auto archive dration of the ThreadChannel in seconds.
      * @type {number}
@@ -63,12 +63,12 @@ class ThreadChannel extends TextBasedChannel {
      * If the ThreadChannel is archived
      * @type {boolean}
      */
-    this.archived = data.thread_metadata.archived;
+    this.archived = data.thread_metadata?.archived;
     /**
      * The time information when the ThreadChannel was archived (only if the ThreadChannel is archived)
      * @type {object | undefined}
      */
-    this.archive_stamp = getAllStamps(data.thread_metadata?.archive_timestamp);
+    this.archive_stamp = Utilities.getAllStamps(data.thread_metadata?.archive_timestamp);
     /**
      * The cooldown of the ThreadChannel in seconds.
      * @type {string | undefined}

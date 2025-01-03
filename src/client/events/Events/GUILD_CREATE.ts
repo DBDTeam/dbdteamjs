@@ -1,4 +1,4 @@
-import { GatewayGuildCreateDispatchData } from "discord-api-types/v10";
+import { GatewayGuildCreateDispatchData, GatewayPresenceUpdate } from "discord-api-types/v10";
 import { Event } from "../Event";
 import { Guild, Shard } from "../../../structures";
 import { EventNames } from "../../../common";
@@ -9,39 +9,30 @@ export default class GuildCreate extends Event<GatewayGuildCreateDispatchData> {
 
     if (!guild) return;
 
-    for (var role of data.roles) {
-      await this.getRole(role, guild.id);
-    }
-
-    for (const channel of data.channels) {
-      this.getChannel(channel);
-    }
-
-    for (const thread of data.threads) {
-      this.getChannel(thread);
-    }
-
     for (var member of data.members) {
       this.getMember({ ...member, id: member.user?.id }, guild.id);
     }
 
-    if (guild.members) {
-      data.presences.forEach((presence: any) => {
-        const finded = guild.members?.cache.find(
-          (x) => x.id === presence.user.id
-        );
+    data.presences
+
+    if (guild.members?.cache) {
+      const membersCache = guild.members.cache;
+      data.presences.forEach((presence: GatewayPresenceUpdate) => {
+        const finded = membersCache.get(presence.user.id);
+    
         if (finded) {
-          finded.presence = presence;
-          guild.members?.cache.set(finded.id, finded);
+          if (finded.presence !== presence) {
+            finded.presence = presence;
+            membersCache.set(finded.id, finded);
+          }
         }
       });
     }
+    
 
     this.client.guilds.cache.set(guild.id, guild);
 
-    const stamp = Date.parse(data.joined_at);
-
-    if (stamp == Date.now()) {
+    if (Date.parse(data.joined_at) == Date.now()) {
       this.client.emit(EventNames.GuildCreate, guild, shard);
     }
   }

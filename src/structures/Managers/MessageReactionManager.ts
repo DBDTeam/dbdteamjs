@@ -1,12 +1,8 @@
 import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
-import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../interfaces/message/Reactions";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../../interfaces/rest/requestHandler";
+import { EmojisEmptyAnswer, RemoveEmojiPayload } from "../../common/interfaces/message/Reactions";
 import * as Endpoints from "../../rest/Endpoints";
-import { getId } from "../../utils/utils";
+import { Utilities } from "../../utils/utils";
 import { type Message } from "../Message";
 
 /**
@@ -75,7 +71,7 @@ class MessageReactions {
 
     if (typeof emojis === "object" && Array.isArray(emojis)) {
       for (var i of emojis) {
-        var emoji = encodeURIComponent(getId(i));
+        var emoji = encodeURIComponent(Utilities.getId(i));
 
         var result = await this.#client.rest.request(
           "DELETE",
@@ -90,7 +86,7 @@ class MessageReactions {
 
         if (!result) continue;
 
-        results.push({ success: result.error, emoji })
+        results.push({ success: result.error ? false : true, emoji })
       }
 
       if (!results?.[0]) return null;
@@ -117,7 +113,7 @@ class MessageReactions {
   ): Promise<Nullable<EmojisEmptyAnswer[]>>  {
     var results: EmojisEmptyAnswer[] = [];
     for (var i of emojis) {
-      var emoji = encodeURIComponent(getId(i));
+      var emoji = encodeURIComponent(Utilities.getId(i));
 
       var result = await this.#client.rest.request(
         "PUT",
@@ -132,7 +128,7 @@ class MessageReactions {
 
       if(!result) continue;
 
-      results.push({ success: result.error, emoji });
+      results.push({ success: result.error ? false : true, emoji });
     }
     for (var index in results) {
       const result = results[index];
@@ -147,9 +143,9 @@ class MessageReactions {
 
   /**
    * Removes all reactions from the message.
-   * @returns {Promise<ResponseFromApi | ErrorResponseFromApi | null>} - The result of the removal operation.
+   * @returns {Promise<RESTResponse | null>} - The result of the removal operation.
    */
-  async removeAll(): Promise<ResponseFromApi | ErrorResponseFromApi | null> {
+  async removeAll(): Promise<boolean> {
     var result = await this.#client.rest.request(
       "DELETE",
       Endpoints.ChannelMessageReactions(this.channelId, this.messageId),
@@ -158,7 +154,7 @@ class MessageReactions {
 
     this.reactions = []
 
-    return result;
+    return result?.error ? false : true;
   }
 }
 

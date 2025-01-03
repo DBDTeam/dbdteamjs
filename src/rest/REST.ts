@@ -13,7 +13,7 @@ class REST extends RequestHandler {
   /**
    * The Endpoints used for client's requests.
    */
-  endpoints: any;
+  endpoints: typeof Endpoints;
 
   /**
    *  Create a new instance of the rest client.

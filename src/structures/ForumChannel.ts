@@ -1,7 +1,7 @@
 import {
-  APIChannel,
   APIGuildForumChannel,
   APIGuildForumTag,
+  RESTPostAPIChannelThreadsResult,
   RESTPostAPIGuildForumThreadsJSONBody,
 } from "discord-api-types/v10";
 import { type Client } from "../client";
@@ -9,9 +9,9 @@ import { Channel } from "./BaseChannel";
 import { Nullable } from "../common";
 import * as Endpoints from "../rest/Endpoints";
 import { ForumThreadPayload } from "./Payloads/ForumThreadPayload";
-import { MessagePayloadFileData } from "../interfaces/message/MessagePayload";
+import { MessagePayloadFileData } from "../common/interfaces/message/MessagePayload";
 import { ForumThreadChannel } from "./ThreadForumChannel";
-import { ErrorResponseFromApi } from "../interfaces/rest/requestHandler";
+import { RESTResponse } from "../rest/requestHandler";
 
 export class ForumChannel extends Channel {
   #data: APIGuildForumChannel;
@@ -43,21 +43,21 @@ export class ForumChannel extends Channel {
       files?: MessagePayloadFileData[];
       reason?: string;
     }
-  ): Promise<ErrorResponseFromApi | ForumThreadChannel> {
+  ): Promise<RESTResponse | ForumThreadChannel> {
     var search = new ForumThreadPayload(object, object?.files);
     var payload = search.payload();
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<RESTPostAPIChannelThreadsResult>(
       "POST",
       Endpoints.ChannelThreads(this.id),
       true,
-      { data: payload },
+      payload,
       object.reason,
       payload.files
     );
 
-    if (result?.error || !result?.data) return result as ErrorResponseFromApi;
+    if (result?.error || !result?.error) return result as RESTResponse;
 
-    var thread = new ForumThreadChannel(result.data, this.client);
+    var thread = new ForumThreadChannel(result, this.client);
 
     return thread;
   }

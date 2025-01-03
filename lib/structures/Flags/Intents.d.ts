@@ -1,4 +1,4 @@
-import { Intents } from "../../types/Intents";
+import { Intents } from "../../common/types/Intents";
 export declare class IntentsBitFields {
     #private;
     /**

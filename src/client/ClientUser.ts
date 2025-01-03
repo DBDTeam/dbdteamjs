@@ -32,31 +32,32 @@ class ClientUser extends User {
   async edit(newInfo: EditClientUserPayload) {
     if (!newInfo || typeof newInfo !== "object")
       throw new ClientTypeError(ErrorNames.InvalidType, "object", "newInfo");
+
+    let avatar: Record<any, any> | null = null;
+
     if (newInfo.avatar) {
-      newInfo.avatar = await resolveImage(newInfo.avatar);
+      avatar = await resolveImage(newInfo.avatar);
     }
+
+    const payload = {
+      username: newInfo.username,
+      avatar: avatar?.uri ?? (newInfo.avatar === "" ? "" : null),
+    };
 
     const result = await this.#client.rest.request(
       "PATCH",
       Endpoints.User("@me"),
       true,
-      {
-        data: newInfo,
-        headers: {
-          "Content-Length": Buffer.byteLength(JSON.stringify(newInfo)),
-        },
-      }
+      payload,
+      null,
+      null
     );
 
-    if (!result) return result;
+    if (!result || result.error) return result;
 
-    if (result.error || !this.#client.user) {
-      return result;
-    } else {
-      var bot = new ClientUser(result.data as APIUser, this.#client);
-      this.#client.users.cache.set(this.#client.user.id, bot);
-      return bot;
-    }
+    var bot = new ClientUser(result as APIUser, this.#client);
+    this.#client.users.cache.set(this.#client.user.id, bot);
+    return bot;
   }
 
   /**

@@ -1,16 +1,13 @@
 import { APIRole, RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import {
-  ErrorResponseFromApi,
-  ResponseFromApi,
-} from "../../interfaces/rest/requestHandler";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
-import { setObj } from "../../utils/utils";
 import { Guild } from "../Guild";
 import { type Member } from "../Member";
 import { EditRolePayload, GuildRole } from "../Role";
 import { Nullable } from "../../common";
+import { Utilities } from "../../utils/utils";
+import { RESTResponse } from "../../rest/requestHandler";
 
 type RoleOptions = {
   roles: string[];
@@ -56,14 +53,14 @@ export class MemberRolesManager {
    * @returns An object containing errors and success responses.
    */
   async add(addObject: RoleOptions): Promise<{
-    error: ErrorResponseFromApi[];
-    success: ResponseFromApi[];
+    error: RESTResponse[];
+    success: RESTResponse[];
   } | null> {
     var roles = addObject.roles;
 
     var reason = addObject.reason;
 
-    var errors: ErrorResponseFromApi[] = [];
+    var errors: RESTResponse[] = [];
     var success: any = [];
 
     for (var i in roles) {
@@ -78,9 +75,9 @@ export class MemberRolesManager {
       if (!response) return null;
 
       if (response.error) {
-        errors.push(response as ErrorResponseFromApi);
+        errors.push(response as RESTResponse);
       } else {
-        success.push(response as ResponseFromApi);
+        success.push(response as RESTResponse);
       }
     }
 
@@ -96,15 +93,15 @@ export class MemberRolesManager {
    * @returns An object containing errors and success responses.
    */
   async remove(removeObject: RoleOptions): Promise<{
-    error: ErrorResponseFromApi[];
-    success: ResponseFromApi[];
+    error: RESTResponse[];
+    success: RESTResponse[];
   } | null> {
     var roles = removeObject.roles;
 
     var reason = removeObject.reason;
 
-    var errors: ErrorResponseFromApi[] = [];
-    var success: ResponseFromApi[] = [];
+    var errors: RESTResponse[] = [];
+    var success: RESTResponse[] = [];
 
     for (var i in roles) {
       var response = await this.#client.rest.request(
@@ -118,9 +115,9 @@ export class MemberRolesManager {
       if (!response) return null;
 
       if (response.error) {
-        errors.push(response as ErrorResponseFromApi);
+        errors.push(response as RESTResponse);
       } else {
-        success.push(response as ResponseFromApi);
+        success.push(response as RESTResponse);
       }
     }
 
@@ -139,7 +136,7 @@ export class MemberRolesManager {
     var response = await this.guild.roles.fetch(roleId);
 
     if (!response) return null;
-    var check = response as ErrorResponseFromApi;
+    var check = response as RESTResponse;
     if (!check.error) {
       if (response instanceof Collection) {
         var i: any = response
@@ -184,28 +181,16 @@ export class GuildRolesManager {
    */
   async fetch(
     roleId: string | null | undefined
-  ): Promise<Collection<string, GuildRole> | GuildRole | ErrorResponseFromApi> {
-    const response = await this.#client.rest.request(
+  ): Promise<Collection<string, GuildRole> | GuildRole | RESTResponse> {
+    const response = await this.#client.rest.request<APIRole[]>(
       "GET",
-      Endpoints.GuildRoles(this.guild.id),
+      Endpoints.GuildRole(this.guild.id, roleId as string),
       true
     );
 
-    if (!response || !response.data) return this.cache;
+    if (!response || response.error) return response as RESTResponse;
 
-    var r: any;
-
-    var _allGuildRoles = response.data;
-
-    for (var i of _allGuildRoles as Array<any>) {
-      var x = new GuildRole(i, this.guild, this.#client);
-      this.cache.set(i.id, x);
-
-      if (roleId == i.id) {
-        r = x;
-      }
-    }
-    return r;
+    return new GuildRole(response as APIRole, this.guild, this.#client);
   }
 
   /**
@@ -219,33 +204,27 @@ export class GuildRolesManager {
   async edit(
     id: string,
     editOptions: EditRolePayload
-  ): Promise<Nullable<ErrorResponseFromApi | GuildRole>> {
+  ): Promise<Nullable<RESTResponse | GuildRole>> {
     let reason = editOptions.reason;
     delete editOptions.reason;
     var response = await this.#client.rest.request(
       "PATCH",
       Endpoints.GuildRole(this.guild.id, id),
       true,
-      { data: editOptions },
+      editOptions,
       reason
     );
 
     if (!response) return null;
 
-    if (response.error) return response as ErrorResponseFromApi;
-    else {
-      if (response?.data) {
+    if (response.error) return response as RESTResponse;
         let role = new GuildRole(
-          response.data as APIRole,
+          response as APIRole,
           this.guild,
           this.#client
         );
         this.cache.set(role.id, role);
         return role;
-      }
-
-      return null;
-    }
   }
 
   /**
@@ -256,18 +235,18 @@ export class GuildRolesManager {
   async delete(
     deleteObject: RoleOptions
   ): Promise<
-    | { error: ErrorResponseFromApi[]; success: ResponseFromApi[] }
+    | { error: RESTResponse[]; success: GuildRole[] }
     | Collection<string, GuildRole>
   > {
     var roles = deleteObject.roles;
 
     var reason = deleteObject.reason;
 
-    var errors: ErrorResponseFromApi[] = [];
-    var success: ResponseFromApi[] = [];
+    var errors: RESTResponse[] = [];
+    var success: GuildRole[] = [];
 
     for (var i in roles) {
-      var response = await this.#client.rest.request(
+      var response = await this.#client.rest.request<APIRole>(
         "DELETE",
         Endpoints.GuildRole(this.guild.id, roles[i]),
         true,
@@ -277,11 +256,9 @@ export class GuildRolesManager {
 
       if (!response) return this.cache;
 
-      if (response.error) {
-        errors.push(response as ErrorResponseFromApi);
-      } else {
-        success.push(response as ResponseFromApi);
-      }
+      if (response.error) errors.push(response as RESTResponse);
+        const role = new GuildRole(response as APIRole, this.guild, this.#client)
+        success.push(response as GuildRole);
     }
 
     return { error: errors, success };
@@ -306,33 +283,32 @@ export class GuildRolesManager {
       reason: null,
     };
 
-    var data = setObj(base, createObject, { unicode_emoji: "unicodeEmoji" });
+    var data = Utilities.setObj(base, createObject, {
+      unicode_emoji: "unicodeEmoji",
+    });
 
     var reason = data.reason;
 
     delete data.reason;
 
-    const response = await this.#client.rest.request(
+    var response = await this.#client.rest.request<APIRole>(
       "POST",
       Endpoints.GuildRoles(this.guild.id),
       true,
-      { data },
+      data,
       reason
     );
 
     if (!response) return null;
 
-    if (response.error) {
-      return response;
-    } else {
-      if (!response.data) return null;
+    if (response.error) return response;
+    const role = new GuildRole(
+      response as APIRole,
+      this.guild.id,
+      this.#client
+    );
+    this.cache.set(response.id, role);
 
-      this.cache.set(
-        response.data.id,
-        new GuildRole(response.data as APIRole, this.guild.id, this.#client)
-      );
-
-      return response.data;
-    }
+    return role;
   }
 }

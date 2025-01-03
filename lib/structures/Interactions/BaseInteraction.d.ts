@@ -5,12 +5,12 @@ import { Member } from "../Member";
 import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
-import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest } from "../../common";
+import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest, Nullable } from "../../common";
 import { ModalPayloadData } from "../Payloads/ModalPayload";
-import { ErrorResponseFromApi, ResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
+import { RESTResponse } from "../../rest/requestHandler";
 /**
  * Represents the base class for interactions.
  */
@@ -75,14 +75,14 @@ declare class InteractionBase {
      * @param {ModalPayloadData} body - The ModalPayloadData
      * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    showModal: (body: ModalPayloadData) => Promise<InteractionResponse | ResponseFromApi>;
+    showModal: (body: ModalPayloadData) => Promise<Nullable<InteractionResponse | RESTResponse>>;
     /**
      * Makes a reply using the gateway.
      * @async
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ResponseFromApi>}
+     * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
      */
-    reply: (obj: InteractionBodyRequest | string) => Promise<InteractionResponse | ResponseFromApi>;
+    reply: (obj: InteractionBodyRequest | string) => Promise<Nullable<InteractionResponse | RESTResponse>>;
     /**
      * The ID of the interaction.
      * @type {any}
@@ -129,16 +129,16 @@ declare class InteractionBase {
      * @private
      * @async
      * @param {InteractionPayload} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ResponseFromApi>}
+     * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
      */
     private __makeReply;
     /**
      * Makes a reply using the gateway.
      * @async
      * @param {InteractionBodyRequest} obj - The InteractionPayloadData
-     * @returns {Promise<InteractionResponse | ResponseFromApi>}
+     * @returns {Promise<Nullable<InteractionResponse | ResponseFromApi>>}
      */
-    makeReply(obj: InteractionBodyRequest | string): Promise<InteractionResponse | ResponseFromApi>;
+    makeReply(obj: InteractionBodyRequest | string): Promise<Nullable<InteractionResponse | RESTResponse>>;
     /**
      * Defers the reply.
      * @async
@@ -152,7 +152,7 @@ declare class InteractionBase {
      * @param {MessageUpdateBodyRequest | string} body - The Body of the new Message.
      * @returns {Promise<InteractionResponse | ErrorResponseFromApi>}
      */
-    editReply(body: MessageUpdateBodyRequest | string): Promise<InteractionResponse | ErrorResponseFromApi>;
+    editReply(body: MessageUpdateBodyRequest | string): Promise<Nullable<InteractionResponse | RESTResponse>>;
     /**
      * Follows up the Interaction response.
      * @async
@@ -166,6 +166,6 @@ declare class InteractionBase {
      * @param {ModalPayloadData} body - The ModalPayloadData
      * @returns {Promise<InteractionResponse | ResponseFromApi>}
      */
-    modal(body: ModalPayloadData): Promise<InteractionResponse | ResponseFromApi>;
+    modal(body: ModalPayloadData): Promise<Nullable<InteractionResponse | RESTResponse>>;
 }
 export { InteractionBase };

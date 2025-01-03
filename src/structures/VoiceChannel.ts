@@ -1,10 +1,6 @@
-import { RESTGetAPIChannelMessageResult, VideoQualityMode } from "discord-api-types/v10";
+import { VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import * as Endpoints from "../rest/Endpoints";
-import { Message } from "./Message";
-import { MessagePayload } from "./Payloads/MessagePayload";
 import { TextBasedChannel } from "./TextBasedChannel";
-import { MessageBodyRequest } from "../common";
 
 /** @extends {Channel} */
 class VoiceChannel extends TextBasedChannel {

@@ -1,5 +1,5 @@
 import { ClientPresencePayload, Nullable } from "../common";
-import { GatewayActivityPayload, PresenceStatus } from "../types/Presences";
+import { GatewayActivityPayload, PresenceStatus } from "../common/types/Presences";
 import { type Client } from "./Client";
 import { ClientError } from "./errors/ClientError";
 import { ErrorNames } from "./errors/ErrorList";

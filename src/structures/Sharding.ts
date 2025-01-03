@@ -1,12 +1,11 @@
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
-import { EventNames, GatewayConfig } from "../common";
+import { EventNames, GatewayConfig, Intents } from "../common";
 import { Collection } from "../utils/Collection";
 import { ListenerManager } from "../client/ClientListener";
 import { GatewayReceivePayload } from "discord-api-types/v10";
 import { ClientError, ClientRangeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
-import { Intents } from "../types";
 
 class Shard extends ListenerManager {
   private client: Client;
@@ -288,9 +287,9 @@ class ShardManager extends ListenerManager {
 
   public async connect() {
     let gatewayConfig = await this.getGatewayConfig();
-    if (gatewayConfig?.error || !gatewayConfig?.data) throw new ClientError(ErrorNames.ClientInvalidToken);
+    if (gatewayConfig?.error) throw new ClientError(ErrorNames.ClientInvalidToken);
 
-    this.config = gatewayConfig.data as GatewayConfig;
+    this.config = gatewayConfig as GatewayConfig;
 
     if (this.totalShards === null || this.totalShards <= 0) {
       this.totalShards = this.config.shards || 1;

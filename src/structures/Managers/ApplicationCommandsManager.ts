@@ -3,9 +3,9 @@ import { type Client } from "../../client/Client";
 import { CommandsBody, Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Collection } from "../../utils/Collection";
-import { ErrorResponseFromApi } from "../../interfaces/rest/requestHandler";
 import { ClientTypeError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
+import { RESTResponse } from "../../rest/requestHandler";
 
 class ApplicationCommandManager {
   #client: Client;
@@ -30,8 +30,10 @@ class ApplicationCommandManager {
    */
 
   async add(
-    body: APIApplicationCommand
-  ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
+    body: CommandsBody | CommandsBody[]
+  ): Promise<
+    Nullable<RESTResponse | Collection<string, APIApplicationCommand>>
+  > {
     if (!body || typeof body !== "object")
       throw new ClientTypeError(
         ErrorNames.InvalidType,
@@ -39,75 +41,48 @@ class ApplicationCommandManager {
         "body"
       );
     if (!this.#client.user) return;
-    if (this.target !== "global") {
-      var response = await this.#client.rest.request(
-        "POST",
-        Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
-        true,
-        { data: body }
-      );
-    } else {
-      var response = await this.#client.rest.request(
-        "POST",
-        Endpoints.ApplicationCommands(this.#client.user.id),
-        true,
-        { data: body }
-      );
-    }
 
-    if (!response) return null;
+    body = Array.isArray(body) ? body : [body];
+    const combined = body.concat(this.cache.toJSON() as CommandsBody[]);
 
-    if (response.error) {
-      return response as ErrorResponseFromApi;
-    } else {
-      this.cache.set(response.data?.id, response.data as APIApplicationCommand);
-      return this.cache.get(response.data?.id) as APIApplicationCommand;
-    }
+    return await this.set(combined);
   }
 
   /**
    * Fetches a application command with their id.
    * @param {string} id - The ID of the application command to fetch.
-   * @returns {Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>>}
+   * @returns {Promise<Nullable<RESTResponse | APIApplicationCommand>>}
    */
 
   async fetch(
     id: string
-  ): Promise<Nullable<ErrorResponseFromApi | APIApplicationCommand>> {
+  ): Promise<Nullable<RESTResponse | APIApplicationCommand>> {
     if (!id && typeof id !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
-    if (this.target !== "global") {
-      var response = await this.#client.rest.request(
-        "GET",
-        Endpoints.ApplicationGuildCommand(
-          this.#client.user.id,
-          this.target,
-          id
-        ),
-        true
-      );
-    } else {
-      var response = await this.#client.rest.request(
-        "GET",
-        Endpoints.ApplicationCommand(this.#client.user.id, id),
-        true
-      );
-    }
+    var response = await this.#client.rest.request(
+      "GET",
+      this.target === "global"
+        ? Endpoints.ApplicationCommand(this.#client.user.id, id)
+        : Endpoints.ApplicationGuildCommand(
+            this.#client.user.id,
+            this.target,
+            id
+          ),
+      true
+    );
 
     if (!response) return null;
 
-    if (response.error) {
-      return response as ErrorResponseFromApi;
-    } else {
-      this.cache.set(response.data?.id, response.data as APIApplicationCommand);
-      return this.cache.get(response.data?.id) as APIApplicationCommand;
-    }
+    if (response.error) return response as RESTResponse;
+
+    this.cache.set(response.data?.id, response.data as APIApplicationCommand);
+    return this.cache.get(response.data?.id) as APIApplicationCommand;
   }
   async set(
     commands: CommandsBody[] | CommandsBody
   ): Promise<
-    Nullable<ErrorResponseFromApi | Collection<string, APIApplicationCommand>>
+    Nullable<RESTResponse | Collection<string, APIApplicationCommand>>
   > {
     if (!commands || typeof commands !== "object")
       throw new ClientTypeError(
@@ -118,68 +93,56 @@ class ApplicationCommandManager {
 
     if (!this.#client.user) return;
 
-    if (this.target !== "global") {
-      var response = await this.#client.rest.request(
-        "PUT",
-        Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
-        true,
-        { data: commands }
-      );
-    } else {
-      var response = await this.#client.rest.request(
-        "PUT",
-        Endpoints.ApplicationCommands(this.#client.user.id),
-        true,
-        { data: commands }
-      );
-    }
+    commands = Array.isArray(commands) ? commands : [commands];
+    commands = [...new Set(commands)];
+
+    const response = await this.#client.rest.request(
+      "PUT",
+      this.target === "global"
+        ? Endpoints.ApplicationCommands(this.#client.user.id)
+        : Endpoints.ApplicationGuildCommands(this.#client.user.id, this.target),
+      true,
+      commands
+    );
 
     if (!response) return null;
 
-    if (response.error) {
-      return response as ErrorResponseFromApi;
-    } else {
-      for (const i of response.data as APIApplicationCommand[]) {
-        if (!i || typeof i !== "object") continue;
-        this.cache.set(i.id, i);
-      }
+    if (response.error) return response as RESTResponse;
+
+    for (const command of response as APIApplicationCommand[]) {
+      if (!command || typeof command !== "object") continue;
+      this.cache.set(command.id, command);
     }
+
     return this.cache;
   }
 
   /**
    * Removes a application command with their ID.
    * @param {string} id - The application command id to remove.
-   * @returns {Promise<Nullable<ErrorResponseFromApi | boolean>>}
+   * @returns {Promise<Nullable<RESTResponse | boolean>>}
    */
 
-  async remove(id: string): Promise<Nullable<ErrorResponseFromApi | boolean>> {
+  async remove(id: string): Promise<Nullable<RESTResponse | boolean>> {
     if (!id && typeof id !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
-    if (this.target !== "global") {
-      var response = await this.#client.rest.request(
-        "DELETE",
-        Endpoints.ApplicationGuildCommand(
-          this.#client.user.id,
-          this.target,
-          id
-        ),
-        true
-      );
-    } else {
-      var response = await this.#client.rest.request(
-        "DELETE",
-        Endpoints.ApplicationCommand(this.#client.user.id, id),
-        true
-      );
-    }
+
+    const response = await this.#client.rest.request(
+      "DELETE",
+      this.target === "global"
+        ? Endpoints.ApplicationCommand(this.#client.user.id, id)
+        : Endpoints.ApplicationGuildCommand(
+            this.#client.user.id,
+            this.target,
+            id
+          ),
+      true
+    );
 
     if (!response) return null;
 
-    if (!response?.error) {
-      return response as ErrorResponseFromApi;
-    }
+    if (!response?.error) return response as RESTResponse;
 
     return response?.error ? false : true;
   }
