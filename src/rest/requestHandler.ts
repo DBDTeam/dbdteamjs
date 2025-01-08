@@ -9,10 +9,6 @@ import { ClientRequest, IncomingMessage } from "http";
 import { Nullable } from "../common";
 import { resolveImage } from "../utils/ImageResolver";
 
-/**
- * RequestHandler is responsible for managing and making API requests,
- * handling rate limits, errors, and response processing.
- */
 export class RequestHandler {
     private lastRequestTime: number; // Tracks the time of the last request.
     private requestInterval: number; // Minimum interval between requests in ms.

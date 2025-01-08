@@ -1,10 +1,6 @@
 import { type Client } from "../client/Client";
 import { Methods } from "../common/interfaces/rest/requestHandler";
 import { Nullable } from "../common";
-/**
- * RequestHandler is responsible for managing and making API requests,
- * handling rate limits, errors, and response processing.
- */
 export declare class RequestHandler {
     private lastRequestTime;
     private requestInterval;
