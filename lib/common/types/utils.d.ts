@@ -23,3 +23,5 @@ export interface PresenceData {
     activities: GatewayActivityPayload[];
     platforms: GatewayPresenceClientStatus;
 }
+export type Badge = "Discord Employee" | "Discord Partner" | "HypeSquad Events" | "Bug Hunter Level 1" | "HypeSquad Bravery" | "HypeSquad Brilliance" | "HypeSquad Balance" | "Early Nitro Supporter" | "Team User" | "Bug Hunter Level 2" | "Verified Bot" | "Early Verified Bot Developer" | "Moderator Programs Alumni" | "Bot with HTTP Interactions" | "Active Developer" | "Nitro Basic" | "Nitro" | "Pomelo";
+export declare const BadgesBitfieldValues: Record<number, Badge>;

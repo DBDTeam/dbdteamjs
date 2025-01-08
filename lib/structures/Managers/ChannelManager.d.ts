@@ -40,8 +40,8 @@ declare class ChannelManager {
      * @param {string} id - The ID of the channel to fetch.
      * @returns {Promise<Channel | null>} - The fetched channel or null if an error occurs.
      */
-    fetch(id: string): Promise<((import("../../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    fetch(id: string): Promise<Channel | ((Record<string, any> | import("../../rest/requestHandler").RESTResponse) & {
         error?: boolean;
-    }) | Channel | null>;
+    }) | null>;
 }
 export { ChannelManager };

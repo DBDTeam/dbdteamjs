@@ -1,8 +1,8 @@
 import { type Client } from "../client/Client";
-import { GatewayConfig } from "../common";
+import { ClientEvents, GatewayConfig } from "../common";
 import { Collection } from "../utils/Collection";
-import { ListenerManager } from "../client/ClientListener";
-declare class Shard extends ListenerManager {
+import { TypedEmitter } from "../utils/typed-emitter";
+declare class Shard extends TypedEmitter<ClientEvents> {
     private client;
     private heartbeatInterval;
     private sessionID;
@@ -30,7 +30,7 @@ declare class Shard extends ListenerManager {
     heartbeat(): Promise<void>;
     disconnect(): Promise<void>;
 }
-declare class ShardManager extends ListenerManager {
+declare class ShardManager extends TypedEmitter<ClientEvents> {
     shards: Collection<number, Shard>;
     private token;
     private intents;

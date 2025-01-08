@@ -5,6 +5,5 @@
  */
 export * from "./client";
 export * from "./structures/";
-export * from "./utils/Collection";
-export * from "./utils/ImageResolver";
+export * from "./utils";
 export * from "./common";

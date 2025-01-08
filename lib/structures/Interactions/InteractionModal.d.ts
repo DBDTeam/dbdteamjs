@@ -1,4 +1,4 @@
-import { Client } from "../../client/Client";
+import { type Client } from "../../client/Client";
 import { Collection } from "../../utils/Collection";
 import { ComponentInteraction } from "./ComponentInteraction";
 /**

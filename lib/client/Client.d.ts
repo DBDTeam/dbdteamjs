@@ -1,4 +1,5 @@
-import { CacheOptions, ClientOptions, GatewayConfig, Nullable, SnowflakeInformation } from "../common";
+import { TypedEmitter } from "../utils/typed-emitter";
+import { CacheOptions, ClientEvents, ClientOptions, GatewayConfig, Nullable, SnowflakeInformation } from "../common";
 import { REST } from "../rest/REST";
 import { ChannelManager } from "../structures/Managers/ChannelManager";
 import { GuildManager } from "../structures/Managers/GuildManager";
@@ -7,8 +8,7 @@ import { ShardManager } from "../structures/Sharding";
 import { ClientApplication } from "./ClientApplication";
 import { ClientPresence } from "./ClientPresence";
 import { ClientUser } from "./ClientUser";
-import { ListenerManager } from "./ClientListener";
-declare class Client extends ListenerManager {
+declare class Client extends TypedEmitter<ClientEvents> {
     /**
      * The token of the client
      */

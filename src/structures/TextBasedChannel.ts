@@ -11,6 +11,8 @@ import { Channel } from "./BaseChannel";
 import { ClientError, ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
 import { Utilities } from "../utils/utils";
+import { MessageCollector } from "./Collectors/MessageCollector";
+import { APIMessage } from "discord-api-types/v10";
 
 export class TextBasedChannel extends Channel {
   /**
@@ -116,7 +118,7 @@ export class TextBasedChannel extends Channel {
 
     const message = new MessagePayload(body, body?.files);
 
-    var result = await this.client.rest.request(
+    var result = await this.client.rest.request<APIMessage>(
       "POST",
       Endpoints.ChannelMessages(this.id),
       true,
@@ -129,14 +131,19 @@ export class TextBasedChannel extends Channel {
 
     if (!result.error) {
       const data: any = {
-        ...result.data,
-        guild: this.guild,
-        member: this.guild?.members?.cache.get(result.data?.author.id),
+        ...result,
+        guild_id: this.guildId,
+        member: this.guild?.members?.cache.get(result?.author.id),
       };
 
       return new Message(data, this.client);
     } else {
       return result;
     }
+  }
+
+  createMessageCollector(filter: (message: Message) => any, options: Record<any, any>) {
+    const collector = new MessageCollector(this.client, filter, options);
+    return collector;
   }
 }

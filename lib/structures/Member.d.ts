@@ -105,7 +105,7 @@ declare class Member extends Base {
     /**
      * Makes the member leave the guild.
      */
-    leave(): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    leave(): Promise<((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
         error?: boolean;
     }) | null>;
     /**

@@ -12,7 +12,7 @@ export declare class ChannelPermissionManager {
      * @param {Client} #client - The #client instance to interact with the API.
      */
     constructor(channelId: string, client: Client);
-    get channel(): import("..").Channel | import("..").TextChannel | import("..").VoiceChannel | import("..").ThreadChannel | import("..").CategoryChannel | undefined;
+    get channel(): import("..").CategoryChannel | import("..").Channel | import("..").VoiceChannel | import("..").TextChannel | import("..").ThreadChannel | undefined;
     /**
      * Resolves the permissions into bitwise values.
      * @param {ObjectOfThePerms} permsObj - The permissions to resolve.

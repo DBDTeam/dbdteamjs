@@ -6,6 +6,8 @@ import { VoiceChannel } from "./VoiceChannel";
 import { ThreadChannel } from "./ThreadChannel";
 import { MessageBodyRequest, SnowflakeInformation } from "../common";
 import { Channel } from "./BaseChannel";
+import { MessageCollector } from "./Collectors/MessageCollector";
+import { APIMessage } from "discord-api-types/v10";
 export declare class TextBasedChannel extends Channel {
     /**
      * The Text Channel message manager
@@ -29,17 +31,17 @@ export declare class TextBasedChannel extends Channel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<Message | ((Record<string, any> | APIMessage) & {
         error?: boolean;
-    }) | Message | null>;
+    }) | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    readonly send: (body: MessageBodyRequest | string) => Promise<Message | ((Record<string, any> | APIMessage) & {
         error?: boolean;
-    }) | Message | null>;
+    }) | null>;
     /**
      * The Text Channel last pin time information
      */
@@ -60,7 +62,8 @@ export declare class TextBasedChannel extends Channel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest | string): Promise<((import("../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    createMessage(body: MessageBodyRequest | string): Promise<Message | ((Record<string, any> | APIMessage) & {
         error?: boolean;
-    }) | Message | null>;
+    }) | null>;
+    createMessageCollector(filter: (message: Message) => any, options: Record<any, any>): MessageCollector;
 }

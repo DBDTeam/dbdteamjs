@@ -27,7 +27,7 @@ export declare class InteractionResponse extends Message {
      * @param {string | MessageBodyRequest} obj - The EditMessagePayloadData
      * @returns {Promise<InteractionResponse | null>}
      */
-    editInteractionResponse(body: MessageBodyRequest | string): Promise<((import("../../rest/requestHandler").RESTResponse | Record<string, any>) & {
+    editInteractionResponse(body: MessageBodyRequest | string): Promise<((Record<string, any> | import("../../rest/requestHandler").RESTResponse) & {
         error?: boolean;
     }) | InteractionResponse | null | undefined>;
 }

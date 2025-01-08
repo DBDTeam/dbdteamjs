@@ -1,6 +1,7 @@
 import { Client } from "../client/Client";
 import { CDN } from "./CDN";
 import { RequestHandler } from "./requestHandler";
+import * as Endpoints from "./Endpoints";
 declare class REST extends RequestHandler {
     /**
      * The CDN handler for this client's requests
@@ -9,7 +10,7 @@ declare class REST extends RequestHandler {
     /**
      * The Endpoints used for client's requests.
      */
-    endpoints: any;
+    endpoints: typeof Endpoints;
     /**
      *  Create a new instance of the rest client.
      *

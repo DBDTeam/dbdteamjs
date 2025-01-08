@@ -1,17 +1,18 @@
 {
   "name": "dbdteamjs",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "A Discord api wrapper to create your bot!",
   "main": "./lib/index.js",
-  "scripts": {
-    "dev": "concurrently \"tsc --watch\" \"ts-node-dev --respawn test/index.ts\""
-  },
   "keywords": [
     "discord",
     "api",
     "wrapper",
     "discordapp",
-    "dbdteam"
+    "dbdteam",
+    "idcteam",
+    "discordbot",
+    "botdiscord",
+    "bot"
   ],
   "author": "DBDTeam",
   "license": "Apache-2.0",

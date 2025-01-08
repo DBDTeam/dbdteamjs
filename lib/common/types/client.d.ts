@@ -361,4 +361,5 @@ export interface ClientEvents {
      * @param {string} shardId - The ID of the shard where the raw event was received.
      */
     rawEvent: (message: GatewayReceivePayload, shardId: number) => unknown;
+    [event: string]: (...args: any[]) => void;
 }

@@ -14,7 +14,7 @@ export declare class Utilities {
     }): string;
     static getId(t: string): string;
     static typeChannel(channelData: any, client: Client): Channel;
-    static interactionType(data: any, client: any): Promise<SlashInteraction | UserInteraction | MessageInteraction | SelectMenuInteraction | ButtonInteraction | InteractionModal | undefined>;
+    static interactionType(data: any, client: any): Promise<SlashInteraction | UserInteraction | SelectMenuInteraction | ButtonInteraction | InteractionModal | MessageInteraction | undefined>;
     static setObj<T>(baseObj: Record<any, any>, actualObj: T, mappings?: {}, includeUndefined?: boolean): T;
     static getKeyByValue(object: object, value: any): string | null;
     static getAllStamps(c: Base | Date): Nullable<SnowflakeInformation>;

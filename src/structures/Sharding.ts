@@ -1,13 +1,13 @@
 import WebSocket from "ws";
 import { type Client } from "../client/Client";
-import { EventNames, GatewayConfig, Intents } from "../common";
+import { ClientEvents, EventNames, GatewayConfig, Intents } from "../common";
 import { Collection } from "../utils/Collection";
-import { ListenerManager } from "../client/ClientListener";
+import { TypedEmitter } from "../utils/typed-emitter";
 import { GatewayReceivePayload } from "discord-api-types/v10";
 import { ClientError, ClientRangeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
 
-class Shard extends ListenerManager {
+class Shard extends TypedEmitter<ClientEvents> {
   private client: Client;
   private heartbeatInterval: any;
   private sessionID: string;
@@ -220,7 +220,7 @@ class Shard extends ListenerManager {
   }
 }
 
-class ShardManager extends ListenerManager {
+class ShardManager extends TypedEmitter<ClientEvents> {
   public shards;
   private token;
   private intents;
