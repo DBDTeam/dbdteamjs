@@ -2,7 +2,7 @@ import { ClientError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { Nullable } from "../../common";
 import { PermissionsBits, PermissionsType } from "../../common/interfaces";
-import { type Channel } from "../BaseChannel";
+import { GuildChannel } from "../GuildChannel";
 
 export class PermissionManager {
   static getPermissions(permissions: string): string {
@@ -14,7 +14,7 @@ export class PermissionManager {
   }
 
   static getChannelPermissions(
-    channel: Nullable<Channel>,
+    channel: Nullable<GuildChannel>,
     memberId: string
   ): bigint {
     let channelPermissions = BigInt(0);

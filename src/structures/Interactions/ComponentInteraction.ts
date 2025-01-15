@@ -39,7 +39,7 @@ class ComponentInteraction extends InteractionBase {
    * @returns { Promise<InteractionResponse | boolean> }
    */
   readonly update: (
-    obj: APIInteractionResponseCallbackData
+    obj: APIInteractionResponseCallbackData | string
   ) => Promise<InteractionResponse | boolean>;
   /**
    * The message of the component interaction.
@@ -63,7 +63,8 @@ class ComponentInteraction extends InteractionBase {
     super(data, client);
     this.customId = data.data?.custom_id;
     this.componentType = data.data?.component_type;
-    this.update = (...args: any) => this.updateReply(args);
+    this.update = (obj: ComponentInteractionMessageUpdate | string) => this.updateReply(obj);
+
 
     this._patch();
   }
@@ -96,13 +97,16 @@ class ComponentInteraction extends InteractionBase {
    * @returns {Promise<InteractionResponse>}
    */
   async updateReply(
-    obj: ComponentInteractionMessageUpdate
+    obj: ComponentInteractionMessageUpdate | string
   ): Promise<InteractionResponse | boolean> {
+    if(typeof obj === "string") {
+      obj = { content: obj as string }
+    }
     if (obj && typeof obj !== "object")
       throw new ClientTypeError(ErrorNames.InvalidType, "object", "obj");
 
     const payload = new InteractionPayload(obj, obj.files);
-    let { payload: _d, files } = payload;
+    let { payload: _d } = payload;
 
     const data = { type: 7, data: _d };
 
@@ -111,8 +115,6 @@ class ComponentInteraction extends InteractionBase {
       Endpoints.Interaction(this.interactionId, this.token),
       true,
       data,
-      null,
-      files
     );
 
     if (obj.fetchResponse) {

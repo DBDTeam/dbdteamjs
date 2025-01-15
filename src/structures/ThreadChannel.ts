@@ -2,10 +2,10 @@ import { type Client } from "../client/Client";
 import * as Endpoints from "../rest/Endpoints";
 import { Utilities } from "../utils/utils";
 import { Channel } from "./BaseChannel";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
 import { type Member } from "./Member";
-import { TextBasedChannel } from "./TextBasedChannel";
 import { TextChannel } from "./TextChannel";
 
 /**
@@ -17,7 +17,7 @@ import { TextChannel } from "./TextChannel";
  */
 
 /** @extends {Channel} */
-class ThreadChannel extends TextBasedChannel {
+class ThreadChannel extends GuildTextBasedChannel {
   readonly client: Client;
   message_count: number;
   locked: boolean;

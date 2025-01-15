@@ -1,14 +1,14 @@
 import { APIThreadMetadata, Snowflake } from "discord-api-types/v10";
 import { type Client } from "../client";
-import { Channel } from "./BaseChannel";
 import { Message } from "./Message";
 import { Guild } from "./Guild";
 import { ThreadMember } from "./ThreadMember";
 import * as Endpoints from "../rest/Endpoints";
 import { ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
+import { GuildChannel } from "./GuildChannel";
 
-export class ForumThreadChannel extends Channel {
+export class ForumThreadChannel extends GuildChannel {
   thread_metadata: APIThreadMetadata;
   message_count: number;
   member_count: number;

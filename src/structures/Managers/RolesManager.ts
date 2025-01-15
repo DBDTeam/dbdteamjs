@@ -38,6 +38,7 @@ export class MemberRolesManager {
   }
 
   #patch() {
+    if(!this.guild) return;
     const roles = this.guild.roles.cache
       .toJSON()
       .filter((role) => this.member.role_ids?.includes(role.id));
@@ -182,7 +183,7 @@ export class GuildRolesManager {
   async fetch(
     roleId: string | null | undefined
   ): Promise<Collection<string, GuildRole> | GuildRole | RESTResponse> {
-    const response = await this.#client.rest.request<APIRole[]>(
+    const response = await this.#client.rest.request<APIRole>(
       "GET",
       Endpoints.GuildRole(this.guild.id, roleId as string),
       true
@@ -207,7 +208,7 @@ export class GuildRolesManager {
   ): Promise<Nullable<RESTResponse | GuildRole>> {
     let reason = editOptions.reason;
     delete editOptions.reason;
-    var response = await this.#client.rest.request(
+    var response = await this.#client.rest.request<APIRole>(
       "PATCH",
       Endpoints.GuildRole(this.guild.id, id),
       true,
@@ -258,7 +259,7 @@ export class GuildRolesManager {
 
       if (response.error) errors.push(response as RESTResponse);
         const role = new GuildRole(response as APIRole, this.guild, this.#client)
-        success.push(response as GuildRole);
+        success.push(role);
     }
 
     return { error: errors, success };

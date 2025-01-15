@@ -54,11 +54,6 @@ export class TextBasedChannel extends Channel {
   constructor(data: any, client: Client) {
     super(data, client);
     this.last_message_id = data.last_message_id;
-    /**
-     * The Text Channel parent id (category id)
-     * @type {string}
-     */
-    this.parent_id = data.parent_id;
     this.last_pin = Utilities.getAllStamps(
       data.last_pin_timestamp
     ) as SnowflakeInformation;
@@ -130,13 +125,8 @@ export class TextBasedChannel extends Channel {
     if (!result) return null;
 
     if (!result.error) {
-      const data: any = {
-        ...result,
-        guild_id: this.guildId,
-        member: this.guild?.members?.cache.get(result?.author.id),
-      };
 
-      return new Message(data, this.client);
+      return new Message(result as APIMessage, this.client);
     } else {
       return result;
     }

@@ -13,13 +13,14 @@ import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type VoiceChannel } from "../VoiceChannel";
 import { ChannnelCreatePayload } from "./ChannelManager";
+import { GuildChannel } from "../GuildChannel";
 
 class GuildChannelManager {
   #client: Client;
   private guildId: string;
   public cache: Collection<
     string,
-    Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel
+    GuildChannel
   >;
 
   /**
@@ -36,7 +37,7 @@ class GuildChannelManager {
   /**
    * Fetches all channels for the guild and populates the cache.
    * @private
-   * @returns {Promise<Collection<string, Channel>> | null} - A collection of channels or null if an error occurs.
+   * @returns {Promise<Collection<string, GuildChannel>> | null} - A collection of channels or null if an error occurs.
    */
   async #fetchAllChannels(): Promise<Collection<string, any> | RESTResponse> {
     const endpoint = Endpoints.GuildChannels(this.guildId);
@@ -49,14 +50,14 @@ class GuildChannelManager {
 
     if (!response || response.error) return response as RESTResponse;
 
-    var fetched = new Collection<string, Channel>()
+    var fetched = new Collection<string, GuildChannel>()
 
     for (let channelData of response as APIChannel[]) {
       const channel = await Utilities.typeChannel(channelData, this.#client)
-      fetched.set(channel.id, channel)
+      fetched.set(channel.id, channel as GuildChannel)
       this.cache.set(
         channel.id,
-        channel
+        channel as GuildChannel
       );
     }
 
@@ -70,7 +71,7 @@ class GuildChannelManager {
    */
   async fetch(
     id?: string
-  ): Promise<Nullable<Channel | Collection<string, any>> | RESTResponse> {
+  ): Promise<Nullable<GuildChannel | Collection<string, any>> | RESTResponse> {
     if (typeof id !== "string") {
       return await this.#fetchAllChannels();
     } else {
@@ -82,9 +83,9 @@ class GuildChannelManager {
       if(!response || response?.error) return response as RESTResponse
 
       const channel = await Utilities.typeChannel(response, this.#client);
-      this.cache.set(channel.id, channel);
+      this.cache.set(channel.id, channel as GuildChannel);
       this.#client.channels.cache.set(channel.id, channel);
-      return channel;
+      return channel as GuildChannel;
     }
   }
 

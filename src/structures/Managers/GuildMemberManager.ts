@@ -9,7 +9,7 @@ import { ClientError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { Utilities } from "../../utils/utils";
 import { RESTResponse } from "../../rest/requestHandler";
-import { APIGuildMember, APITeamMember } from "discord-api-types/v10";
+import { APIGuildMember } from "discord-api-types/v10";
 
 class GuildMemberManager {
   #client: Client;
@@ -48,16 +48,16 @@ class GuildMemberManager {
 
     var fetched = new Collection<string, Member>()
 
-    for (let memberData of response as APITeamMember[]) {
-      const userData = { ...memberData, id: memberData.user.id };
+    for (let memberData of response as APIGuildMember[]) {
+      const userData = { ...memberData, id: memberData.user?.id };
       const member = new Member(
         userData,
         this.#client.guilds.cache.get(this.guildId) || this.guild,
         this.#client
       )
-      fetched.set(userData.id, member)
+      fetched.set(userData.id as string, member)
       this.cache.set(
-        userData.id,
+        userData.id as string,
         member
       );
     }

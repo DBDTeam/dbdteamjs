@@ -4,6 +4,7 @@ import { Event } from "../Event";
 import { EventNames } from "../../../common";
 import { Channel, Guild } from "../../../structures";
 import { Utilities } from "../../../utils/utils";
+import { GuildChannel } from "../../../structures/GuildChannel";
 
 export default class ChannnelCreate extends Event<GatewayChannelCreateDispatchData> {
   handle(data: GatewayChannelCreateDispatchData, shard: Shard) {
@@ -12,7 +13,7 @@ export default class ChannnelCreate extends Event<GatewayChannelCreateDispatchDa
     const channel = this.client.channels.cache
       .set(data.id, Utilities.typeChannel(data, this.client))
       .get(data.id);
-    guild.channels.cache.set(data.id, Utilities.typeChannel(data, this.client));
+    guild.channels.cache.set(data.id, Utilities.typeChannel(data, this.client) as GuildChannel);
 
     this.client.emit(
       EventNames.ChannelCreate,

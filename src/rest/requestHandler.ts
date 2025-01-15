@@ -10,12 +10,9 @@ import { Nullable } from "../common";
 import { resolveImage } from "../utils/ImageResolver";
 
 export class RequestHandler {
-    private lastRequestTime: number; // Tracks the time of the last request.
-    private requestInterval: number; // Minimum interval between requests in ms.
-    private requestCount: number; // Counter for requests sent.
     public client: Client; // Reference to the parent Client instance.
     public options: Record<string, any>; // Configuration options for requests.
-    public ping: number; // Time taken for the last request in ms.
+    protected ping: number; // Time taken for the last request in ms.
     private buckets: Collection<string, Bucket>; // Stores rate limit buckets.
 
     /**
@@ -25,13 +22,9 @@ export class RequestHandler {
     constructor(client: Client) {
         this.client = client;
         this.options = {
-            agent: null, // Custom HTTP agent (e.g., for proxy support).
             baseURL: Endpoints.BASE_URL, // Base URL for the API.
         };
         this.ping = 0; // Initial ping value.
-        this.requestCount = 0; // Initialize request counter.
-        this.lastRequestTime = Date.now(); // Initialize last request timestamp.
-        this.requestInterval = 300; // Default interval between requests.
         this.buckets = new Collection(); // Initialize rate limit buckets.
     }
 
@@ -43,25 +36,25 @@ export class RequestHandler {
         reason?: Nullable<string>,
         files?: Nullable<Array<Record<string, any>>>,
         headers?: Nullable<Record<any, any>>
-    ): Promise<((T | Record<string, any>) & { error?: boolean }) | null> {
+    ): Promise<(T | Record<string, any>) & { error: boolean }> {
         try {
             const response = await this.fetchFromAPI(
                 method,
                 endpoint,
                 auth,
-                { data },
+                data,
                 reason,
                 files,
                 headers
             );
 
-            if (!response || response.error) return response;
+            if (!response || response.error) return response as RESTResponse;
 
             return response.data as (T | Record<string, any>) & {
-                error?: boolean;
+                error: boolean;
             };
         } catch (error) {
-            return null;
+            return error as RESTResponse;
         }
     }
 
@@ -137,8 +130,14 @@ export class RequestHandler {
      * @returns A normalized route key.
      */
     private getRouteKey(url: string): string {
-        return url.replace(/\/[0-9]+/g, "/:id"); // Replace dynamic segments with placeholders.
+        const [baseUrl] = url.split("?"); // Ignorar parámetros de consulta.
+    
+        return baseUrl
+            .replace(/\/\d+/g, "/:id") // Normalizar IDs numéricos.
+            .replace(/\/[a-zA-Z0-9_-]{200,}/g, "/:token") // Normalizar segmentos de 200 o más caracteres.
+            .replace(/\/$/, ""); // Eliminar slashes finales.
     }
+    
 
     /**
      * Retrieves or initializes a rate limit bucket for a specific route key.
@@ -286,21 +285,20 @@ export class RequestHandler {
      */
     private async _writeBody(
         req: ClientRequest,
-        body?: Record<string, any>,
-        files?: Nullable<Array<Record<string, any>>>
+        body: Nullable<Record<string, any>>,
+        files: Nullable<Array<Record<string, any>>>
     ) {
-        if (!files?.[0] && body?.data) {
-            // If no files, write the JSON payload directly.
-            req.write(JSON.stringify(body.data));
-        } else if (files?.[0]) {
+        if ((files || []).length <= 0 && body) {
+            req.write(JSON.stringify(body));
+        } else if (files && files.length > 0) {
             // Handle multipart form-data when files are present.
-            if (body?.data) {
+            if (body) {
                 req.write(`--boundary\r\n`);
                 req.write(
                     `Content-Disposition: form-data; name="payload_json"\r\n`
                 );
                 req.write(`Content-Type: application/json\r\n\r\n`);
-                req.write(JSON.stringify(body.data));
+                req.write(JSON.stringify(body));
                 req.write("\r\n");
             }
 
@@ -433,10 +431,9 @@ export class RESTResponse {
     status: number;
     data: any;
     error: boolean;
-    #data: any;
     constructor(data: any) {
-        this.#data = data;
-        (this.status = data.statusCode), (this.data = data.data);
+        this.status = data.statusCode;
+        this.data = data.data;
         this.error = data.error;
     }
 }

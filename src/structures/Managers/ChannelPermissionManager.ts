@@ -14,6 +14,7 @@ import { PermissionManager } from "../Flags/Permission";
 import { ClientError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { RESTResponse } from "../../rest/requestHandler";
+import { GuildChannel } from "../GuildChannel";
 
 export class ChannelPermissionManager {
   #permissionsBits = PermissionsBits;
@@ -31,7 +32,7 @@ export class ChannelPermissionManager {
   }
 
   get channel() {
-    return this.#client.channels.cache.get(this.channelId);
+    return this.#client.channels.cache.get(this.channelId) as GuildChannel;
   }
 
   /**

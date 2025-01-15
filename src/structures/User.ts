@@ -211,9 +211,9 @@ class User extends Base {
       { recipient_id: this.id }
     );
 
-    if (result?.error || !result?.data) return result as RESTResponse;
+    if (result?.error || !result) return result as RESTResponse;
 
-    const dm = Utilities.typeChannel(result.data, this.#client) as DMChannel;
+    const dm = Utilities.typeChannel(result, this.#client) as DMChannel;
 
     this.dmChannel = dm;
 

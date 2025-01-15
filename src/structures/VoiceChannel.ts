@@ -1,9 +1,9 @@
 import { VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../client/Client";
-import { TextBasedChannel } from "./TextBasedChannel";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
 
 /** @extends {Channel} */
-class VoiceChannel extends TextBasedChannel {
+class VoiceChannel extends GuildTextBasedChannel {
   /**
    * The actual bitrate of the Voice Channel
    */

@@ -7,7 +7,6 @@ import * as Endpoints from "../../rest/Endpoints";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
 import { InteractionPayload } from "../Payloads/InteractionPayload";
-import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
 import {
@@ -28,6 +27,7 @@ import { UserInteraction } from "./UserInteraction";
 import { ClientError, ClientTypeError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { RESTResponse } from "../../rest/requestHandler";
+import { GuildTextBasedChannel } from "../GuildTextBasedChannel";
 
 /**
  * Represents the base class for interactions.
@@ -67,9 +67,9 @@ class InteractionBase {
 
   /**
    * The Channel where the Interaction was triggered.
-   * @type {TextBasedChannel}
+   * @type {GuildTextBasedChannel}
    */
-  public channel: TextBasedChannel;
+  public channel: GuildTextBasedChannel;
 
   /**
    * The Interaction User.
@@ -150,7 +150,7 @@ class InteractionBase {
 
     this.channel = this.guild?.channels.cache.get(
       data.channel_id
-    ) as TextBasedChannel;
+    ) as GuildTextBasedChannel;
     this.user = new User(data.member.user, this.client);
     this.permissions = data.app_permissions;
     this.guildLocale = data.guild_locale;

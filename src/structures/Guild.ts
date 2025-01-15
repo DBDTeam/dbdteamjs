@@ -22,6 +22,7 @@ import { GuildRole } from "./Role";
 import * as Endpoints from "../rest/Endpoints";
 import { GuildBanManager } from "./Managers/BanManager";
 import { Utilities } from "../utils/utils";
+import { GuildChannel } from "./GuildChannel";
 
 class Guild extends Base {
   #exists: any;
@@ -324,7 +325,7 @@ class Guild extends Base {
       for (var channelData of this.#data.channels) {
         const channel = Utilities.typeChannel(channelData, this.client);
 
-        this.channels.cache.set(channel.id, channel);
+        this.channels.cache.set(channel.id, channel as GuildChannel);
 
         this.client.channels.cache.set(channel.id, channel);
       }

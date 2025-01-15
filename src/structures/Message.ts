@@ -19,12 +19,13 @@ import { Member } from "./Member";
 import { EditMessagePayload } from "./Payloads/EditMessagePayload";
 import { MessagePayload } from "./Payloads/MessagePayload";
 import { User } from "./User";
-import { TextBasedChannel } from "./TextBasedChannel";
 import { ClientError, ClientTypeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
 import { PermissionNames } from "../common/interfaces";
 import { Utilities } from "../utils/utils";
 import { RESTResponse } from "../rest/requestHandler";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
+import { TextBasedChannel } from "./TextBasedChannel";
 
 /**
  * Represents a Discord message.
@@ -108,7 +109,7 @@ class Message extends Base {
    * The channel where the message was sent.
    * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
    */
-  channel!: TextBasedChannel;
+  channel!: TextBasedChannel | GuildTextBasedChannel;
 
   /**
    * The guild where the message was sent.
@@ -199,10 +200,9 @@ class Message extends Base {
     };
     this.channel = this.client.channels.cache.get(
       data.channel_id
-    ) as TextBasedChannel;
+    ) as TextBasedChannel | GuildTextBasedChannel;
     this.guild =
-      (this.client.guilds.cache.get(data.guild_id as string) as Guild) ||
-      (this.client.channels.cache.get(this.channelId)?.guild as Guild);
+      (this.channel as GuildTextBasedChannel)?.guild
     this.guildId = this.guild?.id as string;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.tts = data.tts;
@@ -223,16 +223,17 @@ class Message extends Base {
     if (!this.channel) {
       this.channel = (await this.client.channels.fetch(
         this.channelId
-      )) as TextBasedChannel;
+      )) as GuildTextBasedChannel;
     }
 
-    if(!this.guild) {
+    if(!this.guild && (this.channel as GuildTextBasedChannel).guild) {
+      this.channel = this.channel as GuildTextBasedChannel
       this.guild = this.channel.guild
       this.guildId = this.channel.guildId
     }
 
     if (!this.member) {
-      this.member = (await this.guild.members?.fetch(
+      this.member = (await this.guild?.members?.fetch(
         this.data.author.id
       )) as Member;
     }
@@ -269,7 +270,7 @@ class Message extends Base {
       }
     }
 
-    this.reactions = new MessageReactions(
+    if(this.member)  this.reactions = new MessageReactions(
       this.client,
       this,
       this.data.reactions || []

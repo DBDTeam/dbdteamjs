@@ -1,5 +1,6 @@
 import { ProbablyPromise } from "../../common";
 import { Guild, GuildRole } from "../../structures";
+import { GuildChannel } from "../../structures/GuildChannel";
 import { Member } from "../../structures/Member";
 import { Message } from "../../structures/Message";
 import { Shard } from "../../structures/Sharding";
@@ -28,7 +29,7 @@ export abstract class Event<T> {
   getChannel(data: any) {
     const channel = Utilities.typeChannel(data, this.client);
 
-    channel.guild?.channels?.cache?.set(channel.id, channel);
+    if("guild" in channel && channel.guild) ((channel.guild) as Guild)?.channels?.cache?.set(channel.id, channel as GuildChannel);
 
     this.client?.channels?.cache?.set(channel.id, channel);
 

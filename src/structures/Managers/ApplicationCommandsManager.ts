@@ -96,7 +96,7 @@ class ApplicationCommandManager {
     commands = Array.isArray(commands) ? commands : [commands];
     commands = [...new Set(commands)];
 
-    const response = await this.#client.rest.request(
+    const response = await this.#client.rest.request<APIApplicationCommand[]>(
       "PUT",
       this.target === "global"
         ? Endpoints.ApplicationCommands(this.#client.user.id)

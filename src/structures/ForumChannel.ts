@@ -1,8 +1,12 @@
 import {
   APIGuildForumChannel,
+  APIGuildForumDefaultReactionEmoji,
   APIGuildForumTag,
+  ForumLayoutType,
   RESTPostAPIChannelThreadsResult,
   RESTPostAPIGuildForumThreadsJSONBody,
+  SortOrderType,
+  ThreadAutoArchiveDuration,
 } from "discord-api-types/v10";
 import { type Client } from "../client";
 import { Channel } from "./BaseChannel";
@@ -12,11 +16,19 @@ import { ForumThreadPayload } from "./Payloads/ForumThreadPayload";
 import { MessagePayloadFileData } from "../common/interfaces/message/MessagePayload";
 import { ForumThreadChannel } from "./ThreadForumChannel";
 import { RESTResponse } from "../rest/requestHandler";
+import { GuildChannel } from "./GuildChannel";
 
-export class ForumChannel extends Channel {
+export class ForumChannel extends GuildChannel {
   #data: APIGuildForumChannel;
   last_message_id: Nullable<string>;
   declare available_tags: APIGuildForumTag[];
+  topic: Nullable<string>
+  default_auto_archive_duration: Nullable<ThreadAutoArchiveDuration>
+  default_forum_layout: ForumLayoutType
+  default_reaction_emoji: Nullable<APIGuildForumDefaultReactionEmoji>
+  default_sort_order: Nullable<SortOrderType>
+  default_thread_rate_limit_per_user: Nullable<number>
+  rate_limit_per_user: Nullable<number>
   constructor(data: APIGuildForumChannel, client: Client) {
     super(data, client);
     this.#data = data;

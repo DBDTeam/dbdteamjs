@@ -44,7 +44,7 @@ class ClientUser extends User {
       avatar: avatar?.uri ?? (newInfo.avatar === "" ? "" : null),
     };
 
-    const result = await this.#client.rest.request(
+    const result = await this.#client.rest.request<APIUser>(
       "PATCH",
       Endpoints.User("@me"),
       true,
