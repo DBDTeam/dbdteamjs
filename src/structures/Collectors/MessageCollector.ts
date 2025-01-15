@@ -7,7 +7,7 @@ export class MessageCollector extends BaseCollector<Message> {
     declare client: Client;
     constructor(
         client: Client,
-        filter: (message: Message) => boolean,
+        filter: (message: Message) => any,
         options: CollectorOptions = {}
     ) {
         super(client, filter, options, EventNames.MessageCreate);

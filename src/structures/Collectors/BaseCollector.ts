@@ -24,7 +24,7 @@ export class BaseCollector<T> extends TypedEmitter<BaseCollectorEvents<T>> {
     public items: Collection<string, T>;
     protected options: CollectorOptions;
     private stopped: boolean;
-    readonly client: Client;
+    protected client: Client;
     private timeoutId?: NodeJS.Timeout;
     private eventName: EventNames;
     public listener!: (data: T) => void;
