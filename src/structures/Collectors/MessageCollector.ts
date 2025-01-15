@@ -20,7 +20,7 @@ export class MessageCollector extends BaseCollector<Message> {
                 this.items.set(message.id, message);
                 await this.emit("collect", message);
                 if(this.options.limit && this.options.limit >= this.count){
-                    this.stop(CollectorDefaultCodes.LIMIT_REACHED)
+                    this.stop(CollectorDefaultCodes.LIMIT_REACHED);
                 }
             }
         };

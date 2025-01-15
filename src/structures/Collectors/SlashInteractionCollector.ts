@@ -10,7 +10,7 @@ export class SlashInteractionCollector extends InteractionCollector<SlashInterac
         options: CollectorOptions
     ) {
         super(client, async (interaction) => {
-            return interaction.isSlash() && await filter(interaction)
+            return interaction.isSlash() && await filter(interaction);
         }, options);
     }
 }

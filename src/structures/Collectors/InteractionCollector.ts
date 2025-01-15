@@ -28,6 +28,6 @@ export class InteractionCollector<
         };
 
         this.client.on(EventNames.InteractionCreate, this.listener as any);
-    }    
+    }
 }
 

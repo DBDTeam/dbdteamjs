@@ -10,7 +10,7 @@ export class ComponentInteractionCollector extends InteractionCollector<Componen
         options: CollectorOptions
     ) {
         super(client, async (interaction) => {
-            return interaction.isComponent() && await filter(interaction)
+            return interaction.isComponent() && await filter(interaction);
         }, options);
     }
 }

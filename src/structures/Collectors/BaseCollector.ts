@@ -10,7 +10,7 @@ export interface CollectorOptions {
 
 export enum CollectorDefaultCodes {
     TIME_EXPIRED = 1001,
-    LIMIT_REACHED = 1000
+    LIMIT_REACHED = 1000,
 }
 
 interface BaseCollectorEvents<T> {

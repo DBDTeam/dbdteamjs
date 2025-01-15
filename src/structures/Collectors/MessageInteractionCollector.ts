@@ -10,7 +10,7 @@ export class MessageInteractionCollector extends InteractionCollector<MessageInt
         options: CollectorOptions
     ) {
         super(client, async (interaction) => {
-            return interaction.isUser() && await filter(interaction)
+            return interaction.isUser() && await filter(interaction);
         }, options);
     }
 }
