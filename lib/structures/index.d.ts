@@ -19,3 +19,4 @@ export * from "./Flags/Intents";
 export * from "./Interactions/index";
 export * from "./Managers/index";
 export * from "./Payloads/index";
+export * from "./Collectors";

@@ -2,21 +2,18 @@ import { type Client } from "../client/Client";
 import { Methods } from "../common/interfaces/rest/requestHandler";
 import { Nullable } from "../common";
 export declare class RequestHandler {
-    private lastRequestTime;
-    private requestInterval;
-    private requestCount;
     client: Client;
     options: Record<string, any>;
-    ping: number;
+    protected ping: number;
     private buckets;
     /**
      * Initializes a new instance of RequestHandler.
      * @param client - The client using this handler.
      */
     constructor(client: Client);
-    request<T = RESTResponse>(method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH", endpoint: string, auth?: boolean, data?: Record<string, any>, reason?: Nullable<string>, files?: Nullable<Array<Record<string, any>>>, headers?: Nullable<Record<any, any>>): Promise<((T | Record<string, any>) & {
-        error?: boolean;
-    }) | null>;
+    request<T = RESTResponse>(method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH", endpoint: string, auth?: boolean, data?: Record<string, any>, reason?: Nullable<string>, files?: Nullable<Array<Record<string, any>>>, headers?: Nullable<Record<any, any>>): Promise<(T | Record<string, any>) & {
+        error: boolean;
+    }>;
     /**
      * Makes an API request while handling rate limits and errors.
      * @param method - HTTP method to use (e.g., GET, POST).
@@ -121,7 +118,6 @@ export declare class RequestHandler {
     private _sleep;
 }
 export declare class RESTResponse {
-    #private;
     status: number;
     data: any;
     error: boolean;

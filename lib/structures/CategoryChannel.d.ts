@@ -1,6 +1,6 @@
-import { Channel } from "./BaseChannel";
 import { type Client } from "../client/Client";
 import { Collection } from "../utils/Collection";
+import { GuildChannel } from "./GuildChannel";
 /**
  * @typedef {import('./TextChannel.js').TextChannel} TextChannel
  * @typedef {import('./VoiceChannel.js').VoiceChannel} VoiceChannel
@@ -10,7 +10,7 @@ import { Collection } from "../utils/Collection";
 /** Represents a CategoryChannel
  * @extends {Channel}
  */
-export declare class CategoryChannel extends Channel {
+export declare class CategoryChannel extends GuildChannel {
     constructor(data: any, client: Client);
     /**
      * Returns the channels that are in the cache.

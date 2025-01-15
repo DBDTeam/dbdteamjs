@@ -1,9 +1,9 @@
 import { type Client } from "../client/Client";
 import { Channel } from "./BaseChannel";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { ThreadMemberManager } from "./Managers/ThreadMemberManager";
 import { type Member } from "./Member";
-import { TextBasedChannel } from "./TextBasedChannel";
 import { TextChannel } from "./TextChannel";
 /**
  * @typedef {import('./TextChannel').TextChannel} TextChannel
@@ -13,7 +13,7 @@ import { TextChannel } from "./TextChannel";
  * @typedef {import('../client/Client').Client} Client
  */
 /** @extends {Channel} */
-declare class ThreadChannel extends TextBasedChannel {
+declare class ThreadChannel extends GuildTextBasedChannel {
     readonly client: Client;
     message_count: number;
     locked: boolean;
@@ -40,7 +40,7 @@ declare class ThreadChannel extends TextBasedChannel {
      * @async
      */
     leave(): Promise<true | ((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error?: boolean;
+        error: boolean;
     })>;
 }
 export { ThreadChannel };

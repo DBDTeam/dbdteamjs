@@ -116,7 +116,7 @@ declare class User extends Base {
     bannerUrl(opts: CDNOptions): string | undefined;
     createDM(): Promise<RESTResponse | DMChannel>;
     send(body: MessageBodyRequest | string): Promise<import("./Message").Message | ((Record<string, any> | import("discord-api-types/v10").APIMessage) & {
-        error?: boolean;
+        error: boolean;
     }) | null | undefined>;
     /**
      * Returns the User mention

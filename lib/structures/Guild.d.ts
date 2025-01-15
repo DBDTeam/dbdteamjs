@@ -84,7 +84,7 @@ declare class Guild extends Base {
      */
     leave(): Promise<boolean | null>;
     edit(body: RESTPatchAPIGuildJSONBody): Promise<Guild | ((Record<string, any> | APIGuild) & {
-        error?: boolean;
+        error: boolean;
     }) | null>;
 }
 export { Guild };

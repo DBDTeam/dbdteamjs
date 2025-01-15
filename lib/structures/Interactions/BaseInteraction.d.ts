@@ -2,7 +2,6 @@ import { InteractionType } from "discord-api-types/v10";
 import { Client } from "../../client/Client";
 import { Guild } from "../Guild";
 import { Member } from "../Member";
-import { TextBasedChannel } from "../TextBasedChannel";
 import { User } from "../User";
 import { InteractionResponse } from "./InteractionResponse";
 import { InteractionBodyRequest, MessageBodyRequest, MessageUpdateBodyRequest, Nullable } from "../../common";
@@ -11,6 +10,7 @@ import { SlashInteraction } from "./SlashInteraction";
 import { ComponentInteraction } from "./ComponentInteraction";
 import { UserInteraction } from "./UserInteraction";
 import { RESTResponse } from "../../rest/requestHandler";
+import { GuildTextBasedChannel } from "../GuildTextBasedChannel";
 /**
  * Represents the base class for interactions.
  */
@@ -46,9 +46,9 @@ declare class InteractionBase {
     guild: Guild;
     /**
      * The Channel where the Interaction was triggered.
-     * @type {TextBasedChannel}
+     * @type {GuildTextBasedChannel}
      */
-    channel: TextBasedChannel;
+    channel: GuildTextBasedChannel;
     /**
      * The Interaction User.
      * @type {User | undefined}

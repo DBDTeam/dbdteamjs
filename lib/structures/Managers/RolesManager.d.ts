@@ -95,7 +95,7 @@ export declare class GuildRolesManager {
     create(createObject: RESTPostAPIGuildRoleJSONBody & {
         reason?: string;
     }): Promise<GuildRole | ((Record<string, any> | APIRole) & {
-        error?: boolean;
+        error: boolean;
     }) | null>;
 }
 export {};

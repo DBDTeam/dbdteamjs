@@ -1,8 +1,10 @@
 import { type Client } from "../client/Client";
-import { TextBasedChannel } from "./TextBasedChannel";
+import { Nullable } from "../common";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
 /** @extends {TextBasedChannel} */
-declare class TextChannel extends TextBasedChannel {
+declare class TextChannel extends GuildTextBasedChannel {
     #private;
+    topic: Nullable<string>;
     /**
      * Represents a Text Channel
      * @param {*} data

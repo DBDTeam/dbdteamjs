@@ -1,31 +1,24 @@
 import { Client } from "../client";
 import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { Message } from "./Message";
-import { TextChannel } from "./TextChannel";
-import { VoiceChannel } from "./VoiceChannel";
-import { ThreadChannel } from "./ThreadChannel";
-import { MessageBodyRequest, SnowflakeInformation } from "../common";
-import { Channel } from "./BaseChannel";
+import { MessageBodyRequest, Nullable, SnowflakeInformation } from "../common";
 import { MessageCollector } from "./Collectors/MessageCollector";
-import { APIMessage } from "discord-api-types/v10";
-export declare class TextBasedChannel extends Channel {
+import { APIMessage, APITextBasedChannel } from "discord-api-types/v10";
+import { GuildChannel } from "./GuildChannel";
+export declare class GuildTextBasedChannel extends GuildChannel {
     /**
      * The Text Channel message manager
      */
-    messages: ChannelMessageManager<TextChannel | VoiceChannel | ThreadChannel | TextBasedChannel>;
+    messages: ChannelMessageManager<GuildChannel>;
     /**
      * The last Text Channel message
      */
-    last_message_id: string;
+    last_message_id: Nullable<string>;
     /**
-     * The Text Channel cooldown per user in seconds
-     * @type {number}
+     * The rate limit per user of the channel.
+     * @type {Nullable<number>}
      */
-    rate_limit_per_user: number;
-    /**
-     * The Text Channel cooldown per user in seconds
-     */
-    readonly cooldown: number;
+    rate_limit_per_user: Nullable<number>;
     /**
      * Creates a message in the Text Channel
      * @readonly
@@ -46,7 +39,7 @@ export declare class TextBasedChannel extends Channel {
      * The Text Channel last pin time information
      */
     readonly last_pin: SnowflakeInformation;
-    constructor(data: any, client: Client);
+    constructor(data: APITextBasedChannel<any>, client: Client);
     /**
      * Creates a message in the Text Channel
      * @param {MessagePayload} body - The message send payload

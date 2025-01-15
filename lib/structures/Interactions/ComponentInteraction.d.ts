@@ -29,7 +29,7 @@ declare class ComponentInteraction extends InteractionBase {
      * @param { APIInteractionResponseCallbackData } obj - The object to update the reply.
      * @returns { Promise<InteractionResponse | boolean> }
      */
-    readonly update: (obj: APIInteractionResponseCallbackData) => Promise<InteractionResponse | boolean>;
+    readonly update: (obj: APIInteractionResponseCallbackData | string) => Promise<InteractionResponse | boolean>;
     /**
      * The message of the component interaction.
      * @type { Message }
@@ -60,7 +60,7 @@ declare class ComponentInteraction extends InteractionBase {
      * @param {InteractionPayloadData} obj - The InteractionPayloadData
      * @returns {Promise<InteractionResponse>}
      */
-    updateReply(obj: ComponentInteractionMessageUpdate): Promise<InteractionResponse | boolean>;
+    updateReply(obj: ComponentInteractionMessageUpdate | string): Promise<InteractionResponse | boolean>;
     /**
      * Patch method for initializing data properties.
      * @private

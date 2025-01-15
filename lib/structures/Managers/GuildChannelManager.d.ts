@@ -10,10 +10,11 @@ import { type TextChannel } from "../TextChannel";
 import { type ThreadChannel } from "../ThreadChannel";
 import { type VoiceChannel } from "../VoiceChannel";
 import { ChannnelCreatePayload } from "./ChannelManager";
+import { GuildChannel } from "../GuildChannel";
 declare class GuildChannelManager {
     #private;
     private guildId;
-    cache: Collection<string, Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel>;
+    cache: Collection<string, GuildChannel>;
     /**
      * Constructs a new GuildChannelManager instance.
      * @param {string} guildId - The ID of the guild to manage channels for.
@@ -25,7 +26,7 @@ declare class GuildChannelManager {
      * @param {string} id - The ID of the channel to fetch.
      * @returns {Promise<Channel | null>} - The fetched channel or null if not found.
      */
-    fetch(id?: string): Promise<Nullable<Channel | Collection<string, any>> | RESTResponse>;
+    fetch(id?: string): Promise<Nullable<GuildChannel | Collection<string, any>> | RESTResponse>;
     /**
      * Creates a new channel in the guild.
      * @param {ChannnelCreatePayload} channelObj - The channel creation payload.

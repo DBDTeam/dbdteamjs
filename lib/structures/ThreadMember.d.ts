@@ -32,7 +32,7 @@ declare class ThreadMember {
      * @returns {Promise<Object | boolean>}
      */
     kick(): Promise<true | ((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error?: boolean;
+        error: boolean;
     })>;
     static type: string;
 }

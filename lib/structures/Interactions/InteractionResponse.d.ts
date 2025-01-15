@@ -28,6 +28,6 @@ export declare class InteractionResponse extends Message {
      * @returns {Promise<InteractionResponse | null>}
      */
     editInteractionResponse(body: MessageBodyRequest | string): Promise<((Record<string, any> | import("../../rest/requestHandler").RESTResponse) & {
-        error?: boolean;
+        error: boolean;
     }) | InteractionResponse | null | undefined>;
 }

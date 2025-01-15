@@ -105,9 +105,9 @@ declare class Member extends Base {
     /**
      * Makes the member leave the guild.
      */
-    leave(): Promise<((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error?: boolean;
-    }) | null>;
+    leave(): Promise<(Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
+        error: boolean;
+    }>;
     /**
      * Checks if the member is kickable.
      * @returns {boolean} True if the member can be kicked, false otherwise.

@@ -8,8 +8,9 @@ import { Guild } from "./Guild";
 import { MessageReactions } from "./Managers/MessageReactionManager";
 import { Member } from "./Member";
 import { User } from "./User";
-import { TextBasedChannel } from "./TextBasedChannel";
 import { RESTResponse } from "../rest/requestHandler";
+import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
+import { TextBasedChannel } from "./TextBasedChannel";
 /**
  * Represents a Discord message.
  */
@@ -82,7 +83,7 @@ declare class Message extends Base {
      * The channel where the message was sent.
      * @type {(Channel | VoiceChannel | TextChannel | ThreadChannel | CategoryChannel | undefined)}
      */
-    channel: TextBasedChannel;
+    channel: TextBasedChannel | GuildTextBasedChannel;
     /**
      * The guild where the message was sent.
      * @type {(Guild | undefined)}

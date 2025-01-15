@@ -3,6 +3,7 @@ import { PermissionsType } from "../../common/interfaces/general/Permissions";
 import { Client } from "../../client/Client";
 import { Nullable } from "../../common";
 import { RESTResponse } from "../../rest/requestHandler";
+import { GuildChannel } from "../GuildChannel";
 export declare class ChannelPermissionManager {
     #private;
     private readonly channelId;
@@ -12,7 +13,7 @@ export declare class ChannelPermissionManager {
      * @param {Client} #client - The #client instance to interact with the API.
      */
     constructor(channelId: string, client: Client);
-    get channel(): import("..").CategoryChannel | import("..").Channel | import("..").VoiceChannel | import("..").TextChannel | import("..").ThreadChannel | undefined;
+    get channel(): GuildChannel;
     /**
      * Resolves the permissions into bitwise values.
      * @param {ObjectOfThePerms} permsObj - The permissions to resolve.

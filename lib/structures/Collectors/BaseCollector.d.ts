@@ -20,7 +20,7 @@ export declare class BaseCollector<T> extends TypedEmitter<BaseCollectorEvents<T
     items: Collection<string, T>;
     protected options: CollectorOptions;
     private stopped;
-    readonly client: Client;
+    protected client: Client;
     private timeoutId?;
     private eventName;
     listener: (data: T) => void;
