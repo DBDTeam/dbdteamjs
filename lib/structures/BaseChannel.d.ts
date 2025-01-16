@@ -6,6 +6,9 @@ import { type ThreadChannel } from "./ThreadChannel";
 import { type VoiceChannel } from "./VoiceChannel";
 import { type TextBasedChannel } from "./TextBasedChannel";
 import { ForumChannel } from "./ForumChannel";
+import { DMChannel } from "./DMChannel";
+import { GuildChannel } from "./GuildChannel";
+import { CategoryChannel } from "./CategoryChannel";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -48,8 +51,11 @@ export declare class Channel extends Base {
     constructor(data: APIChannel, client: Client);
     toString(): string;
     isTextBased(): this is TextBasedChannel;
+    isCategory(): this is CategoryChannel;
     isVoice(): this is VoiceChannel;
     isText(): this is TextChannel;
     isThread(): this is ThreadChannel;
     isForum(): this is ForumChannel;
+    isDM(): this is DMChannel;
+    isGuildChannel(): this is GuildChannel;
 }

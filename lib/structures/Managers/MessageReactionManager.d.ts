@@ -18,11 +18,6 @@ declare class MessageReactions {
      */
     readonly channelId: string;
     /**
-     * The guild id
-     * @type { string }
-     */
-    readonly guildId?: string;
-    /**
      * The reactions that the message has.
      * * @type {Array<string>}
     */
