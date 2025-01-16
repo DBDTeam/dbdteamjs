@@ -213,6 +213,11 @@ class Message extends Base {
     this.stickers = new Collection();
     this.nonce = data.nonce || 0;
     this.pinned = data.pinned;
+    this.reactions = new MessageReactions(
+      this.client,
+      this,
+      this.data.reactions || []
+    );
   }
 
   /**
@@ -223,7 +228,7 @@ class Message extends Base {
     if (!this.channel) {
       this.channel = (await this.client.channels.fetch(
         this.channelId
-      )) as GuildTextBasedChannel;
+      )) as TextBasedChannel;
     }
 
     if(!this.guild && (this.channel as GuildTextBasedChannel).guild) {
@@ -269,12 +274,6 @@ class Message extends Base {
         this.stickers.set(i.id, i);
       }
     }
-
-    if(this.member)  this.reactions = new MessageReactions(
-      this.client,
-      this,
-      this.data.reactions || []
-    );
   }
 
   /**

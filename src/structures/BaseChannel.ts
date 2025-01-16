@@ -11,6 +11,9 @@ import { type VoiceChannel } from "./VoiceChannel";
 import { ChannelTypes } from "../common/types/ChannelTypes";
 import { type TextBasedChannel } from "./TextBasedChannel";
 import { ForumChannel } from "./ForumChannel";
+import { DMChannel } from "./DMChannel";
+import { GuildChannel } from "./GuildChannel";
+import { CategoryChannel } from "./CategoryChannel";
 /**
  * Represents a BaseChannel (for easier usage)
  * @param {object} data - The Channel payload
@@ -75,7 +78,12 @@ export class Channel extends Base {
       ChannelTypes.Voice,
       ChannelTypes.PublicThread,
       ChannelTypes.PrivateThread,
+      ChannelTypes.DM,
     ].includes(this.type);
+  }
+
+  isCategory(): this is CategoryChannel {
+    return ChannelTypes.Category === this.type
   }
 
   isVoice(): this is VoiceChannel {
@@ -92,5 +100,13 @@ export class Channel extends Base {
 
   isForum(): this is ForumChannel {
     return this.type === ChannelTypes.Forum
+  }
+
+  isDM(): this is DMChannel {
+    return this.type === ChannelTypes.DM
+  }
+
+  isGuildChannel(): this is GuildChannel {
+    return this.isText() || this.isThread() || this.isVoice() || this.isCategory()
   }
 }

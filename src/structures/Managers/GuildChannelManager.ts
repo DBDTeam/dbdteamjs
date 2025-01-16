@@ -5,13 +5,6 @@ import * as Endpoints from "../../rest/Endpoints";
 import { RESTResponse } from "../../rest/requestHandler";
 import { Collection } from "../../utils/Collection";
 import { Utilities } from "../../utils/utils";
-import { Channel } from "../BaseChannel";
-import { type CategoryChannel } from "../CategoryChannel";
-import { ForumChannel } from "../ForumChannel";
-import { TextBasedChannel } from "../TextBasedChannel";
-import { type TextChannel } from "../TextChannel";
-import { type ThreadChannel } from "../ThreadChannel";
-import { type VoiceChannel } from "../VoiceChannel";
 import { ChannnelCreatePayload } from "./ChannelManager";
 import { GuildChannel } from "../GuildChannel";
 
@@ -39,7 +32,7 @@ class GuildChannelManager {
    * @private
    * @returns {Promise<Collection<string, GuildChannel>> | null} - A collection of channels or null if an error occurs.
    */
-  async #fetchAllChannels(): Promise<Collection<string, any> | RESTResponse> {
+  async #fetchAllChannels(): Promise<Collection<string, GuildChannel> | RESTResponse> {
     const endpoint = Endpoints.GuildChannels(this.guildId);
 
     const response = await this.#client.rest.request<APIChannel[]>(
@@ -67,7 +60,7 @@ class GuildChannelManager {
   /**
    * Fetches a specific channel by its ID.
    * @param {string} id - The ID of the channel to fetch.
-   * @returns {Promise<Channel | null>} - The fetched channel or null if not found.
+   * @returns {Promise<Nullable<GuildChannel | Collection<string, any>> | RESTResponse>} - The fetched channel or null if not found.
    */
   async fetch(
     id?: string
@@ -75,7 +68,7 @@ class GuildChannelManager {
     if (typeof id !== "string") {
       return await this.#fetchAllChannels();
     } else {
-      const response = await this.#client.rest.request(
+      const response = await this.#client.rest.request<APIChannel>(
         "GET",
         Endpoints.Channel(id),
       )
@@ -92,21 +85,12 @@ class GuildChannelManager {
   /**
    * Creates a new channel in the guild.
    * @param {ChannnelCreatePayload} channelObj - The channel creation payload.
-   * @returns {Promise<Nullable<Channel | VoiceChannel | ThreadChannel | CategoryChannel | ForumChannel | TextBasedChannel | TextChannel | ErrorResponseFromApi>>} - The created channel or null if an error occurs.
+   * @returns {Promise<Nullable<GuildChannel | RESTResponse>>} - The created channel or null if an error occurs.
    */
   async create(
     channelObj: ChannnelCreatePayload
   ): Promise<
-    Nullable<
-      | Channel
-      | VoiceChannel
-      | ThreadChannel
-      | CategoryChannel
-      | ForumChannel
-      | TextBasedChannel
-      | TextChannel
-      | RESTResponse
-    >
+    Nullable<GuildChannel | RESTResponse>
   > {
     const reason = channelObj?.reason;
     const response = await this.#client.rest.request<APIChannel>(
@@ -117,26 +101,22 @@ class GuildChannelManager {
       reason
     );
 
-    if (!response) return response;
+    if (!response || response.error) return response as RESTResponse;
 
-    if (response?.error) {
-      return response as RESTResponse;
-    } else {
-      return await Utilities.typeChannel(response, this.#client);
-    }
+      return await Utilities.typeChannel(response, this.#client) as GuildChannel;
   }
 
   /**
    * Deletes a channel from the guild.
    * @param {string} channelId - The ID of the channel to delete.
    * @param {string} [reason] - The reason for deleting the channel.
-   * @returns {Promise<Nullable<Channel | RESTResponse>>} - The deleted channel or null if an error occurs.
+   * @returns {Promise<Nullable<GuildChannel | RESTResponse>>} - The deleted channel or null if an error occurs.
    */
   async delete(
     channelId: string,
     reason?: string
-  ): Promise<Nullable<Channel | RESTResponse>> {
-    const response = await this.#client.rest.request(
+  ): Promise<Nullable<GuildChannel | RESTResponse>> {
+    const response = await this.#client.rest.request<APIChannel>(
       "DELETE",
       Endpoints.Channel(channelId),
       true,
@@ -144,13 +124,9 @@ class GuildChannelManager {
       reason
     );
 
-    if (!response) return response;
+    if (!response || response.error) return response as RESTResponse;
 
-    if (response.error) {
-      return response as RESTResponse;
-    } else {
-      return await Utilities.typeChannel(response.data, this.#client);
-    }
+      return await Utilities.typeChannel(response, this.#client) as GuildChannel;
   }
 }
 

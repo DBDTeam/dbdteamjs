@@ -140,6 +140,8 @@ class User extends Base {
       .filter(([flag]) => (this.flags & Number(flag)) !== 0)
       .map(([, badge]) => badge);
 
+      this.dmChannel = this.#oldUser?.dmChannel ?? undefined;
+
     if (data.premium_type === 3 || data.premium_type === 1) {
       this.badges.push("Nitro Basic");
     }
@@ -213,11 +215,12 @@ class User extends Base {
 
     if (result?.error || !result) return result as RESTResponse;
 
-    const dm = Utilities.typeChannel(result, this.#client) as DMChannel;
+    this.dmChannel = new DMChannel(result, this.#client)
 
-    this.dmChannel = dm;
+    this.#client.users.cache.set(this.id, this)
+    this.#client.channels.cache.set(this.dmChannel.id, this.dmChannel)
 
-    return dm;
+    return this.dmChannel
   }
 
   async send(body: MessageBodyRequest | string) {

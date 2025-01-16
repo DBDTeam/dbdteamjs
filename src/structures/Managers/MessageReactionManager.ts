@@ -25,11 +25,6 @@ class MessageReactions {
    */
   readonly channelId: string;
   /**
-   * The guild id
-   * @type { string }
-   */
-  readonly guildId?: string;
-  /**
    * The reactions that the message has.
    * * @type {Array<string>}
   */
@@ -46,7 +41,6 @@ class MessageReactions {
     this.#client = client;
     this.messageId = msgObj.id;
     this.channelId = msgObj.channelId;
-    this.guildId = msgObj.guild.id;
     this.reactions = reacts;
   }
 

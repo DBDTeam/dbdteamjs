@@ -67,9 +67,12 @@ class ChannelManager {
       true
     );
 
-    if (!response || response.status !== 200) return response;
+    if (!response || response.error) return response;
 
-    return await Utilities.typeChannel(response.data, this.#client);
+    const channel = await Utilities.typeChannel(response, this.#client);
+
+    this.cache.set(channel.id, channel)
+    return channel
   }
 }
 
