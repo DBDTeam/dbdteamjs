@@ -60,7 +60,7 @@ class ApplicationCommandManager {
     if (!id && typeof id !== "string")
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
-    var response = await this.#client.rest.request(
+    var response = await this.#client.rest.request<APIApplicationCommand>(
       "GET",
       this.target === "global"
         ? Endpoints.ApplicationCommand(this.#client.user.id, id)
@@ -76,8 +76,8 @@ class ApplicationCommandManager {
 
     if (response.error) return response as RESTResponse;
 
-    this.cache.set(response.data?.id, response.data as APIApplicationCommand);
-    return this.cache.get(response.data?.id) as APIApplicationCommand;
+    this.cache.set(response.id, response as APIApplicationCommand);
+    return this.cache.get(response.id) as APIApplicationCommand;
   }
   async set(
     commands: CommandsBody[] | CommandsBody
@@ -128,7 +128,7 @@ class ApplicationCommandManager {
       throw new ClientTypeError(ErrorNames.InvalidType, "string", "id");
     if (!this.#client.user) return;
 
-    const response = await this.#client.rest.request(
+    const response = await this.#client.rest.request<APIApplicationCommand>(
       "DELETE",
       this.target === "global"
         ? Endpoints.ApplicationCommand(this.#client.user.id, id)

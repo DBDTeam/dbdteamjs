@@ -1,3 +1,4 @@
+import { APIMessage } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import { Nullable } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
@@ -5,6 +6,7 @@ import { Collection } from "../../utils/Collection";
 import { Utilities } from "../../utils/utils";
 import { Guild } from "../Guild";
 import { Message } from "../Message";
+import { RESTResponse } from "../../rest/requestHandler";
 
 export class ChannelMessageManager<T extends Record<any, any>> {
   #client: Client;
@@ -35,7 +37,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
    * @param {string | Record<any, any>} msgId - The ID of the message to fetch or an object with query parameters.
    * @returns {Promise<Message | Message[] | null>} - The fetched message(s) or null if not found.
    */
-  async fetch(msgId: string | Record<any, any>): Promise<Nullable<Message | Message[]>> {
+  async fetch(msgId: string | Record<any, any>): Promise<Nullable<RESTResponse | Message | Message[]>> {
     if (typeof msgId === "object" && msgId instanceof Object) {
       const config = {
         limit: 50,
@@ -84,7 +86,7 @@ export class ChannelMessageManager<T extends Record<any, any>> {
           const msg = new Message(i, this.#client);
 
           if (!this.channel.messages) return null;
-
+          // Still in work here.
           if (this.channel?.messages.cache.get(i.id)) {
             if (!msg.channel && !this.channel) {
               msg.channel = this.channel;
@@ -98,30 +100,24 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         return response;
       }
     } else if (typeof msgId === "string") {
-      const response = await this.#client.rest.request(
+      const response = await this.#client.rest.request<APIMessage>(
         "GET",
         Endpoints.ChannelMessage(this.channel.id, msgId),
         true
       );
 
-      if (!response) return null;
-
-      if (response.error) {
-        return null;
-      } else {
-        if (!response.data) return null;
-        const msg = new Message( //@ts-ignore
-          { ...response.data, guild: this.guild },
+      if (!response || response.error) return response as RESTResponse
+        const msg = new Message(
+          { ...response as APIMessage, guild_id: this.guild?.id },
           this.#client
         );
         if (!msg.channel && !this.channel) {
           msg.channel = this.channel;
         }
-        if (this.channel.messages.cache.get(response.data.id)) {
-          this.channel.messages.cache.set(response.data.id, msg);
+        if (this.channel.messages.cache.get(response.id)) {
+          this.channel.messages.cache.set(response.id, msg);
         }
         return msg;
       }
-    }
   }
 }

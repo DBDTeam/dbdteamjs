@@ -1,4 +1,5 @@
 import {
+  APIInteractionResponseCallbackData,
   InteractionResponseType,
   InteractionType,
 } from "discord-api-types/v10";
@@ -216,7 +217,7 @@ class InteractionBase {
     const data = { type: obj.type, data: obj.data };
 
     var response;
-    var request = await this.client.rest.request(
+    var request = await this.client.rest.request<APIInteractionResponseCallbackData>(
       "POST",
       Endpoints.Interaction(this.interactionId, this.token),
       true,
@@ -226,7 +227,7 @@ class InteractionBase {
     );
 
     if (obj.fetchResponse) {
-      request = await this.client.rest.request(
+      request = await this.client.rest.request<APIInteractionResponseCallbackData>(
         "GET",
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
         true
@@ -236,7 +237,7 @@ class InteractionBase {
 
       response = new InteractionResponse(
         {
-          ...request?.data,
+          ...request,
           guild_id: this.guildId,
           token: this.token,
           interactionId: this.interactionId,
@@ -326,7 +327,7 @@ class InteractionBase {
       MessagePayloadData.files,
     ];
 
-    const request = await this.client.rest.request(
+    const request = await this.client.rest.request<APIInteractionResponseCallbackData>(
       "PATCH",
       Endpoints.InteractionOriginal(this.client.user.id, this.token),
       true,
@@ -340,7 +341,7 @@ class InteractionBase {
     if (request?.error)
       return request as RESTResponse;
 
-    const message = new InteractionResponse(request.data, this.client);
+    const message = new InteractionResponse(request, this.client);
 
     return message;
   }
@@ -378,7 +379,7 @@ class InteractionBase {
       MessagePayloadData.files,
     ];
 
-    const request = await this.client.rest.request(
+    const request = await this.client.rest.request<APIInteractionResponseCallbackData>(
       "POST",
       Endpoints.InteractionCreateFollowUp(this.client.user.id, this.token),
       true,
@@ -387,9 +388,9 @@ class InteractionBase {
       files
     );
 
-    if (!request || request?.error || !request?.data) return request;
+    if (!request || request?.error) return request;
 
-    const message = new InteractionResponse(request.data, this.client);
+    const message = new InteractionResponse(request, this.client);
 
     return message;
   }

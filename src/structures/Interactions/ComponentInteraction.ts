@@ -110,7 +110,7 @@ class ComponentInteraction extends InteractionBase {
 
     const data = { type: 7, data: _d };
 
-    let response = await this.client.rest.request(
+    let response = await this.client.rest.request<APIInteractionResponseCallbackData>(
       "POST",
       Endpoints.Interaction(this.interactionId, this.token),
       true,
@@ -118,17 +118,17 @@ class ComponentInteraction extends InteractionBase {
     );
 
     if (obj.fetchResponse) {
-      response = await this.client.rest.request(
+      response = await this.client.rest.request<APIInteractionResponseCallbackData>(
         "GET",
         Endpoints.InteractionOriginal(this.client.user.id, this.token),
         true
       );
 
-      if (!response) return false;
+      if (!response || response.error) return false;
 
       const result = new InteractionResponse(
         {
-          ...response.data,
+          ...response,
           guild_id: this.guildId,
           token: this.token,
           interactionId: this.interactionId,

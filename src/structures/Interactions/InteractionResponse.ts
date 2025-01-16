@@ -1,9 +1,9 @@
+import { APIInteractionResponseCallbackData } from "discord-api-types/v10";
 import { User } from "..";
 import { type Client } from "../../client/Client";
 import { ClientTypeError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
-import { MessageBodyRequest } from "../../common";
-import { InteractionResponseData } from "../../common/types/Interactions"
+import { InteractionResponseData, MessageBodyRequest } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
 import { Message } from "../Message";
 import { EditMessagePayload } from "../Payloads/EditMessagePayload";
@@ -58,7 +58,7 @@ export class InteractionResponse extends Message {
 
     const message = new EditMessagePayload(body, body?.files)
 
-    const response = await this.client.rest.request(
+    const response = await this.client.rest.request<APIInteractionResponseCallbackData>(
       "PATCH",
       Endpoints.InteractionOriginal(this.client.user.id, this.token),
       true,
@@ -69,10 +69,9 @@ export class InteractionResponse extends Message {
 
     if (!response) return null;
     if (response.error) return response;
-    if (response.data)
       return new InteractionResponse(
         {
-          ...response.data,
+          ...response,
           guild_id: this.guildId,
           token: this.token,
           interactionId: this.interaction_id,

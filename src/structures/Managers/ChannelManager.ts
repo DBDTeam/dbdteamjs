@@ -1,4 +1,5 @@
 import {
+  APIChannel,
   APIChannelPatchOverwrite,
   APIGuildForumDefaultReactionEmoji,
   APIGuildForumTag,
@@ -61,7 +62,7 @@ class ChannelManager {
    * @returns {Promise<Channel | null>} - The fetched channel or null if an error occurs.
    */
   async fetch(id: string) {
-    const response = await this.#client.rest.request(
+    const response = await this.#client.rest.request<APIChannel>(
       "GET",
       Endpoints.Channel(id),
       true
