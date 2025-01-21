@@ -122,14 +122,9 @@ export class TextBasedChannel extends Channel {
       message.files
     );
 
-    if (!result) return null;
+    if (!result || !result.hasData()) return result;
 
-    if (!result.error) {
-
-      return new Message(result as APIMessage, this.client);
-    } else {
-      return result;
-    }
+    return new Message(result.data, this.client);
   }
 
   createMessageCollector(filter: (message: Message) => any, options: Record<any, any>) {

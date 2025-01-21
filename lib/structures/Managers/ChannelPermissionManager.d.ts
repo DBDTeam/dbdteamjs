@@ -57,7 +57,7 @@ export declare class ChannelPermissionManager {
      * and values are booleans indicating whether the target should have (`true`) or not have (`false`) the permission.
      * @returns {Promise<boolean>} - Returns true if the target has all the permissions required, otherwise false.
      */
-    has(target: TargetPayload, permissions: Partial<Record<PermissionsType, boolean>>): Promise<boolean>;
+    has(target: TargetPayload, permissions: PermissionsType | PermissionsType[] | Partial<Record<PermissionsType, boolean>>, forceAdmin?: boolean, matchAll?: boolean): Promise<boolean>;
     /**
      * Checks if a target has at least one of the specified permissions in the channel.
      * @param {TargetPayload} target - The target payload (e.g., user or role) whose permissions are being checked.
@@ -65,7 +65,7 @@ export declare class ChannelPermissionManager {
      * and values are booleans indicating whether the target should have (`true`) or not have (`false`) the permission.
      * @returns {Promise<boolean>} - Returns true if the target has at least one of the required permissions, otherwise false.
      */
-    hasAny(target: TargetPayload, permissions: Partial<Record<PermissionsType, boolean>>): Promise<boolean>;
+    hasAny(target: TargetPayload, permissions: PermissionsType | PermissionsType[] | Partial<Record<PermissionsType, boolean>>): Promise<boolean>;
     private determineTargetType;
     private prepareTarget;
 }

@@ -3,7 +3,7 @@ import { ChannelMessageManager } from "./Managers/ChannelMessageManager";
 import { Message } from "./Message";
 import { MessageBodyRequest, Nullable, SnowflakeInformation } from "../common";
 import { MessageCollector } from "./Collectors/MessageCollector";
-import { APIMessage, APITextBasedChannel } from "discord-api-types/v10";
+import { APITextBasedChannel } from "discord-api-types/v10";
 import { GuildChannel } from "./GuildChannel";
 export declare class GuildTextBasedChannel extends GuildChannel {
     /**
@@ -24,17 +24,13 @@ export declare class GuildTextBasedChannel extends GuildChannel {
      * @readonly
      * @function
      */
-    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<Message | ((Record<string, any> | APIMessage) & {
-        error: boolean;
-    }) | null>;
+    readonly sendMessage: (body: MessageBodyRequest | string) => Promise<Message | null>;
     /**
      * Creates a message in the Text Channel
      * @readonly
      * @function
      */
-    readonly send: (body: MessageBodyRequest | string) => Promise<Message | ((Record<string, any> | APIMessage) & {
-        error: boolean;
-    }) | null>;
+    readonly send: (body: MessageBodyRequest | string) => Promise<Message | null>;
     /**
      * The Text Channel last pin time information
      */
@@ -55,8 +51,6 @@ export declare class GuildTextBasedChannel extends GuildChannel {
      * })
      * @returns {Promise<Message | object>}
      */
-    createMessage(body: MessageBodyRequest | string): Promise<Message | ((Record<string, any> | APIMessage) & {
-        error: boolean;
-    }) | null>;
+    createMessage(body: MessageBodyRequest | string): Promise<Message | null>;
     createMessageCollector(filter: (message: Message) => any, options: Record<any, any>): MessageCollector;
 }

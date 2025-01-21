@@ -3,7 +3,7 @@ import { type Client } from "../client/Client";
 import { ClientEvents, EventNames, GatewayConfig, Intents } from "../common";
 import { Collection } from "../utils/Collection";
 import { TypedEmitter } from "../utils/typed-emitter";
-import { GatewayReceivePayload } from "discord-api-types/v10";
+import { APIGatewayBotInfo, GatewayReceivePayload } from "discord-api-types/v10";
 import { ClientError, ClientRangeError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
 
@@ -282,7 +282,7 @@ class ShardManager extends TypedEmitter<ClientEvents> {
   }
 
   private async getGatewayConfig() {
-    return await this.client.rest.request("GET", `/gateway/bot`, true);
+    return await this.client.rest.request<APIGatewayBotInfo>("GET", `/gateway/bot`, true);
   }
 
   public async connect() {

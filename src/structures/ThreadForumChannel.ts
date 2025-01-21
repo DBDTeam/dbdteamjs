@@ -1,4 +1,4 @@
-import { APIThreadMetadata, Snowflake } from "discord-api-types/v10";
+import { APIChannel, APIThreadMetadata, Snowflake } from "discord-api-types/v10";
 import { type Client } from "../client";
 import { Message } from "./Message";
 import { Guild } from "./Guild";
@@ -45,7 +45,7 @@ export class ForumThreadChannel extends GuildChannel {
       );
     if (!tagsIds || tagsIds.some((id) => typeof id !== "string")) return;
 
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIChannel>(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
@@ -53,7 +53,7 @@ export class ForumThreadChannel extends GuildChannel {
       reason
     );
 
-    return result;
+    return new ForumThreadChannel(result, this.client);
   }
 
   async addTags(tagsIds: string[], reason?: string) {
@@ -67,7 +67,7 @@ export class ForumThreadChannel extends GuildChannel {
 
     let combinedTags = [... new Set(this.applied_tags.concat(tagsIds))];
 
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIChannel>(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
@@ -75,7 +75,7 @@ export class ForumThreadChannel extends GuildChannel {
       reason
     );
 
-    return result;
+    return new ForumThreadChannel(result, this.client);
   }
 
   async removeTags(tagsIds: string[], reason?: string) {
@@ -91,7 +91,7 @@ export class ForumThreadChannel extends GuildChannel {
       (tag) => !tagsIds.includes(tag)
     );
 
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIChannel>(
       "PATCH",
       Endpoints.Channel(this.id),
       true,
@@ -99,6 +99,6 @@ export class ForumThreadChannel extends GuildChannel {
       reason
     );
 
-    return result;
+    return new ForumThreadChannel(result, this.client);
   }
 }

@@ -165,7 +165,7 @@ declare class Message extends Base {
      * @param {MessageBodyRequest | string} obj - The edit message payload or content.
      * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the edited message, or ErrorResponseFromAPI if failed.
      */
-    edit(newMessage: MessageUpdateBodyRequest | string): Promise<Message | RESTResponse>;
+    edit(newMessage: MessageUpdateBodyRequest | string): Promise<Message | RESTResponse | null>;
     /**
      * Removes all embeds from the message.
      * @returns {Promise<Message | ErrorResponseFromApi>} A promise that resolves to the updated message, or undefined if failed.

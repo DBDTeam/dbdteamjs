@@ -20,9 +20,7 @@ export class GuildTextBasedChannel extends GuildChannel {
     /**
      * The Text Channel message manager
      */
-    messages: ChannelMessageManager<
-        GuildChannel
-    >;
+    messages: ChannelMessageManager<GuildChannel>;
     /**
      * The last Text Channel message
      */
@@ -114,16 +112,13 @@ export class GuildTextBasedChannel extends GuildChannel {
 
         if (!result) return null;
 
-        if (!result.error) {
-            const data = {
-                ...result as APIMessage,
-                member: this.guild.members.cache.get(result.author.id),
-                guild_id: this.guildId
-            }
-            return new Message(data as APIMessage, this.client);
-        } else {
-            return result;
-        }
+        if (!result.hasData()) return result;
+        const data = {
+            ...result.data,
+            member: this.guild.members.cache.get(result.data.author.id),
+            guild_id: this.guildId,
+        };
+        return new Message(data as APIMessage, this.client);
     }
 
     createMessageCollector(

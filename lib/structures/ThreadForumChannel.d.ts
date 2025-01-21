@@ -12,13 +12,7 @@ export declare class ForumThreadChannel extends GuildChannel {
     member: ThreadMember;
     message?: Message;
     constructor(data: any, client: Client);
-    setTags(tagsIds: Snowflake[], reason?: string): Promise<((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    }) | undefined>;
-    addTags(tagsIds: string[], reason?: string): Promise<((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    }) | undefined>;
-    removeTags(tagsIds: string[], reason?: string): Promise<((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    }) | undefined>;
+    setTags(tagsIds: Snowflake[], reason?: string): Promise<ForumThreadChannel | undefined>;
+    addTags(tagsIds: string[], reason?: string): Promise<ForumThreadChannel | undefined>;
+    removeTags(tagsIds: string[], reason?: string): Promise<ForumThreadChannel | undefined>;
 }

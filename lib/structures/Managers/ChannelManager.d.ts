@@ -1,4 +1,4 @@
-import { APIChannelPatchOverwrite, APIGuildForumDefaultReactionEmoji, APIGuildForumTag, ChannelType, ForumLayoutType, SortOrderType, VideoQualityMode } from "discord-api-types/v10";
+import { APIChannel, APIChannelPatchOverwrite, APIGuildForumDefaultReactionEmoji, APIGuildForumTag, ChannelType, ForumLayoutType, SortOrderType, VideoQualityMode } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import { Collection } from "../../utils/Collection";
 import { type Channel } from "../BaseChannel";
@@ -40,8 +40,6 @@ declare class ChannelManager {
      * @param {string} id - The ID of the channel to fetch.
      * @returns {Promise<Channel | null>} - The fetched channel or null if an error occurs.
      */
-    fetch(id: string): Promise<Channel | ((Record<string, any> | import("../../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    })>;
+    fetch(id: string): Promise<Channel | import("../../rest/requestHandler").RESTResponse<APIChannel> | null>;
 }
 export { ChannelManager };

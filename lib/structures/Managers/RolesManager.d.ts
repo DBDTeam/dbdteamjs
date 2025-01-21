@@ -1,4 +1,4 @@
-import { APIRole, RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
+import { RESTPostAPIGuildRoleJSONBody } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import { Collection } from "../../utils/Collection";
 import { Guild } from "../Guild";
@@ -94,8 +94,6 @@ export declare class GuildRolesManager {
      */
     create(createObject: RESTPostAPIGuildRoleJSONBody & {
         reason?: string;
-    }): Promise<GuildRole | ((Record<string, any> | APIRole) & {
-        error: boolean;
-    }) | null>;
+    }): Promise<GuildRole | null>;
 }
 export {};

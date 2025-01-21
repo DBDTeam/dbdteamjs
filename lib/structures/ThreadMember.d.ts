@@ -1,3 +1,4 @@
+import { APIThreadMember } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { type Guild } from "./Guild";
 import { Member } from "./Member";
@@ -25,15 +26,13 @@ declare class ThreadMember {
      * @param {Guild} guild - The Guild where the user is
      * @param {Client} client - The Client
      */
-    constructor(data: Record<string, any>, guild: Guild, client: Client);
+    constructor(data: APIThreadMember, guild: Guild, client: Client);
     /**
      * Kick the ThreadMember from the ThreadChannel. Returns true when success, and a object when error.
      * @async
      * @returns {Promise<Object | boolean>}
      */
-    kick(): Promise<true | ((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    })>;
+    kick(): Promise<true | import("../rest/requestHandler").RESTResponse<unknown>>;
     static type: string;
 }
 export { ThreadMember };

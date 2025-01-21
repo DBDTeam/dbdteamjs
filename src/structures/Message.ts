@@ -1,4 +1,5 @@
 import {
+  APIChannel,
   APIChannelMention,
   APIMessage,
   GatewayMessageCreateDispatchData,
@@ -26,6 +27,7 @@ import { Utilities } from "../utils/utils";
 import { RESTResponse } from "../rest/requestHandler";
 import { GuildTextBasedChannel } from "./GuildTextBasedChannel";
 import { TextBasedChannel } from "./TextBasedChannel";
+import { GuildChannel } from "./GuildChannel";
 
 /**
  * Represents a Discord message.
@@ -201,9 +203,9 @@ class Message extends Base {
     this.channel = this.client.channels.cache.get(
       data.channel_id
     ) as TextBasedChannel | GuildTextBasedChannel;
+    this.guildId = data.guild_id ?? (this.channel as GuildTextBasedChannel).guild?.id as string;
     this.guild =
       (this.channel as GuildTextBasedChannel)?.guild
-    this.guildId = this.guild?.id as string;
     this.member = this.guild?.members?.cache.get(this.user.id) as Member;
     this.tts = data.tts;
     this.flags = data.flags || 0;
@@ -323,9 +325,9 @@ class Message extends Base {
     if (!result || !result?.error) return result as RESTResponse;
 
       const messageData: any = {
-        ...result,
+        ...result.data,
         guild: this.guild,
-        member: this.guild?.members?.cache.get(result.author.id),
+        member: this.guild?.members?.cache.get(result.data.author.id),
       }
       return new Message(messageData, this.client);
   }
@@ -337,7 +339,7 @@ class Message extends Base {
    */
   async edit(
     newMessage: MessageUpdateBodyRequest | string
-  ): Promise<Message | RESTResponse> {
+  ): Promise<Message | RESTResponse | null> {
     if (
       !newMessage ||
       (typeof newMessage !== "string" && typeof newMessage !== "object")
@@ -363,7 +365,7 @@ class Message extends Base {
         "embeds",
       ]);
 
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIMessage>(
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true,
@@ -372,16 +374,14 @@ class Message extends Base {
       files
     );
 
-    if (result?.data && !result.error) {
-      const data: APIMessage & { guild_id: string } = {
-        ...(result.data as APIMessage),
+    if (!result || !result.hasData()) return result;
+    
+      const messageData: APIMessage & { guild_id: string } = {
+        ...result.data,
         guild_id: this.guild.id,
       };
 
-      return new Message(data as APIMessage, this.client);
-    }
-
-    return result as RESTResponse;
+      return new Message(messageData, this.client);
   }
 
   /**
@@ -393,16 +393,16 @@ class Message extends Base {
 
     if (!me.permissions.has(PermissionNames.ManageMessages))
       throw new ClientError(ErrorNames.MissingPermissions, "ManageMessages");
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIMessage>(
       "PATCH",
       Endpoints.ChannelMessage(this.channelId, this.id),
       true,
       { flags: 4 }
     );
 
-    if (result?.data && !result.error) {
+    if (result && !result.hasData) {
       return new Message(
-        { ...(result.data as APIMessage), guild_id: this.guildId },
+        { ...result.data, guild_id: this.guildId },
         this.client
       );
     }
@@ -438,25 +438,23 @@ class Message extends Base {
    * @returns {Promise<Channel | null>} A promise that resolves to the channel, or null if not found.
    */
   async _getChannel(channelId: string): Promise<Channel | null> {
-    const result = await this.client.rest.request(
+    const result = await this.client.rest.request<APIChannel>(
       "GET",
       Endpoints.Channel(channelId),
       true
     );
 
-    if (!result?.error || result) {
-      let channel: any = result;
-
-      if (this.guild) channel.guild = this.guild;
-
-      channel = Utilities.typeChannel(channel.data, this.client);
+    if (!result?.error || result) { //@ts-ignore
+      if (this.guild) result.guild_id = this.guild.id;
+      
+      var channel = Utilities.typeChannel(result, this.client);
 
       this.client.channels.cache.set(channel.id, channel);
-      this.guild?.channels.cache.set(channel.id, channel);
+      if(this.channel.isGuildChannel()) this.guild?.channels.cache.set(channel.id, channel as GuildChannel);
 
       return channel;
     } else {
-      return null;
+      return result;
     }
   }
 }

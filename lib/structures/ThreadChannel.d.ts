@@ -39,8 +39,6 @@ declare class ThreadChannel extends GuildTextBasedChannel {
      * @returns {Promise<ThreadChannel>}
      * @async
      */
-    leave(): Promise<true | ((Record<string, any> | import("../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    })>;
+    leave(): Promise<true | import("../rest/requestHandler").RESTResponse<unknown>>;
 }
 export { ThreadChannel };

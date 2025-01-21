@@ -3,6 +3,7 @@ import { Nullable } from "../../common";
 import { Collection } from "../../utils/Collection";
 import { Guild } from "../Guild";
 import { Message } from "../Message";
+import { RESTResponse } from "../../rest/requestHandler";
 export declare class ChannelMessageManager<T extends Record<any, any>> {
     #private;
     channel: T;
@@ -23,5 +24,5 @@ export declare class ChannelMessageManager<T extends Record<any, any>> {
      * @param {string | Record<any, any>} msgId - The ID of the message to fetch or an object with query parameters.
      * @returns {Promise<Message | Message[] | null>} - The fetched message(s) or null if not found.
      */
-    fetch(msgId: string | Record<any, any>): Promise<Nullable<Message | Message[]>>;
+    fetch(msgId: string | Record<any, any>): Promise<Nullable<RESTResponse | Message | Message[]>>;
 }

@@ -1,4 +1,3 @@
-import { APIUser } from "discord-api-types/v10";
 import { EditClientUserPayload } from "../common";
 import { User } from "../structures/User";
 import { Client } from "./Client";
@@ -21,9 +20,7 @@ declare class ClientUser extends User {
      * })
      * @returns {Promise<ClientUser>}
      */
-    edit(newInfo: EditClientUserPayload): Promise<ClientUser | ((Record<string, any> | APIUser) & {
-        error: boolean;
-    })>;
+    edit(newInfo: EditClientUserPayload): Promise<ClientUser | null>;
     /**
      *
      * @param {string} username - The new username of the Client
@@ -36,9 +33,7 @@ declare class ClientUser extends User {
      *
      * @returns {Promise<ClientUser>}
      */
-    editUsername(username: string): Promise<ClientUser | ((Record<string, any> | APIUser) & {
-        error: boolean;
-    })>;
+    editUsername(username: string): Promise<ClientUser | null>;
     /**
      *
      * @param {string} url - The new username of the Client
@@ -52,8 +47,6 @@ declare class ClientUser extends User {
      *
      * @returns {Promise<ClientUser>}
      */
-    editAvatar(url: string): Promise<ClientUser | ((Record<string, any> | APIUser) & {
-        error: boolean;
-    })>;
+    editAvatar(url: string): Promise<ClientUser | null>;
 }
 export { ClientUser };

@@ -1,4 +1,4 @@
-import { RESTGetAPIUserResult } from "discord-api-types/v10";
+import { APIDMChannel, RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../common/interfaces/rest/cdn";
 import { Base } from "./Base";
@@ -114,10 +114,8 @@ declare class User extends Base {
      * user.bannerUrl() // https://cdn.discordapp.com/banners/640685917467705344/0510a7bd372082644a05c92ffbbe7b2b.webp
      */
     bannerUrl(opts: CDNOptions): string | undefined;
-    createDM(): Promise<RESTResponse | DMChannel>;
-    send(body: MessageBodyRequest | string): Promise<import("./Message").Message | ((Record<string, any> | import("discord-api-types/v10").APIMessage) & {
-        error: boolean;
-    }) | null | undefined>;
+    createDM(): Promise<DMChannel | RESTResponse<APIDMChannel> | null>;
+    send(body: MessageBodyRequest | string): Promise<import("./Message").Message | null | undefined>;
     /**
      * Returns the User mention
      */

@@ -1,3 +1,4 @@
+import { APIThreadMember } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import { FetchWithLimitAfterAndBefore } from "../../common";
 import { RESTResponse } from "../../rest/requestHandler";
@@ -25,7 +26,7 @@ declare class ThreadMemberManager {
      * @param memberId - The ID of the member to fetch or options for fetching members.
      * @returns A thread member, a collection of thread members, or an error response.
      */
-    fetch(memberId: string | FetchWithLimitAfterAndBefore): Promise<RESTResponse | ThreadMember | Collection<string, ThreadMember>>;
+    fetch(memberId: string | FetchWithLimitAfterAndBefore): Promise<ThreadMember | Collection<string, ThreadMember> | RESTResponse<APIThreadMember> | null>;
     /**
      * Removes a member from a thread.
      * @param memberId - The ID of the member to remove.

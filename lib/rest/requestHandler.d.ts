@@ -11,9 +11,6 @@ export declare class RequestHandler {
      * @param client - The client using this handler.
      */
     constructor(client: Client);
-    request<T = RESTResponse>(method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH", endpoint: string, auth?: boolean, data?: Record<string, any>, reason?: Nullable<string>, files?: Nullable<Array<Record<string, any>>>, headers?: Nullable<Record<any, any>>): Promise<(T | Record<string, any>) & {
-        error: boolean;
-    }>;
     /**
      * Makes an API request while handling rate limits and errors.
      * @param method - HTTP method to use (e.g., GET, POST).
@@ -24,7 +21,7 @@ export declare class RequestHandler {
      * @param files - Optional files to include in the request.
      * @returns A promise resolving to the API response or rejecting on error.
      */
-    private fetchFromAPI;
+    request<T>(method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH", url: string, auth?: boolean, body?: Record<string, any>, reason?: Nullable<string>, files?: Nullable<Array<Record<string, any>>>, addHeaders?: Nullable<Record<any, any>>): Promise<RESTResponse<T> | null>;
     /**
      * Generates a consistent key for rate-limiting based on the URL.
      * @param url - The API endpoint URL.
@@ -117,9 +114,15 @@ export declare class RequestHandler {
      */
     private _sleep;
 }
-export declare class RESTResponse {
+export declare class RESTResponse<T = any> {
     status: number;
-    data: any;
+    data: T;
     error: boolean;
-    constructor(data: any);
+    constructor(data: {
+        status: number;
+        data: T;
+        error: boolean;
+    });
+    isError(): this is RESTResponse<null>;
+    hasData(): this is RESTResponse<NonNullable<T>>;
 }

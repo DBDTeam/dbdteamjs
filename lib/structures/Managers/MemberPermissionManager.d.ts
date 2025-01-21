@@ -5,7 +5,7 @@ export declare class MemberPermissionManager {
     member: Member;
     private guild;
     constructor(member: Member, guild: Guild);
-    get permissions(): string;
+    get(): string;
     private checkPermission;
     /**
      * Checks if the member has all of the specified permissions.

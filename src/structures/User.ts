@@ -1,4 +1,4 @@
-import { RESTGetAPIUserResult } from "discord-api-types/v10";
+import { APIDMChannel, RESTGetAPIUserResult } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { CDNOptions } from "../common/interfaces/rest/cdn";
 import * as Endpoints from "../rest/Endpoints";
@@ -206,14 +206,14 @@ class User extends Base {
 
   async createDM() {
     if (this.dmChannel) return this.dmChannel;
-    const result = await this.#client.rest.request(
+    const result = await this.#client.rest.request<APIDMChannel>(
       "POST",
       Endpoints.UserDM(),
       true,
       { recipient_id: this.id }
     );
 
-    if (result?.error || !result) return result as RESTResponse;
+    if (result?.error || !result) return result;
 
     this.dmChannel = new DMChannel(result, this.#client)
 

@@ -1,3 +1,4 @@
+import { APIThreadMember } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
 import { FetchWithLimitAfterAndBefore } from "../../common";
 import * as Endpoints from "../../rest/Endpoints";
@@ -42,13 +43,12 @@ class ThreadMemberManager {
 
     const url = Utilities.buildUrl(endpoint, "", config);
 
-    const response = await this.#client.rest.request("GET", url);
+    const response = await this.#client.rest.request<APIThreadMember[]>("GET", url);
 
     var fetched = new Collection<string, ThreadMember>();
 
-    if (response?.error || !response) {
-      return response as RESTResponse;
-    } else {
+    if (!response || !response.hasData()) return response;
+
       for (var member of response.data) {
         var thread_member = new ThreadMember(member, this.guild, this.#client);
         this.cache.set(thread_member.id, thread_member);
@@ -56,7 +56,6 @@ class ThreadMemberManager {
       }
 
       return fetched;
-    }
   }
 
   /**
@@ -66,23 +65,20 @@ class ThreadMemberManager {
    */
   async fetch(memberId: string | FetchWithLimitAfterAndBefore) {
     if (typeof memberId === "string") {
-      const result = await this.#client.rest.request(
+      const result = await this.#client.rest.request<APIThreadMember>(
         "GET",
         Endpoints.ChannelThreadMember(this.id, memberId)
       );
 
-      if (result?.error || !result) {
-        return result as RESTResponse;
-      } else {
+      if (!result || result?.hasData()) return result;
         var thread_member = new ThreadMember(
-          result as Record<string, any>,
+          result.data,
           this.guild as Guild,
           this.#client
         );
         this.cache.set(thread_member.id, thread_member);
 
         return thread_member;
-      }
     } else {
       return await this.#fetchAllMembersInThread(memberId || {});
     }

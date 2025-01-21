@@ -41,11 +41,13 @@ class GuildChannelManager {
     );
 
 
-    if (!response || response.error) return response as RESTResponse;
+    if (!response) return this.cache;
+
+    if(!response.hasData()) return response;
 
     var fetched = new Collection<string, GuildChannel>()
 
-    for (let channelData of response as APIChannel[]) {
+    for (let channelData of response.data) {
       const channel = await Utilities.typeChannel(channelData, this.#client)
       fetched.set(channel.id, channel as GuildChannel)
       this.cache.set(

@@ -323,7 +323,7 @@ class Guild extends Base {
   #patch() {
     if ("channels" in this.#data) {
       for (var channelData of this.#data.channels) {
-        const channel = Utilities.typeChannel(channelData, this.client);
+        const channel = Utilities.typeChannel({...channelData, guild_id: this.id}, this.client);
 
         this.channels.cache.set(channel.id, channel as GuildChannel);
 
@@ -425,9 +425,9 @@ class Guild extends Base {
       body
     );
 
-    if (!response || response?.error) return response;
+    if (!response || !response?.hasData()) return response;
 
-    return new Guild(response as APIGuild, this.client);
+    return new Guild(response.data, this.client);
   }
 }
 

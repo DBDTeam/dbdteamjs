@@ -3,27 +3,26 @@ import { Nullable } from "../..";
 /**
  * The remove emoji inner payload
  */
-export interface RemoveEmojiPayload {
+export interface RemoveReactionPayload {
     /**
      * The emojis to remove.
      */
-    emojis: string[];
+    reactions: string[];
     /**
-     * The user that will be removed they emoji.
+     * The user that will be removed they reactions.
      */
     user?: Nullable<string |"@me">;
   }
-  
 /**
- * The answer when a emoji is added or removed.
+ * The answer when a reaction is added or removed.
  */
-  export interface EmojisEmptyAnswer {
+  export interface ReactionEmptyAnswer {
     /**
      * If the operation was successfully executed.
      */
     success: boolean,
     /**
-     * The emoji that has been removed/added (if property 'success' is true)
+     * The reaction that has been removed/added (if property 'success' is true)
      */
-    emoji: string
+    reaction?: string
   }

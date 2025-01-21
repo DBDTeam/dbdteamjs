@@ -191,7 +191,7 @@ export class GuildRolesManager {
 
     if (!response || response.error) return response as RESTResponse;
 
-    return new GuildRole(response as APIRole, this.guild, this.#client);
+    return new GuildRole(response.data, this.guild, this.#client);
   }
 
   /**
@@ -218,9 +218,9 @@ export class GuildRolesManager {
 
     if (!response) return null;
 
-    if (response.error) return response as RESTResponse;
+    if (!response.hasData()) return response as RESTResponse;
         let role = new GuildRole(
-          response as APIRole,
+          response.data,
           this.guild,
           this.#client
         );
@@ -257,8 +257,8 @@ export class GuildRolesManager {
 
       if (!response) return this.cache;
 
-      if (response.error) errors.push(response as RESTResponse);
-        const role = new GuildRole(response as APIRole, this.guild, this.#client)
+      if (!response.hasData()) errors.push(response as RESTResponse);
+        const role = new GuildRole(response.data, this.guild, this.#client)
         success.push(role);
     }
 
@@ -300,15 +300,13 @@ export class GuildRolesManager {
       reason
     );
 
-    if (!response) return null;
-
-    if (response.error) return response;
+    if (!response || !response.hasData()) return response;
     const role = new GuildRole(
-      response as APIRole,
+      response.data,
       this.guild.id,
       this.#client
     );
-    this.cache.set(response.id, role);
+    this.cache.set(response.data.id, role);
 
     return role;
   }

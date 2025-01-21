@@ -106,16 +106,16 @@ export class ChannelMessageManager<T extends Record<any, any>> {
         true
       );
 
-      if (!response || response.error) return response as RESTResponse
+      if (!response || !response.hasData()) return response;
         const msg = new Message(
-          { ...response as APIMessage, guild_id: this.guild?.id },
+          { ...response.data, guild_id: this.guild?.id },
           this.#client
         );
         if (!msg.channel && !this.channel) {
           msg.channel = this.channel;
         }
-        if (this.channel.messages.cache.get(response.id)) {
-          this.channel.messages.cache.set(response.id, msg);
+        if (this.channel.messages.cache.get(response.data.id)) {
+          this.channel.messages.cache.set(response.data.id, msg);
         }
         return msg;
       }

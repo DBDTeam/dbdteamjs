@@ -23,9 +23,9 @@ class GuildManager {
       true
     );
 
-    if(!response || response.error) return null;
+    if(!response || !response.hasData()) return null;
 
-    var guild = new Guild(response as APIGuild, this.#client);
+    var guild = new Guild(response.data, this.#client);
     this.cache.set(guild.id, guild)
 
     return guild;

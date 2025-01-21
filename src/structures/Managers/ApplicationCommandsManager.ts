@@ -74,10 +74,10 @@ class ApplicationCommandManager {
 
     if (!response) return null;
 
-    if (response.error) return response as RESTResponse;
+    if (!response.hasData()) return response as RESTResponse;
 
-    this.cache.set(response.id, response as APIApplicationCommand);
-    return this.cache.get(response.id) as APIApplicationCommand;
+    this.cache.set(response.data.id, response.data);
+    return this.cache.get(response.data.id) as APIApplicationCommand;
   }
   async set(
     commands: CommandsBody[] | CommandsBody
@@ -107,9 +107,9 @@ class ApplicationCommandManager {
 
     if (!response) return null;
 
-    if (response.error) return response as RESTResponse;
+    if (!response.hasData()) return response as RESTResponse;
 
-    for (const command of response as APIApplicationCommand[]) {
+    for (const command of response.data) {
       if (!command || typeof command !== "object") continue;
       this.cache.set(command.id, command);
     }

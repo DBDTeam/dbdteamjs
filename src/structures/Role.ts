@@ -151,7 +151,7 @@ export class GuildRole extends Base {
         "body"
       );
 
-    const response = await this.#client.rest.request(
+    const response = await this.#client.rest.request<APIRole>(
       "PATCH",
       Endpoints.GuildRole(this.guildId, this.id),
       true,
@@ -159,11 +159,11 @@ export class GuildRole extends Base {
       reason
     );
 
-    if (response?.error || !response) {
+    if (response?.hasData || !response) {
       return response as RESTResponse;
     }
       return new GuildRole(
-        response.data as APIRole,
+        response.data,
         this.guild as Guild,
         this.#client
       );

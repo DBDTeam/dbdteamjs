@@ -1,3 +1,4 @@
+import { APIThreadMember } from "discord-api-types/v10";
 import { Client } from "../client/Client";
 import { ClientError } from "../client/errors/ClientError";
 import { ErrorNames } from "../client/errors/ErrorList";
@@ -33,7 +34,7 @@ class ThreadMember {
    * @param {Client} client - The Client
    */
   constructor(
-    data: Record<string, any>,
+    data: APIThreadMember,
     guild: Guild,
     client: Client
   ) {
@@ -43,7 +44,7 @@ class ThreadMember {
      * The thread user ID
      * @type {string}
      */
-    this.id = data?.user_id;
+    this.id = data?.user_id as string;
     /**
      * The Guild this member is from
      * @type {Guild}
@@ -63,18 +64,18 @@ class ThreadMember {
      * The ID of the Thread
      * @type {string}
      */
-    this.threadId = data?.id;
-    if (this.#client.channels.cache.get(data?.id)) {
+    this.threadId = data?.id as string;
+    if (this.#client.channels.cache.get(data?.id as string)) {
       /**
        * The Thread Channel (if it can be finded in the cache)
        * @type {ThreadChannel}
        */
-      this.thread = this.#client.channels.cache.get(data?.id) as ThreadChannel;
+      this.thread = this.#client.channels.cache.get(data?.id as string) as ThreadChannel;
     }
     /**
      * The time information when the user joined to the Thread
      */
-    this.joined = Utilities.getAllStamps(data?.joined_timestamp);
+    this.joined = Utilities.getAllStamps(new Date(data?.join_timestamp));
     /**
      * Removes the user (alias of {@link ThreadMember.kick})
      * @async

@@ -9,7 +9,7 @@ import { ClientError } from "../../client/errors/ClientError";
 import { ErrorNames } from "../../client/errors/ErrorList";
 import { Utilities } from "../../utils/utils";
 import { RESTResponse } from "../../rest/requestHandler";
-import { APIGuildMember } from "discord-api-types/v10";
+import { APIGuildMember, APIUser } from "discord-api-types/v10";
 
 class GuildMemberManager {
   #client: Client;
@@ -44,11 +44,11 @@ class GuildMemberManager {
       url
     );
 
-    if (!response || response.error) return null;
+    if (!response || !response.hasData()) return null;
 
     var fetched = new Collection<string, Member>()
 
-    for (let memberData of response as APIGuildMember[]) {
+    for (let memberData of response.data) {
       const userData = { ...memberData, id: memberData.user?.id };
       const member = new Member(
         userData,
@@ -72,14 +72,14 @@ class GuildMemberManager {
    */
   async fetch(memberId: string | FetchWithLimitAndAfter): Promise<Nullable<Member | RESTResponse | Collection<string, Member>>> {
     if (typeof memberId === "string") {
-      const result = await this.#client.rest.request(
+      const result = await this.#client.rest.request<APIGuildMember>(
         "GET",
         Endpoints.GuildMember(this.guildId, memberId)
       );
     
-      if (!result || result?.error) return result as RESTResponse;
-    
-      const { user } = result as Record<any, any>;
+      if (!result || !result?.hasData()) return result as RESTResponse;
+
+      const user = result.data.user as APIUser;
       const userData = { ...result, id: user.id };
     
       this.#client.users.cache.set(userData.id, new User(user, this.#client));

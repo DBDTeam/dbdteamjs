@@ -13,7 +13,7 @@ export class MemberPermissionManager {
     this.guild = guild;
   }
 
-  get permissions(): string {
+  get(): string {
     const rolePermissions = this.member.roles.cache
       .toJSON()
       .map((role: any) => role.permissions);
@@ -35,8 +35,10 @@ export class MemberPermissionManager {
     forceAdmin: boolean,
     matchAll: boolean
   ): boolean {
+    if(!permissions || !["string", "object"].includes(typeof permissions)) throw new ClientError(ErrorNames.InvalidType, "string | object", "permissions")
+
     const adminPerm = BigInt(PermissionsBits.ADMINISTRATOR);
-    const userPerms = BigInt(this.permissions);
+    const userPerms = BigInt(this.get());
 
     if (typeof permissions === "string") {
       permissions = [permissions];

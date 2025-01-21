@@ -1,6 +1,6 @@
+import { APIInteractionResponseCallbackData } from "discord-api-types/v10";
 import { type Client } from "../../client/Client";
-import { MessageBodyRequest } from "../../common";
-import { InteractionResponseData } from "../../common/types/Interactions";
+import { InteractionResponseData, MessageBodyRequest } from "../../common";
 import { Message } from "../Message";
 export declare class InteractionResponse extends Message {
     readonly client: Client;
@@ -27,7 +27,5 @@ export declare class InteractionResponse extends Message {
      * @param {string | MessageBodyRequest} obj - The EditMessagePayloadData
      * @returns {Promise<InteractionResponse | null>}
      */
-    editInteractionResponse(body: MessageBodyRequest | string): Promise<((Record<string, any> | import("../../rest/requestHandler").RESTResponse) & {
-        error: boolean;
-    }) | InteractionResponse | null | undefined>;
+    editInteractionResponse(body: MessageBodyRequest | string): Promise<InteractionResponse | import("../../rest/requestHandler").RESTResponse<APIInteractionResponseCallbackData> | null>;
 }

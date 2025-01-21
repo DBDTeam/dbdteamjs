@@ -53,12 +53,12 @@ export class GuildBanManager {
       url
     );
 
-    if (!response || response?.error)
+    if (!response || !response?.hasData())
       return response as RESTResponse;
 
-    const user = new User(response.user, this.client);
+    const user = new User(response.data.user, this.client);
 
-    return { user, reason: response?.reason };
+    return { user, reason: response.data?.reason };
   }
 
   /**

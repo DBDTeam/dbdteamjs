@@ -69,11 +69,11 @@ export declare class GuildRole extends Base {
     edit(body: RESTPatchAPIGuildRoleJSONBody & {
         position?: number;
     }, reason?: string): Promise<RESTResponse | GuildRole>;
-    setName(name: string, reason?: string): Promise<RESTResponse | GuildRole>;
-    setPosition(position: number, reason?: string): Promise<RESTResponse | GuildRole>;
-    setColor(color: number, reason?: string): Promise<RESTResponse | GuildRole>;
-    setHoist(hoist: boolean, reason?: string): Promise<RESTResponse | GuildRole>;
-    setIcon(icon: string, reason?: string): Promise<RESTResponse | GuildRole>;
-    setEmoji(unicode_emoji: string, reason?: string): Promise<RESTResponse | GuildRole>;
-    setMentionable(mentionable: boolean, reason?: string): Promise<RESTResponse | GuildRole>;
+    setName(name: string, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setPosition(position: number, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setColor(color: number, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setHoist(hoist: boolean, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setIcon(icon: string, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setEmoji(unicode_emoji: string, reason?: string): Promise<RESTResponse<any> | GuildRole>;
+    setMentionable(mentionable: boolean, reason?: string): Promise<RESTResponse<any> | GuildRole>;
 }

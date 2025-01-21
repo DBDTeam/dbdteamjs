@@ -28,36 +28,6 @@ export class RequestHandler {
         this.buckets = new Collection(); // Initialize rate limit buckets.
     }
 
-    public async request<T = RESTResponse>(
-        method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
-        endpoint: string,
-        auth: boolean = true,
-        data?: Record<string, any>,
-        reason?: Nullable<string>,
-        files?: Nullable<Array<Record<string, any>>>,
-        headers?: Nullable<Record<any, any>>
-    ): Promise<(T | Record<string, any>) & { error: boolean }> {
-        try {
-            const response = await this.fetchFromAPI(
-                method,
-                endpoint,
-                auth,
-                data,
-                reason,
-                files,
-                headers
-            );
-
-            if (!response || response.error) return response as RESTResponse;
-
-            return response.data as (T | Record<string, any>) & {
-                error: boolean;
-            };
-        } catch (error) {
-            return error as RESTResponse;
-        }
-    }
-
     /**
      * Makes an API request while handling rate limits and errors.
      * @param method - HTTP method to use (e.g., GET, POST).
@@ -68,7 +38,7 @@ export class RequestHandler {
      * @param files - Optional files to include in the request.
      * @returns A promise resolving to the API response or rejecting on error.
      */
-    private async fetchFromAPI(
+    public async request<T>(
         method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
         url: string,
         auth: boolean = true,
@@ -76,7 +46,7 @@ export class RequestHandler {
         reason?: Nullable<string>,
         files?: Nullable<Array<Record<string, any>>>,
         addHeaders?: Nullable<Record<any, any>>
-    ): Promise<null | RESTResponse> {
+    ): Promise<RESTResponse<T> | null> {
         const routeKey = this.getRouteKey(url); // Generate a unique route key.
         const bucket = this.getBucket(routeKey); // Get or create a rate limit bucket.
 
@@ -92,7 +62,7 @@ export class RequestHandler {
                 );
 
                 try {
-                    const response = await this.makeResponse(
+                    const response = await this.makeResponse<T>(
                         finalURL,
                         { method, headers },
                         method,
@@ -107,7 +77,7 @@ export class RequestHandler {
                             "Rate limit encountered. Retrying after the specified delay."
                         );
                         resolve(
-                            await this.fetchFromAPI(
+                            await this.request(
                                 method,
                                 url,
                                 auth,
@@ -131,13 +101,12 @@ export class RequestHandler {
      */
     private getRouteKey(url: string): string {
         const [baseUrl] = url.split("?"); // Ignorar parámetros de consulta.
-    
+
         return baseUrl
             .replace(/\/\d+/g, "/:id") // Normalizar IDs numéricos.
             .replace(/\/[a-zA-Z0-9_-]{200,}/g, "/:token") // Normalizar segmentos de 200 o más caracteres.
             .replace(/\/$/, ""); // Eliminar slashes finales.
     }
-    
 
     /**
      * Retrieves or initializes a rate limit bucket for a specific route key.
@@ -193,7 +162,7 @@ export class RequestHandler {
      * @param files - Optional files to upload.
      * @returns Parsed response data or throws an error.
      */
-    private async makeResponse(
+    private async makeResponse<T>(
         finalURL: string,
         options: Record<string, any>,
         method: Methods | "PUT" | "POST" | "GET" | "DELETE" | "PATCH",
@@ -220,7 +189,7 @@ export class RequestHandler {
                             await this._handle(res, parsedData, reject); // Handle response errors.
                             this.ping = Date.now() - startTime; // Calculate request ping.
                             resolve(
-                                new RESTResponse({
+                                new RESTResponse<T>({
                                     status: res.statusCode as number,
                                     data: parsedData,
                                     error: false,
@@ -427,13 +396,23 @@ export class RequestHandler {
     }
 }
 
-export class RESTResponse {
+export class RESTResponse<T = any> {
     status: number;
-    data: any;
+    data: T;
     error: boolean;
-    constructor(data: any) {
-        this.status = data.statusCode;
+
+    constructor(data: { status: number; data: T; error: boolean }) {
+        this.status = data.status;
         this.data = data.data;
         this.error = data.error;
+    }
+
+    isError(): this is RESTResponse<null> {
+        return this.error;
+    }
+
+    // Ahora este método asegura que 'data' no es null y TypeScript puede inferirlo.
+    hasData(): this is RESTResponse<NonNullable<T>> {
+        return this.data !== null && !this.error;
     }
 }

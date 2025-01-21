@@ -53,9 +53,9 @@ class ClientUser extends User {
       null
     );
 
-    if (!result || result.error) return result;
+    if (!result || !result.hasData()) return result;
 
-    var bot = new ClientUser(result as APIUser, this.#client);
+    var bot = new ClientUser(result.data, this.#client);
     this.#client.users.cache.set(this.#client.user.id, bot);
     return bot;
   }
